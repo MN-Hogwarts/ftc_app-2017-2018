@@ -55,6 +55,7 @@ public class AutoTest1 extends LinearOpMode {
 
         auto.initOpmode(this, hardwareMap);
         //auto.initVuforia();
-        auto.pictographID();//run Vuforia method
+        //auto.pictographID(); //run Vuforia method, includes initVuforia()
+
     }
 }
