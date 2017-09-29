@@ -13,3 +13,7 @@
 
 // Include common definitions from above.
 apply from: '../build.common.gradle'
+
+dependencies {
+    compile project(path: ':Ftc3543Lib-2017-18')
+}
