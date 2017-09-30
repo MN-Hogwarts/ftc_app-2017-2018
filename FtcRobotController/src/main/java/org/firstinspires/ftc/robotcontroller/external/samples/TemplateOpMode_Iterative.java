@@ -58,7 +58,7 @@ import java.util.Date;
  */
 
 @TeleOp(name="Template: Iterative OpMode", group="Iterative Opmode")  // @Autonomous(...) is the other common choice
-@Disabled
+//@Disabled
 public class TemplateOpMode_Iterative extends OpMode
 {
     /* Declare OpMode members. */

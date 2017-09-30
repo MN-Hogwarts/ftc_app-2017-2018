@@ -1,10 +1,8 @@
 import java.util.regex.Pattern
-
 //
 // build.gradle in FtcRobotController
 //
 apply plugin: 'com.android.library'
-
 android {
 
     defaultConfig {
@@ -13,17 +11,20 @@ android {
     }
 
     compileSdkVersion 23
-    buildToolsVersion '23.0.3'
+    buildToolsVersion '25.0.0'
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
 }
-
 repositories {
     flatDir {
         dirs '../libs'
     }
 }
-
 apply from: 'build.release.gradle'
+
+dependencies {
+    // compile '../libs/org.boofcv:boofcv-android:0.27'
+    compile fileTree(dir: 'libs', include: 'boofcv-android-0.27.jar')
+}
