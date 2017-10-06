@@ -225,8 +225,7 @@ public abstract class FtcOpMode extends LinearOpMode implements TrcRobot.RobotMo
      * This method is called when our OpMode is loaded and the "Init" button on the Driver Station is pressed.
      */
     @Override
-    public void runOpMode()
-    {
+    public void runOpMode() throws InterruptedException {
         final String funcName = "runOpMode";
         HalDashboard dashboard = HalDashboard.createInstance(telemetry);
         TrcRobot.RunMode runMode;
