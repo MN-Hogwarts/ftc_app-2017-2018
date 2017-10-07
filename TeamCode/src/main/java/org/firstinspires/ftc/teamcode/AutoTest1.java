@@ -35,6 +35,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import ftclib.FtcOpMode;
 
+import static org.firstinspires.ftc.teamcode.AngleMeasureHw.GYRO;
+
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
  */
@@ -59,18 +61,24 @@ public class AutoTest1 extends FtcOpMode {
     public void runOpMode() throws InterruptedException{
 
         auto.initOpmode(this, hardwareMap);
+        auto.initVuforia();
         auto.initAlliance(AllianceColor.RED);
-        auto.initJewelHardware();
+        auto.initJewelHardware(GYRO);
         while (!isStarted()) {
             telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
+            telemetry.addData("Angle X", auto.getAngleX());
+            telemetry.addData("Angle Y", auto.getAngleY());
+            telemetry.addData("Angle Z", auto.getAngleZ());
             telemetry.update();
-
         }
 
-        auto.jewelColor();
+        //auto.pictographID();
+        //auto.jewelColor();
+        auto.driveToCryptobox();
         //sleep(5000);
         while (opModeIsActive()) {
-            telemetry.addData("Moving Away:", auto.moveAwayFromColor());
+            //telemetry.addData("Moving Away:", auto.moveAwayFromColor());
+            auto.place1stGlyph();
             telemetry.update();
         }
 

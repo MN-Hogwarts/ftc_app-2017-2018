@@ -30,9 +30,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -40,6 +38,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuMarkInstanceId;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -48,8 +49,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 import ftclib.FtcDcMotor;
 import ftclib.FtcOpMode;
-import swlib.SWIMUGyro;
 import trclib.TrcDriveBase;
+
+import static org.firstinspires.ftc.teamcode.AngleMeasureHw.GYRO;
+import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
 
 /**
  * This class will contain all methods for autonomous,
@@ -57,6 +60,7 @@ import trclib.TrcDriveBase;
  */
 
 enum AllianceColor {RED, BLUE}
+enum AngleMeasureHw {GYRO, IMU}
 
 public class AutonomousActions {
 
@@ -64,6 +68,7 @@ public class AutonomousActions {
     HardwareMap hardwareMap;
     Telemetry telemetry;
     AllianceColor allianceColor;
+    AngleMeasureHw angleMeasureHw;
 
     FtcDcMotor leftFrontMotor   = null;
     FtcDcMotor rightFrontMotor  = null;
@@ -82,7 +87,7 @@ public class AutonomousActions {
     VuforiaLocalizer vuforia;
     VuforiaTrackables relicTrackables;
     VuforiaTrackable relicTemplate;
-    RelicRecoveryVuMark vuMark;
+    RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.UNKNOWN;
 
     ColorSensor colorSensor = null;
     Servo jewelArm          = null;
@@ -147,7 +152,17 @@ public class AutonomousActions {
 
     }
 
-    void initJewelHardware() {
+    void initJewelHardware(AngleMeasureHw angleMeasureHw) {
+
+        this.angleMeasureHw = angleMeasureHw;
+
+        if (this.angleMeasureHw == GYRO) {
+            gyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");
+        }
+        else {
+            imu = hardwareMap.get(BNO055IMU.class, "imu");
+        }
+
         colorSensor = hardwareMap.get(ColorSensor.class, "color");
         jewelArm = hardwareMap.get(Servo.class, "jewel_arm");
         jewelArm.setPosition(0.1);
@@ -165,7 +180,10 @@ public class AutonomousActions {
 
     public void pictographID() {
 
-        initVuforia();
+        //initVuforia();
+
+        telemetry.addLine("Hi");
+        telemetry.update();
 
         relicTrackables.activate();
         ElapsedTime time = new ElapsedTime();
@@ -180,9 +198,30 @@ public class AutonomousActions {
              * UNKNOWN will be returned by {@link RelicRecoveryVuMark#from(VuforiaTrackable)}.
              */
             vuMark = RelicRecoveryVuMark.from(relicTemplate);
-            opMode.telemetry.addData("VuMark", "not visible");
-            opMode.telemetry.update();
+            telemetry.addData("VuMark", "not visible");
+            telemetry.addData("Time", time.seconds());
+            telemetry.update();
         }
+    }
+
+    boolean moveAwayFromColor() {
+        return allianceColor == AllianceColor.BLUE && colorSensor.blue() > colorSensor.red()
+                || allianceColor == AllianceColor.RED && colorSensor.red() > colorSensor.blue();
+    }
+
+    void place1stGlyph() { // TODO: place glyph in correct column
+        if (vuMark == RelicRecoveryVuMark.UNKNOWN)
+            telemetry.addLine("VuMark Unknown");
+        if (vuMark == RelicRecoveryVuMark.LEFT)
+            telemetry.addLine("Glyph Left");
+        if (vuMark == RelicRecoveryVuMark.CENTER)
+            telemetry.addLine("Glyph Center");
+        if (vuMark == RelicRecoveryVuMark.RIGHT)
+            telemetry.addLine("Glyph Right");
+    }
+
+    String format(OpenGLMatrix transformationMatrix) {
+        return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
     }
 
     void jewelColor() throws InterruptedException {
@@ -196,7 +235,7 @@ public class AutonomousActions {
         opMode.sleep(700);
         if (moveAwayFromColor()) {
             telemetry.addLine("Moving left"); // TODO: move arm to side without color sensor
-            turn(10);
+            turn(10, 0.4);
 
             /*
             turnLeftWithoutAngle(0.5);
@@ -206,7 +245,7 @@ public class AutonomousActions {
         }
         else {
             telemetry.addLine("Moving right"); // TODO: move arm to side with color sensor
-            turn(-10);
+            turn(-10, 0.4);
 
             /*
             turnRightWithoutAngle(0.5);
@@ -219,35 +258,24 @@ public class AutonomousActions {
         //colorSensor.enableLed(false);
     }
 
-    boolean moveAwayFromColor() {
-        return allianceColor == AllianceColor.BLUE && colorSensor.blue() > colorSensor.red()
-                || allianceColor == AllianceColor.RED && colorSensor.red() > colorSensor.blue();
+    void driveToCryptobox() throws InterruptedException {
+
+        mecanumDrive.mecanumDrive_Polar(0.6, 90, 0);
+        opMode.sleep(1000);
+        mecanumDrive.stop();
+
+        turn(90);
     }
 
-    void place1stGlyph() { // TODO: place glyph in correct column
-        if (vuMark == RelicRecoveryVuMark.UNKNOWN)
-            opMode.telemetry.addLine("VuMark Unknown");
-        if (vuMark == RelicRecoveryVuMark.LEFT)
-            opMode.telemetry.addLine("Glyph Left");
-        if (vuMark == RelicRecoveryVuMark.CENTER)
-            opMode.telemetry.addLine("Glyph Center");
-        if (vuMark == RelicRecoveryVuMark.RIGHT)
-            opMode.telemetry.addLine("Glyph Right");
-    }
-
-    String format(OpenGLMatrix transformationMatrix) {
-        return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
-    }
-
-    public void turn(int turnAngle) throws InterruptedException {
+    public void turn(int turnAngle, double power) throws InterruptedException {
 
         // leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         // rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         // int leftPos = leftMotor.getCurrentPosition();
         // int rightPos = rightMotor.getCurrentPosition();
 
-        double startAngle = getHeading();
-        angleZ = getHeading();
+        double startAngle = getAngleZ();
+        angleZ = getAngleZ();
 
         double angDiff = (turnAngle - angleZ) % 360;
         if (360 - Math.abs(angDiff) < Math.abs(angDiff))
@@ -262,7 +290,105 @@ public class AutonomousActions {
 
             while (opMode.opModeIsActive() && angDiff < 0) {
 
-                angleZ = getHeading();
+                angleZ = getAngleZ();
+                angDiff = (turnAngle - angleZ) % 360;
+                if (360 - Math.abs(angDiff) < Math.abs(angDiff))
+                    angDiff = -(360 * Math.signum(angDiff) - angDiff);
+
+                telemetry.addData("Angle", angleZ);
+                telemetry.addData("Difference", angDiff);
+                telemetry.update();
+
+                turnRightWithoutAngle(power);
+                /*
+                leftFrontMotor.setPower(turnPower(angDiff));
+                rightFrontMotor.setPower(-turnPower(angDiff));
+                leftBackMotor.setPower(turnPower(angDiff));
+                rightBackMotor.setPower(-turnPower(angDiff));
+                */
+                telemetry.addData("Power", leftFrontMotor.getPower());
+
+                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, -90, false);
+                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, angDiff);
+
+                /* if (leftMotor.getCurrentPosition() - 100 > leftPos
+                        && rightMotor.getCurrentPosition() + 100 < rightPos
+                        && IMUheading() == startAngle) {
+                    resetIMuandPos(leftPos, rightPos);
+                } */
+
+                opMode.idle(); // Always call opMode.idle() at the bottom of your while(opModeIsActive()) loop
+            }
+        } else if (angDiff > 0) { //turns left
+            //leftMotor.setPower(-APPROACH_SPEED);
+            //rightMotor.setPower(APPROACH_SPEED);
+
+            while (opMode.opModeIsActive() && angDiff > 0) {
+
+                angleZ = getAngleZ();
+                angDiff = (turnAngle - angleZ) % 360;
+                if (360 - Math.abs(angDiff) < Math.abs(angDiff))
+                    angDiff = -(360 * Math.signum(angDiff) - angDiff);
+
+                telemetry.addData("Angle", angleZ);
+                telemetry.addData("Difference", angDiff);
+                telemetry.update();
+
+                turnLeftWithoutAngle(power);
+                /*
+                leftFrontMotor.setPower(turnPower(angDiff));
+                rightFrontMotor.setPower(-turnPower(angDiff));
+                leftBackMotor.setPower(turnPower(angDiff));
+                rightBackMotor.setPower(-turnPower(angDiff));
+                telemetry.addData("Power", leftFrontMotor.getPower());
+                */
+
+                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, 90, false);
+                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, angDiff);
+
+                /* if (leftMotor.getCurrentPosition() + 100 < leftPos
+                        && rightMotor.getCurrentPosition() - 100 > rightPos
+                        && IMUheading() == startAngle) {
+                    resetIMuandPos(leftPos, rightPos);
+                } */
+
+                opMode.idle(); // Always call opMode.idle() at the bottom of your while(opModeIsActive()) loop
+            }
+        }
+
+        mecanumDrive.stop();
+        /*
+        leftFrontMotor.setPower(0);
+        rightFrontMotor.setPower(0);
+        leftBackMotor.setPower(0);
+        rightBackMotor.setPower(0);
+        */
+    }
+
+    public void turn(int turnAngle) throws InterruptedException {
+
+        // leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // int leftPos = leftMotor.getCurrentPosition();
+        // int rightPos = rightMotor.getCurrentPosition();
+
+        double startAngle = getAngleZ();
+        angleZ = getAngleZ();
+
+        double angDiff = (turnAngle - angleZ) % 360;
+        if (360 - Math.abs(angDiff) < Math.abs(angDiff))
+            angDiff = -(360 * Math.signum(angDiff) - angDiff);
+
+        telemetry.log().add("Angle Difference: " + angDiff);
+        telemetry.update();
+
+        if (angDiff < 0) { //turns right
+            //leftMotor.setPower(APPROACH_SPEED * .6 );
+            //rightMotor.setPower(-APPROACH_SPEED * .6);
+
+            while (opMode.opModeIsActive() && angDiff < 0) {
+
+                angleZ = getAngleZ();
                 angDiff = (turnAngle - angleZ) % 360;
                 if (360 - Math.abs(angDiff) < Math.abs(angDiff))
                     angDiff = -(360 * Math.signum(angDiff) - angDiff);
@@ -297,7 +423,7 @@ public class AutonomousActions {
 
             while (opMode.opModeIsActive() && angDiff > 0) {
 
-                angleZ = getHeading();
+                angleZ = getAngleZ();
                 angDiff = (turnAngle - angleZ) % 360;
                 if (360 - Math.abs(angDiff) < Math.abs(angDiff))
                     angDiff = -(360 * Math.signum(angDiff) - angDiff);
@@ -353,19 +479,37 @@ public class AutonomousActions {
 
     private double turnPower(double difference) {
         if (Math.abs(difference) < 20) {
-            return 0.1;
-        } else if (Math.abs(difference) < 45) {
             return 0.15;
-        } else if (Math.abs(difference) < 90) {
+        } else if (Math.abs(difference) < 45) {
             return 0.3;
-        } else return 0.4;
+        } else if (Math.abs(difference) < 90) {
+            return 0.6;
+        } else return 0.8;
     }
 
-    double getHeading() {
-        if (gyro != null) {
+    double getAngleX() {
+        if (angleMeasureHw == IMU) {
+            return imu.getAngularOrientation().firstAngle;
+        }
+        else {
+            return 0;
+        }
+    }
+
+    double getAngleY() {
+        if (angleMeasureHw == IMU) {
+            return imu.getAngularOrientation().secondAngle;
+        }
+        else {
+            return 0;
+        }
+    }
+
+    double getAngleZ() {
+        if (angleMeasureHw == GYRO) {
             return gyro.getHeading();
         }
-        else if (imu != null) {
+        else if (angleMeasureHw == IMU) {
             return imu.getAngularOrientation().thirdAngle;
         }
         else {
