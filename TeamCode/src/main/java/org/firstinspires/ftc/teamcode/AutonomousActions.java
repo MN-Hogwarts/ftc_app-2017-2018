@@ -33,6 +33,7 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -70,6 +71,10 @@ public class AutonomousActions {
     FtcDcMotor leftBackMotor    = null;
     FtcDcMotor rightBackMotor   = null;
     TrcDriveBase mecanumDrive   = null;
+    DigitalChannel touchSensor  = null;
+
+    Servo leftServo;
+    Servo rightServo;
 
     public static final String TAG = "Testing Vuforia";
 
@@ -161,6 +166,25 @@ public class AutonomousActions {
         rightBackMotor.setInverted(true);
 
         mecanumDrive = new TrcDriveBase(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
+    }
+
+    public void glyphPickup() {
+        leftServo = hardwareMap.get(Servo.class, "leftWheel");
+        rightServo = hardwareMap.get(Servo.class, "rightWheel");
+
+        leftFrontMotor.setPower(0.5);
+        rightFrontMotor.setPower(0.5);
+        leftBackMotor.setPower(0.5);
+        rightBackMotor.setPower(0.5);
+
+        while (opMode.opModeIsActive() && touchSensor.getState() == false) ;
+        leftFrontMotor.setPower(0);
+        rightFrontMotor.setPower(0);
+        leftBackMotor.setPower(0);
+        rightBackMotor.setPower(0);
+
+        leftServo.setPosition(0);
+        rightServo.setPosition(0);
     }
 
     public void pictographID() {
