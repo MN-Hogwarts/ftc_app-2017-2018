@@ -14,6 +14,7 @@
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 
-android {
-    buildToolsVersion '25.0.0'
+dependencies {
+    compile project(path: ':Ftc3543Lib-2017-18')
+    compile files('/home/spmega4567/working/dev/ftc/ftc_app-2017-2018/libs/boofcv-android-0.27.jar')
 }
