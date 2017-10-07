@@ -26,3 +26,7 @@ repositories {
 }
 
 apply from: 'build.release.gradle'
+
+dependencies {
+    // compile '../libs/org.boofcv:boofcv-android:0.27'
+}
