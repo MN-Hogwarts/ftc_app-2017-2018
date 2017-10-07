@@ -100,8 +100,6 @@ public class VuforiaCryptoGraphExample_Linear extends LinearOpMode{
          *
          * @see VuforiaTrackableDefaultListener#getRobotLocation()
          */
-        OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicCryptograph.getListener()).getPose();
-        telemetry.addData("pose is null", pose == null ? true: false);
 
         /** Wait for the game to begin */
         telemetry.addData(">", "Press Play to start tracking");
@@ -111,14 +109,16 @@ public class VuforiaCryptoGraphExample_Linear extends LinearOpMode{
         /** Start tracking the data sets we care about. */
         relicVuMarkTrackable.activate();
 
-        RelicRecoveryVuMark relicRecoveryVuMark = RelicRecoveryVuMark.from(relicCryptograph);
-
         while (opModeIsActive()) {
             /*
             if(relicRecoveryVuMark != RelicRecoveryVuMark.UNKNOWN){
                 telemetry.addData("Crypograph", relicRecoveryVuMark + " is visible");
             }
             */
+            OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicCryptograph.getListener()).getPose();
+            telemetry.addData("pose is null", pose == null ? true: false);
+
+            RelicRecoveryVuMark relicRecoveryVuMark = RelicRecoveryVuMark.from(relicCryptograph);
 
             telemetry.addData("Crypograph", relicRecoveryVuMark + " is visible");
 
