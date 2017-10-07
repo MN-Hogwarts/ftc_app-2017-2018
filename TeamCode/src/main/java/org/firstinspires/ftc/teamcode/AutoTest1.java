@@ -33,12 +33,14 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import ftclib.FtcOpMode;
+
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
  */
 @Autonomous(name = "Auto 1", group = "Concept")
 //@Disabled
-public class AutoTest1 extends LinearOpMode {
+public class AutoTest1 extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
 
@@ -49,11 +51,29 @@ public class AutoTest1 extends LinearOpMode {
 
 
     @Override
-    public void runOpMode() {
+    public void initRobot() {
 
-        waitForStart();
+    }
+
+    @Override
+    public void runOpMode() throws InterruptedException{
 
         auto.initOpmode(this, hardwareMap);
+        auto.initAlliance(AllianceColor.RED);
+        auto.initJewelHardware();
+        while (!isStarted()) {
+            telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
+            telemetry.update();
+
+        }
+
+        auto.jewelColor();
+        //sleep(5000);
+        while (opModeIsActive()) {
+            telemetry.addData("Moving Away:", auto.moveAwayFromColor());
+            telemetry.update();
+        }
+
         //auto.initVuforia();
         //auto.pictographID(); //run Vuforia method, includes initVuforia()
 
