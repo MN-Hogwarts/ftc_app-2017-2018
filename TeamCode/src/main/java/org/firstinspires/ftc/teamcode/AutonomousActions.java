@@ -58,6 +58,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 enum AllianceColor {RED, BLUE}
 
 public class AutonomousActions {
+    int   RED_THRESHOLD  = (9);
+    int   BLUE_THRESHOLD = (9);
 
     LinearOpMode opMode;
     HardwareMap hardwareMap;
@@ -176,7 +178,13 @@ public class AutonomousActions {
         if (vuMark == RelicRecoveryVuMark.RIGHT)
             opMode.telemetry.addLine("Glyph Right");
     }
+    void tapeFinder() {
+        while (opMode.opModeIsActive() && (colorSensor.red() < RED_THRESHOLD)) {
 
+            telemetry.update(); //Tells the intensity of the color we are looking for
+        }
+
+    }
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
     }
