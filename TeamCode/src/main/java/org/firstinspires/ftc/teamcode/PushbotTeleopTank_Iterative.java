@@ -121,12 +121,13 @@ public class PushbotTeleopTank_Iterative extends OpMode{
         robot.leftMotor.setPower(left);
         robot.rightMotor.setPower(right);
 
+        // Run wheels backwards if 'B' is pressed. If not, stop servos
     if (gamepad1.b) {
         leftServo.setPosition(-1.0);
         rightServo.setPosition(1.0);
         left_Servo.setPosition(-1.0);
         right_Servo.setPosition(1.0);
-    telemetry.addData("Left Servo Value", left_Servo.getPosition()) ;
+    telemetry.addData("Right Servo Value", right_Servo.getPosition()) ;
     telemetry.update() ;
     }
       else {
@@ -135,6 +136,7 @@ public class PushbotTeleopTank_Iterative extends OpMode{
         left_Servo.setPosition(0.52);
         right_Servo.setPosition(0.5);}
 
+//If touch sensor is pressed, stop wheels. If 'A' is pressed, run wheels. If neither is pressed, stop wheels
     if (!touchSensor.getState()) {
         leftServo.setPosition(0.53);
         rightServo.setPosition(0.5);
