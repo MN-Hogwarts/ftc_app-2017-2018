@@ -73,6 +73,7 @@ public class AutonomousActions {
     TrcDriveBase mecanumDrive   = null;
     DigitalChannel touchSensor  = null;
 
+
     Servo leftServo;
     Servo rightServo;
 
@@ -168,6 +169,11 @@ public class AutonomousActions {
         mecanumDrive = new TrcDriveBase(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
     }
 
+    public void moveSirvo(){
+
+    }
+
+
     public void glyphPickup() {
         leftServo = hardwareMap.get(Servo.class, "leftWheel");
         rightServo = hardwareMap.get(Servo.class, "rightWheel");
@@ -186,7 +192,7 @@ public class AutonomousActions {
         leftServo.setPosition(0);
         rightServo.setPosition(0);
     }
-
+// find the Target Device section under the General tab on the Android Application page
     public void pictographID() {
 
         initVuforia();
