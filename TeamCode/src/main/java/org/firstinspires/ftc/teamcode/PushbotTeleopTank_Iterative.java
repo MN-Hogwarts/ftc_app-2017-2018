@@ -66,6 +66,8 @@ public class PushbotTeleopTank_Iterative extends OpMode{
     HardwarePushbot robot       = new HardwarePushbot(); // use the class created to define a Pushbot's hardware
     Servo leftServo ;
     Servo rightServo ;
+    Servo left_Servo ;
+    Servo right_Servo ;
     DigitalChannel touchSensor ;
                                                          // could also use HardwarePushbotMatrix class.
    /* double          clawOffset  = 0.0 ;                  // Servo mid position
@@ -83,6 +85,8 @@ public class PushbotTeleopTank_Iterative extends OpMode{
         robot.init(hardwareMap);
         leftServo = hardwareMap.get(Servo.class, "leftWheel") ;
         rightServo = hardwareMap.get(Servo.class, "rightWheel") ;
+        left_Servo = hardwareMap.get (Servo.class, "left_Wheel") ;
+        right_Servo = hardwareMap.get (Servo.class, "right_Wheel") ;
         touchSensor = hardwareMap.get(DigitalChannel.class, "touchSensor") ;
 
         // Send telemetry message to signify robot waiting;
@@ -117,24 +121,54 @@ public class PushbotTeleopTank_Iterative extends OpMode{
         robot.leftMotor.setPower(left);
         robot.rightMotor.setPower(right);
 
-        if (gamepad1.a) {
-            if (!touchSensor.getState()) {
-                leftServo.setPosition(0.53);
-                rightServo.setPosition(0.5); }
-            else
-            {
-                leftServo.setPosition(1.0);
-                rightServo.setPosition(-1.0); }
-            }
-        else {
-                leftServo.setPosition(0.53);
-                rightServo.setPosition(0.5);
-            }
-
-        telemetry.addData("Touch sensor value", touchSensor.getState()) ;
-        telemetry.update() ;
-
+        // Run wheels backwards if 'B' is pressed. If not, stop servos
+    if (gamepad1.b) {
+        leftServo.setPosition(-1.0);
+        rightServo.setPosition(1.0);
+        left_Servo.setPosition(-1.0);
+        right_Servo.setPosition(1.0);
+    telemetry.addData("Right Servo Value", right_Servo.getPosition()) ;
+    telemetry.update() ;
     }
+      else {
+        leftServo.setPosition(0.53);
+        rightServo.setPosition(0.5);
+        left_Servo.setPosition(0.52);
+        right_Servo.setPosition(0.5);}
+
+//If touch sensor is pressed, stop wheels. If 'A' is pressed, run wheels. If neither is pressed, stop wheels
+    if (!touchSensor.getState()) {
+        leftServo.setPosition(0.53);
+        rightServo.setPosition(0.5);
+        left_Servo.setPosition(0.52);
+        right_Servo.setPosition(0.5);
+    telemetry.addData("Left Servo Value", left_Servo.getPosition());
+    telemetry.update() ;
+    }
+    else if (gamepad1.a) {
+        leftServo.setPosition(1.0);
+        rightServo.setPosition(-1.0);
+        left_Servo.setPosition(1.0);
+        right_Servo.setPosition(-1.0);
+    telemetry.addData("Left Servo Value", left_Servo.getPosition()) ;
+    telemetry.update() ;
+    }
+     else {
+        leftServo.setPosition(0.53);
+        rightServo.setPosition(0.5);
+        left_Servo.setPosition(0.52);
+        right_Servo.setPosition(0.5);
+     telemetry.addData("Left Servo Value", left_Servo.getPosition()) ;
+     telemetry.update() ;
+     }
+
+        telemetry.addData("Touch sensor value", touchSensor.getState());
+        telemetry.update();
+
+
+        }
+
+
 
         // Use gamepad left & right Bumpers to open and close the claw
       /*  if (gamepad1.right_bumper)
