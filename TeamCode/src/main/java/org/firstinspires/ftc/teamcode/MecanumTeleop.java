@@ -106,7 +106,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
     public void init() {
         dashboard = HalDashboard.createInstance(this.telemetry);
 
-        gyro = new SWIMUGyro(hardwareMap, "gyro", null);
+        gyro = new SWIMUGyro(hardwareMap, "imu", null);
         gyro.calibrate();
 
         leftFrontMotor = new FtcDcMotor(this.hardwareMap, "leftFront", null, null);
