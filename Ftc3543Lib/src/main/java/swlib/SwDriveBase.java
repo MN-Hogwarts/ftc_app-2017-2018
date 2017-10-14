@@ -1038,24 +1038,42 @@ public class SwDriveBase implements TrcTaskMgr.Task
         }
 
         double wheelSpeeds[] = new double[4];
+        /*
         wheelSpeeds[MotorType.LEFT_FRONT.value] = (sinD*magnitude + rotation);
         wheelSpeeds[MotorType.RIGHT_FRONT.value] = (cosD*magnitude - rotation);
         wheelSpeeds[MotorType.LEFT_REAR.value] = (cosD*magnitude + rotation);
         wheelSpeeds[MotorType.RIGHT_REAR.value] = (sinD*magnitude - rotation);
+        */
+        wheelSpeeds[MotorType.LEFT_FRONT.value] = (sinD*magnitude - rotation);
+        wheelSpeeds[MotorType.RIGHT_FRONT.value] = (cosD*magnitude + rotation);
+        wheelSpeeds[MotorType.LEFT_REAR.value] = (cosD*magnitude - rotation);
+        wheelSpeeds[MotorType.RIGHT_REAR.value] = (sinD*magnitude + rotation);
         normalize(wheelSpeeds);
+
+        /*
+        if(originalDirection < 0){
+            wheelSpeeds[MotorType.LEFT_FRONT.value] *= -1;
+            wheelSpeeds[MotorType.LEFT_REAR.value] *= -1;
+        } else if(originalDirection > 0){
+            wheelSpeeds[MotorType.RIGHT_FRONT.value] *= -1;
+            wheelSpeeds[MotorType.RIGHT_REAR.value] *= -1;
+        }
+        */
 
         for (int i = 0; i < wheelSpeeds.length; i++)
         {
             wheelSpeeds[i] = TrcUtil.clipRange(wheelSpeeds[i], -maxOutput, maxOutput);
         }
 
-        if(originalDirection > 0){
+        /*
+        if(originalDirection < 0){
             wheelSpeeds[MotorType.LEFT_FRONT.value] *= -1;
             wheelSpeeds[MotorType.LEFT_REAR.value] *= -1;
-        } else if(originalDirection < 0){
+        } else if(originalDirection > 0){
             wheelSpeeds[MotorType.RIGHT_FRONT.value] *= -1;
             wheelSpeeds[MotorType.RIGHT_REAR.value] *= -1;
         }
+        */
 
         if (leftFrontMotor != null) leftFrontMotor.setPower(wheelSpeeds[MotorType.LEFT_FRONT.value]);
         if (rightFrontMotor != null) rightFrontMotor.setPower(wheelSpeeds[MotorType.RIGHT_FRONT.value]);
