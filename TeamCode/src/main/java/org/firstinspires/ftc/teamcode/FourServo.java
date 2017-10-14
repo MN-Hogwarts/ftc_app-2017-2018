@@ -32,16 +32,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.AnalogSensor;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.util.Range;
 
 /**
  * This file provides basic Telop driving for a Pushbot robot.
@@ -58,9 +52,9 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Pushbot: Teleop Tank2", group="Pushbot")
+@TeleOp(name="FourServo", group="Pushbot")
 //@Disabled
-public class PushbotTeleopTank_Iterative extends OpMode{
+public class FourServo extends OpMode{
 
     /* Declare OpMode members. */
     HardwarePushbot robot       = new HardwarePushbot(); // use the class created to define a Pushbot's hardware
@@ -162,9 +156,6 @@ public class PushbotTeleopTank_Iterative extends OpMode{
 
 
         }
-
-
-
 
     @Override
     public void stop() {

@@ -86,21 +86,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         OP_MODE_IS_ACTIVE = false;
     }
 
-    @Override
-    public void internalPreInit() {
-        super.internalPreInit();
-    }
 
-    @Override
-    public void internalPostInitLoop() {
-        super.internalPostInitLoop();
-    }
-
-    @Override
-    public void internalPostLoop() {
-        super.internalPostLoop();
-        taskMgr.executeTaskType(TrcTaskMgr.TaskType.POSTPERIODIC_TASK, TrcRobot.RunMode.TELEOP_MODE);
-    }
 
     @Override
     public void init() {
