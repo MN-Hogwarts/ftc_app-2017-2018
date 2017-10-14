@@ -1070,6 +1070,7 @@ public class SwDriveBase implements TrcTaskMgr.Task
     public void mecanumDrive_PolarAdaptiveControl(double magnitude, double direction, double rotation, boolean inverted)
     {
         final String funcName = "mecanumDrive_Polar";
+        double originalDirection = direction;
 
         if (debugEnabled)
         {
@@ -1119,15 +1120,36 @@ public class SwDriveBase implements TrcTaskMgr.Task
         wheelSpeeds[MotorType.RIGHT_REAR.value] = ((sinD*magnitude - rotation) * SPEED_LIMITER) + addedValue;
         normalize(wheelSpeeds);
 
+        if(direction > 0){
+            wheelSpeeds[MotorType.RIGHT_REAR.value] *= -1;
+            wheelSpeeds[MotorType.RIGHT_FRONT.value] *= -1;
+        } else if (direction < 0){
+            wheelSpeeds[MotorType.LEFT_FRONT.value] *= -1;
+            wheelSpeeds[MotorType.LEFT_REAR.value] *=  -1;
+        }
+
         for (int i = 0; i < wheelSpeeds.length; i++)
         {
             wheelSpeeds[i] = TrcUtil.clipRange(wheelSpeeds[i], -maxOutput, maxOutput);
         }
 
-        if (leftFrontMotor != null) leftFrontMotor.setPower(wheelSpeeds[MotorType.LEFT_FRONT.value]);
-        if (rightFrontMotor != null) rightFrontMotor.setPower(wheelSpeeds[MotorType.RIGHT_FRONT.value]);
-        if (leftRearMotor != null) leftRearMotor.setPower(wheelSpeeds[MotorType.LEFT_REAR.value]);
-        if (rightRearMotor != null) rightRearMotor.setPower(wheelSpeeds[MotorType.RIGHT_REAR.value]);
+        double leftFront = wheelSpeeds[MotorType.LEFT_FRONT.value];
+        double rightFront = wheelSpeeds[MotorType.RIGHT_FRONT.value];
+        double leftRear = wheelSpeeds[MotorType.LEFT_REAR.value];
+        double rightRear = wheelSpeeds[MotorType.RIGHT_REAR.value];
+
+        if(originalDirection > 0){
+            rightFront *= -1;
+            rightRear *= -1;
+        } else if (originalDirection < 0){
+            leftFront *= -1;
+            leftRear *=  -1;
+        }
+
+        if (leftFrontMotor != null) leftFrontMotor.setPower(leftFront);
+        if (rightFrontMotor != null) rightFrontMotor.setPower(rightFront);
+        if (leftRearMotor != null) leftRearMotor.setPower(leftRear);
+        if (rightRearMotor != null) rightRearMotor.setPower(rightRear);
 
         if (debugEnabled)
         {
