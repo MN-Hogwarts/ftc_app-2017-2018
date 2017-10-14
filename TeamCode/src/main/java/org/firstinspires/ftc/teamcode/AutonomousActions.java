@@ -239,9 +239,13 @@ public class AutonomousActions {
     void tapeFinder() {
         while (opMode.opModeIsActive() && (colorSensor.red() < RED_THRESHOLD)) {
 
+            telemetry.addData("Color Sensor: Red", colorSensor.red());
             telemetry.update(); //Tells the intensity of the color we are looking for
         }
-
+        leftFrontMotor.setPower(0);
+        rightFrontMotor.setPower(0);
+        leftBackMotor.setPower(0);
+        rightBackMotor.setPower(0);
     }
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
