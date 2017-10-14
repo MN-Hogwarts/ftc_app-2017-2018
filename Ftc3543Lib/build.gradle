@@ -1,10 +1,8 @@
 import java.util.regex.Pattern
-
 //
 // build.gradle in Ftc3543Lib
 //
 apply plugin: 'com.android.library'
-
 android {
 
     defaultConfig {
@@ -19,11 +17,12 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 }
-
 repositories {
     flatDir {
         dirs '../libs'
     }
 }
-
 apply from: 'build.release.gradle'
+
+dependencies {
+}

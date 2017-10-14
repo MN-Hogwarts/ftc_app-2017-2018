@@ -2,10 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.RobotLog;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -18,26 +18,25 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by spmega4567 on 9/30/17.
  */
-@TeleOp(name = "Vuforia Crypto Graph Example", group = "linear opmodes")
-public class VuforiaCryptoGraphExample_Linear extends LinearOpMode{
+@TeleOp(name = "Auto Vuforia Crypto Graph Example", group = "linear opmodes")
+public class AutoVuforiaCryptoGraphExample_Linear extends LinearOpMode{
 
     public static final String TAG = "Vuforia Navigation Sample";
 
-    OpenGLMatrix lastLocation = null;
+    private OpenGLMatrix lastLocation = null;
+
+    private DcMotor leftMotor, rightMotor;
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
      * localization engine.
      */
     VuforiaLocalizer vuforia;
-    @Override public void runOpMode() {
 
+    @Override public void runOpMode() {
         /*
          * To start up Vuforia, tell it the view that we wish to use for camera monitor (on the RC phone);
          * If no camera monitor is desired, use the parameterless constructor instead (commented out below).
@@ -101,6 +100,11 @@ public class VuforiaCryptoGraphExample_Linear extends LinearOpMode{
          * @see VuforiaTrackableDefaultListener#getRobotLocation()
          */
 
+        leftMotor = this.hardwareMap.dcMotor.get("l");
+        rightMotor = this.hardwareMap.dcMotor.get("r");
+
+        rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
         /** Wait for the game to begin */
         telemetry.addData(">", "Press Play to start tracking");
         telemetry.update();
@@ -108,6 +112,7 @@ public class VuforiaCryptoGraphExample_Linear extends LinearOpMode{
 
         /** Start tracking the data sets we care about. */
         relicVuMarkTrackable.activate();
+        RelicRecoveryVuMark relicRecoveryVuMark = null;
 
         while (opModeIsActive()) {
             /*
@@ -118,11 +123,11 @@ public class VuforiaCryptoGraphExample_Linear extends LinearOpMode{
             OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicCryptograph.getListener()).getPose();
             telemetry.addData("pose is null", pose == null ? true: false);
 
-            RelicRecoveryVuMark relicRecoveryVuMark = RelicRecoveryVuMark.from(relicCryptograph);
+            relicRecoveryVuMark = RelicRecoveryVuMark.from(relicCryptograph);
 
             telemetry.addData("Crypograph", relicRecoveryVuMark + " is visible");
 
-            if(pose != null){
+            if(pose != null && relicRecoveryVuMark != RelicRecoveryVuMark.UNKNOWN){
                 telemetry.addData("Pose", format(pose));
 
                 VectorF trans = pose.getTranslation();
@@ -144,6 +149,16 @@ public class VuforiaCryptoGraphExample_Linear extends LinearOpMode{
                 telemetry.addData("rY", rY);
                 telemetry.addData("rZ", rZ);
 
+                if(-tZ < 300){
+                    leftMotor.setPower(-0.3);
+                    rightMotor.setPower(-0.3);
+                } else if (-tZ > 500){
+                    leftMotor.setPower(0.3);
+                    rightMotor.setPower(0.3);
+                } else {
+                    leftMotor.setPower(0);
+                    rightMotor.setPower(0);
+                }
             }
 
             telemetry.update();

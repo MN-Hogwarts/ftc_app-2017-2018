@@ -86,27 +86,13 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         OP_MODE_IS_ACTIVE = false;
     }
 
-    @Override
-    public void internalPreInit() {
-        super.internalPreInit();
-    }
 
-    @Override
-    public void internalPostInitLoop() {
-        super.internalPostInitLoop();
-    }
-
-    @Override
-    public void internalPostLoop() {
-        super.internalPostLoop();
-        taskMgr.executeTaskType(TrcTaskMgr.TaskType.POSTPERIODIC_TASK, TrcRobot.RunMode.TELEOP_MODE);
-    }
 
     @Override
     public void init() {
         dashboard = HalDashboard.createInstance(this.telemetry);
 
-        gyro = new SWIMUGyro(hardwareMap, "gyro", null);
+        gyro = new SWIMUGyro(hardwareMap, "imu", null);
         gyro.calibrate();
 
         leftFrontMotor = new FtcDcMotor(this.hardwareMap, "leftFront", null, null);
@@ -172,7 +158,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         if(gamepad.getLeftStickX() == 0 && gamepad.getLeftStickY() == 0)
             magnitude = 0;
 
-        driveBase.mecanumDrive_PolarFieldCentric(magnitude, direction, rotation);
+        driveBase.mecanumDrive_XPolarFieldCentric(magnitude, direction, rotation);
 
 
         /*

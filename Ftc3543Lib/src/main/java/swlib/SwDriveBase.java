@@ -1004,14 +1004,105 @@ public class SwDriveBase implements TrcTaskMgr.Task
      * @param rotation specifies the rotation power.
      * @param inverted specifies true to invert control (i.e. robot front becomes robot back).
      */
-    public void mecanumDrive_Polar(double magnitude, double direction, double rotation, boolean inverted)
+    public void mecanumDrive_XPolar(double magnitude, double direction, double rotation, boolean inverted)
+    {
+        final String funcName = "mecanumDrive_Polar";
+
+        double originalDirection = direction;
+
+        if (debugEnabled)
+        {
+            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API, "mag=%f,dir=%f,rot=%f,inverted=%s",
+                                magnitude, direction, rotation, Boolean.toString(inverted));
+        }
+
+        if (numMotors != 4)
+        {
+            throw new IllegalArgumentException("Mecanum drive requires 4 motors");
+        }
+
+        magnitude = TrcUtil.clipRange(magnitude) * Math.sqrt(2.0);
+        if (inverted)
+        {
+            direction += 180.0;
+            direction %= 360.0;
+        }
+
+        double dirInRad = Math.toRadians(direction + 45.0);
+        double cosD = Math.cos(dirInRad);
+        double sinD = Math.sin(dirInRad);
+
+        if (gyroAssistEnabled)
+        {
+            rotation += TrcUtil.clipRange(gyroAssistKp*(rotation - gyroRateScale*gyro.getZRotationRate().value));
+        }
+
+        double wheelSpeeds[] = new double[4];
+        /*
+        wheelSpeeds[MotorType.LEFT_FRONT.value] = (sinD*magnitude + rotation);
+        wheelSpeeds[MotorType.RIGHT_FRONT.value] = (cosD*magnitude - rotation);
+        wheelSpeeds[MotorType.LEFT_REAR.value] = (cosD*magnitude + rotation);
+        wheelSpeeds[MotorType.RIGHT_REAR.value] = (sinD*magnitude - rotation);
+        */
+        wheelSpeeds[MotorType.LEFT_FRONT.value] = (sinD*magnitude - rotation);
+        wheelSpeeds[MotorType.RIGHT_FRONT.value] = (cosD*magnitude + rotation);
+        wheelSpeeds[MotorType.LEFT_REAR.value] = (cosD*magnitude - rotation);
+        wheelSpeeds[MotorType.RIGHT_REAR.value] = (sinD*magnitude + rotation);
+        normalize(wheelSpeeds);
+
+        /*
+        if(originalDirection < 0){
+            wheelSpeeds[MotorType.LEFT_FRONT.value] *= -1;
+            wheelSpeeds[MotorType.LEFT_REAR.value] *= -1;
+        } else if(originalDirection > 0){
+            wheelSpeeds[MotorType.RIGHT_FRONT.value] *= -1;
+            wheelSpeeds[MotorType.RIGHT_REAR.value] *= -1;
+        }
+        */
+
+        for (int i = 0; i < wheelSpeeds.length; i++)
+        {
+            wheelSpeeds[i] = TrcUtil.clipRange(wheelSpeeds[i], -maxOutput, maxOutput);
+        }
+
+        /*
+        if(originalDirection < 0){
+            wheelSpeeds[MotorType.LEFT_FRONT.value] *= -1;
+            wheelSpeeds[MotorType.LEFT_REAR.value] *= -1;
+        } else if(originalDirection > 0){
+            wheelSpeeds[MotorType.RIGHT_FRONT.value] *= -1;
+            wheelSpeeds[MotorType.RIGHT_REAR.value] *= -1;
+        }
+        */
+
+        if (leftFrontMotor != null) leftFrontMotor.setPower(wheelSpeeds[MotorType.LEFT_FRONT.value]);
+        if (rightFrontMotor != null) rightFrontMotor.setPower(wheelSpeeds[MotorType.RIGHT_FRONT.value]);
+        if (leftRearMotor != null) leftRearMotor.setPower(wheelSpeeds[MotorType.LEFT_REAR.value]);
+        if (rightRearMotor != null) rightRearMotor.setPower(wheelSpeeds[MotorType.RIGHT_REAR.value]);
+
+        if (debugEnabled)
+        {
+            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API);
+        }
+    }   //mecanumDrive_Polar
+
+    /**
+     * This method implements mecanum drive where magnitude controls how fast the robot will go in the given direction
+     * and how fast it will rotate.
+     *
+     * @param magnitude specifies the magnitude combining x and y axes.
+     * @param direction specifies the direction in degrees.
+     * @param rotation specifies the rotation power.
+     * @param inverted specifies true to invert control (i.e. robot front becomes robot back).
+     */
+    public void mecanumDrive_BoxPolar(double magnitude, double direction, double rotation, boolean inverted)
     {
         final String funcName = "mecanumDrive_Polar";
 
         if (debugEnabled)
         {
             dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API, "mag=%f,dir=%f,rot=%f,inverted=%s",
-                                magnitude, direction, rotation, Boolean.toString(inverted));
+                    magnitude, direction, rotation, Boolean.toString(inverted));
         }
 
         if (numMotors != 4)
@@ -1070,6 +1161,7 @@ public class SwDriveBase implements TrcTaskMgr.Task
     public void mecanumDrive_PolarAdaptiveControl(double magnitude, double direction, double rotation, boolean inverted)
     {
         final String funcName = "mecanumDrive_Polar";
+        double originalDirection = direction;
 
         if (debugEnabled)
         {
@@ -1119,15 +1211,36 @@ public class SwDriveBase implements TrcTaskMgr.Task
         wheelSpeeds[MotorType.RIGHT_REAR.value] = ((sinD*magnitude - rotation) * SPEED_LIMITER) + addedValue;
         normalize(wheelSpeeds);
 
+        if(direction > 0){
+            wheelSpeeds[MotorType.RIGHT_REAR.value] *= -1;
+            wheelSpeeds[MotorType.RIGHT_FRONT.value] *= -1;
+        } else if (direction < 0){
+            wheelSpeeds[MotorType.LEFT_FRONT.value] *= -1;
+            wheelSpeeds[MotorType.LEFT_REAR.value] *=  -1;
+        }
+
         for (int i = 0; i < wheelSpeeds.length; i++)
         {
             wheelSpeeds[i] = TrcUtil.clipRange(wheelSpeeds[i], -maxOutput, maxOutput);
         }
 
-        if (leftFrontMotor != null) leftFrontMotor.setPower(wheelSpeeds[MotorType.LEFT_FRONT.value]);
-        if (rightFrontMotor != null) rightFrontMotor.setPower(wheelSpeeds[MotorType.RIGHT_FRONT.value]);
-        if (leftRearMotor != null) leftRearMotor.setPower(wheelSpeeds[MotorType.LEFT_REAR.value]);
-        if (rightRearMotor != null) rightRearMotor.setPower(wheelSpeeds[MotorType.RIGHT_REAR.value]);
+        double leftFront = wheelSpeeds[MotorType.LEFT_FRONT.value];
+        double rightFront = wheelSpeeds[MotorType.RIGHT_FRONT.value];
+        double leftRear = wheelSpeeds[MotorType.LEFT_REAR.value];
+        double rightRear = wheelSpeeds[MotorType.RIGHT_REAR.value];
+
+        if(originalDirection > 0){
+            rightFront *= -1;
+            rightRear *= -1;
+        } else if (originalDirection < 0){
+            leftFront *= -1;
+            leftRear *=  -1;
+        }
+
+        if (leftFrontMotor != null) leftFrontMotor.setPower(leftFront);
+        if (rightFrontMotor != null) rightFrontMotor.setPower(rightFront);
+        if (leftRearMotor != null) leftRearMotor.setPower(leftRear);
+        if (rightRearMotor != null) rightRearMotor.setPower(rightRear);
 
         if (debugEnabled)
         {
@@ -1158,15 +1271,34 @@ public class SwDriveBase implements TrcTaskMgr.Task
      * @param direction specifies the direction in degrees.
      * @param rotation specifies the rotation power.
      */
-    public void mecanumDrive_Polar(double magnitude, double direction, double rotation)
+    public void mecanumDrive_XPolar(double magnitude, double direction, double rotation)
     {
-        mecanumDrive_Polar(magnitude, direction, rotation, false);
+        mecanumDrive_XPolar(magnitude, direction, rotation, false);
     }   //mecanumDrive_Polar
 
-    public void mecanumDrive_PolarFieldCentric(double magnitude, double direction, double rotation)
+    public void mecanumDrive_XPolarFieldCentric(double magnitude, double direction, double rotation)
     {
         double directionToGo = ((direction + 360) % 360) - gyro.getRawZData(TrcGyro.DataType.HEADING).value;
-        mecanumDrive_Polar(magnitude, directionToGo, rotation, false);
+        mecanumDrive_XPolar(magnitude, directionToGo, rotation, false);
+    }   //mecanumDrive_Polar
+
+    /**
+     * This method implements mecanum drive where magnitude controls how fast the robot will go in the given direction
+     * and how fast it will rotate.
+     *
+     * @param magnitude specifies the magnitude combining x and y axes.
+     * @param direction specifies the direction in degrees.
+     * @param rotation specifies the rotation power.
+     */
+    public void mecanumDrive_BoxPolar(double magnitude, double direction, double rotation)
+    {
+        mecanumDrive_BoxPolar(magnitude, direction, rotation, false);
+    }   //mecanumDrive_Polar
+
+    public void mecanumDrive_BoxPolarFieldCentric(double magnitude, double direction, double rotation)
+    {
+        double directionToGo = ((direction + 360) % 360) - gyro.getRawZData(TrcGyro.DataType.HEADING).value;
+        mecanumDrive_BoxPolar(magnitude, directionToGo, rotation, false);
     }   //mecanumDrive_Polar
 
     public void mecanumDrive_PolarFieldCentricAdaptiveControl(double magnitude, double direction, double rotation)
