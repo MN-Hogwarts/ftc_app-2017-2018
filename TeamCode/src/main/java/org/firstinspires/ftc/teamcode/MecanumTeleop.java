@@ -172,7 +172,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         if(gamepad.getLeftStickX() == 0 && gamepad.getLeftStickY() == 0)
             magnitude = 0;
 
-        driveBase.mecanumDrive_PolarFieldCentric(magnitude, direction, rotation);
+        driveBase.mecanumDrive_XPolarFieldCentric(magnitude, direction, rotation);
 
 
         /*
