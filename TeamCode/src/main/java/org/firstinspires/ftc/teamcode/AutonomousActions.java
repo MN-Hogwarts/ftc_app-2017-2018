@@ -29,7 +29,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -41,6 +43,7 @@ import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuMarkInstanceId;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -96,6 +99,9 @@ public class AutonomousActions {
     ModernRoboticsI2cGyro gyro  = null;
     BNO055IMU imu           = null;
     double angleZ;
+
+    ModernRoboticsI2cRangeSensor leftRange = null;
+    ModernRoboticsI2cRangeSensor rightRange = null;
 
     void initOpmode(FtcOpMode opMode, HardwareMap hardwareMap) {
         this.opMode = opMode;
@@ -160,22 +166,40 @@ public class AutonomousActions {
             gyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");
         }
         else {
+            BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+            parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+            parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+            parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+            parameters.loggingEnabled      = true;
+            parameters.loggingTag          = "IMU";
+            parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
             imu = hardwareMap.get(BNO055IMU.class, "imu");
+            imu.initialize(parameters);
         }
 
         colorSensor = hardwareMap.get(ColorSensor.class, "color");
         jewelArm = hardwareMap.get(Servo.class, "jewel_arm");
-        jewelArm.setPosition(0.1);
+        jewelArm.setPosition(1);
         leftFrontMotor = new FtcDcMotor("left_front");
         rightFrontMotor = new FtcDcMotor("right_front");
         leftBackMotor = new FtcDcMotor("left_rear");
         rightBackMotor = new FtcDcMotor("right_rear");
+
         leftFrontMotor.setInverted(false);
         rightFrontMotor.setInverted(true);
         leftBackMotor.setInverted(false);
         rightBackMotor.setInverted(true);
 
         mecanumDrive = new TrcDriveBase(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
+
+    }
+
+    void initGlyphHardware() {
+
+        leftRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "left_range");
+        rightRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "right_range");
+
     }
 
     public void pictographID() {
@@ -227,15 +251,15 @@ public class AutonomousActions {
     void jewelColor() throws InterruptedException {
 
         double timeLimit = 1.0;
-        jewelArm.setPosition(0.84);
+        jewelArm.setPosition(0.45);
         colorSensor.enableLed(true);
         telemetry.addLine("Alliance Color: " + allianceColor);
         ElapsedTime time = new ElapsedTime();
 
         opMode.sleep(700);
         if (moveAwayFromColor()) {
-            telemetry.addLine("Moving left"); // TODO: move arm to side without color sensor
-            turn(10, 0.4);
+            telemetry.addLine("Moving right"); // TODO: move arm to side without color sensor
+            turn(-10, 0.4);
 
             /*
             turnLeftWithoutAngle(0.5);
@@ -244,8 +268,8 @@ public class AutonomousActions {
             */
         }
         else {
-            telemetry.addLine("Moving right"); // TODO: move arm to side with color sensor
-            turn(-10, 0.4);
+            telemetry.addLine("Moving left"); // TODO: move arm to side with color sensor
+            turn(10, 0.4);
 
             /*
             turnRightWithoutAngle(0.5);
@@ -260,11 +284,18 @@ public class AutonomousActions {
 
     void driveToCryptobox() throws InterruptedException {
 
+        while (opMode.opModeIsActive()) {
+            telemetry.addData("Left distance", leftRange.getDistance(DistanceUnit.CM));
+            telemetry.addData("Right distance", rightRange.getDistance(DistanceUnit.CM));
+            telemetry.update();
+        }
+        /*
         mecanumDrive.mecanumDrive_Polar(0.6, 90, 0);
-        opMode.sleep(1000);
+        opMode.sleep(2000);
         mecanumDrive.stop();
 
         turn(90);
+        */
     }
 
     public void turn(int turnAngle, double power) throws InterruptedException {
@@ -274,8 +305,8 @@ public class AutonomousActions {
         // int leftPos = leftMotor.getCurrentPosition();
         // int rightPos = rightMotor.getCurrentPosition();
 
-        double startAngle = getAngleZ();
-        angleZ = getAngleZ();
+        double startAngle = getAngleX();
+        angleZ = getAngleX();
 
         double angDiff = (turnAngle - angleZ) % 360;
         if (360 - Math.abs(angDiff) < Math.abs(angDiff))
@@ -290,7 +321,7 @@ public class AutonomousActions {
 
             while (opMode.opModeIsActive() && angDiff < 0) {
 
-                angleZ = getAngleZ();
+                angleZ = getAngleX();
                 angDiff = (turnAngle - angleZ) % 360;
                 if (360 - Math.abs(angDiff) < Math.abs(angDiff))
                     angDiff = -(360 * Math.signum(angDiff) - angDiff);
@@ -325,7 +356,7 @@ public class AutonomousActions {
 
             while (opMode.opModeIsActive() && angDiff > 0) {
 
-                angleZ = getAngleZ();
+                angleZ = getAngleX();
                 angDiff = (turnAngle - angleZ) % 360;
                 if (360 - Math.abs(angDiff) < Math.abs(angDiff))
                     angDiff = -(360 * Math.signum(angDiff) - angDiff);
@@ -372,8 +403,8 @@ public class AutonomousActions {
         // int leftPos = leftMotor.getCurrentPosition();
         // int rightPos = rightMotor.getCurrentPosition();
 
-        double startAngle = getAngleZ();
-        angleZ = getAngleZ();
+        double startAngle = getAngleX();
+        angleZ = getAngleX();
 
         double angDiff = (turnAngle - angleZ) % 360;
         if (360 - Math.abs(angDiff) < Math.abs(angDiff))
@@ -388,7 +419,7 @@ public class AutonomousActions {
 
             while (opMode.opModeIsActive() && angDiff < 0) {
 
-                angleZ = getAngleZ();
+                angleZ = getAngleX();
                 angDiff = (turnAngle - angleZ) % 360;
                 if (360 - Math.abs(angDiff) < Math.abs(angDiff))
                     angDiff = -(360 * Math.signum(angDiff) - angDiff);
@@ -423,7 +454,7 @@ public class AutonomousActions {
 
             while (opMode.opModeIsActive() && angDiff > 0) {
 
-                angleZ = getAngleZ();
+                angleZ = getAngleX();
                 angDiff = (turnAngle - angleZ) % 360;
                 if (360 - Math.abs(angDiff) < Math.abs(angDiff))
                     angDiff = -(360 * Math.signum(angDiff) - angDiff);
