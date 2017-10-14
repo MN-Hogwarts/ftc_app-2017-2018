@@ -59,23 +59,23 @@ public class AutoTest1 extends FtcOpMode {
     public void runOpMode() throws InterruptedException{
 
         auto.initOpmode(this, hardwareMap);
-        auto.initAlliance(AllianceColor.RED);
-        auto.initJewelHardware();
+        //auto.initAlliance(AllianceColor.RED);
+        //auto.initJewelHardware();
         while (!isStarted()) {
             telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
             telemetry.update();
 
         }
 
-        auto.jewelColor();
+        //auto.jewelColor();
         //sleep(5000);
         while (opModeIsActive()) {
             telemetry.addData("Moving Away:", auto.moveAwayFromColor());
             telemetry.update();
         }
 
-        //auto.initVuforia();
-        //auto.pictographID(); //run Vuforia method, includes initVuforia()
+        auto.initVuforia();
+        auto.pictographID(); //run Vuforia method, includes initVuforia()
 
     }
 }

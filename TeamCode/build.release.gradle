@@ -5,4 +5,5 @@ dependencies {
     compile (name: 'FtcCommon-release', ext: 'aar')
     compile (name:'Analytics-release', ext:'aar')
     compile (name:'WirelessP2p-release', ext:'aar')
+    //compile group: 'org.boofcv', name: 'boofcv-android', version: '0.27'
 }

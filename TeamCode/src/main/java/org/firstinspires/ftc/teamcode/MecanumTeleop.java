@@ -25,6 +25,7 @@ import trclib.TrcTaskMgr;
  */
 @TeleOp(name = "MecanumTeleop", group = "teleop")
 public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Runnable{
+    /*
     private final double LOADED_POSITION_TRIGGER = 0.557;
     private final double SHOOT_POSITION_TRIGGER = 0.428;
     private final double START_POSITION_ANGULAR = 0.3;
@@ -36,8 +37,10 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
     private final double SERVO_INCREMENT = 0.0025;
 
     private Servo triggerServo, angularServo, turretServo;
+    */
 
     private boolean OP_MODE_IS_ACTIVE = true;
+    /*
     private boolean SHOOTER_MOTORS_ACTIVE = false;
     private boolean SHOOTER_MOTORS_REVERSE = false;
     private boolean SHOOTER_MOTORS_IS_READY = false;
@@ -46,6 +49,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
 
     boolean               inputPin;             // Input State
     DigitalChannel digIn;                // Device Object
+    */
 
     private FtcDcMotor leftFrontMotor;
     private FtcDcMotor leftRearMotor;
@@ -102,7 +106,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
     public void init() {
         dashboard = HalDashboard.createInstance(this.telemetry);
 
-        gyro = new SWIMUGyro(hardwareMap, "gyro", null);
+        gyro = new SWIMUGyro(hardwareMap, "imu", null);
         gyro.calibrate();
 
         leftFrontMotor = new FtcDcMotor(this.hardwareMap, "leftFront", null, null);
@@ -129,7 +133,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         gamepad.enableDebug(true);
 
         driveBase.enableGyroAssist(0.0001, 0.05);
-
+        /*
         triggerServo = hardwareMap.servo.get("triggerServo");
         angularServo = hardwareMap.servo.get("pixyyaxis");
         turretServo = hardwareMap.servo.get("pixyyrotation");
@@ -148,7 +152,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         triggerServo.setPosition(LOADED_POSITION_TRIGGER);
         angularServo.setPosition(START_POSITION_ANGULAR);
         turretServo.setPosition(START_POSITION_TURRET);
-
+        */
 
         new Thread(this).start();
     }
@@ -168,9 +172,10 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         if(gamepad.getLeftStickX() == 0 && gamepad.getLeftStickY() == 0)
             magnitude = 0;
 
-        driveBase.mecanumDrive_PolarFieldCentric(magnitude, direction, rotation);
+        driveBase.mecanumDrive_XPolarFieldCentric(magnitude, direction, rotation);
 
 
+        /*
         if(gamepad1.x){
             turretServo.setPosition(CLOCKWISE_POSITION_TURRET);
         } else if (gamepad1.b){
@@ -199,6 +204,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         dashboard.displayPrintf(1, LABEL_WIDTH, "digital input: ", "%b", inputPin);
         dashboard.displayPrintf(2, LABEL_WIDTH, "servo position: ", "%1.3f", triggerServo.getPosition());
         dashboard.displayPrintf(4, LABEL_WIDTH, "rotation: ", "%.2f", rotation);
+        */
         dashboard.displayPrintf(5, LABEL_WIDTH, "gamepad left stick direction true: ", "%.2f", gamepad.getLeftStickDirectionDegrees(true));
         dashboard.displayPrintf(6, LABEL_WIDTH, "gamepad left stick direction false: ", "%.2f", gamepad.getLeftStickDirectionDegrees(false));
         dashboard.displayPrintf(7, LABEL_WIDTH, "gamepad right stick x: ", "%1.2f", gamepad.getRightStickX());
@@ -281,6 +287,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
     //THE THREAD THAT WILL RUN THE TRIGGER
     @Override
     public void run() {
+        /*
         while (OP_MODE_IS_ACTIVE){
             inputPin = digIn.getState();
             if(!gamepad1.left_bumper) {
@@ -332,5 +339,6 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
                 SHOOTER_MOTORS_REVERSE = true;
             }
         }
+        */
     }
 }
