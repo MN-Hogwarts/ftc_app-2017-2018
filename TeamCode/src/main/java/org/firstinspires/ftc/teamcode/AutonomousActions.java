@@ -87,6 +87,7 @@ public class AutonomousActions {
     RelicRecoveryVuMark vuMark;
 
     ColorSensor colorSensor = null;
+    ColorSensor tapeSensor = null;
     Servo jewelArm          = null;
 
 
@@ -149,6 +150,11 @@ public class AutonomousActions {
 
     }
 
+    void initGlyphHardware() {
+
+        tapeSensor = hardwareMap.get(ColorSensor.class, "bottom_color");
+        tapeSensor.enableLed(true);
+    }
     void initJewelHardware() {
         colorSensor = hardwareMap.get(ColorSensor.class, "color");
         jewelArm = hardwareMap.get(Servo.class, "jewel_arm");
@@ -236,10 +242,11 @@ public class AutonomousActions {
         if (vuMark == RelicRecoveryVuMark.RIGHT)
             opMode.telemetry.addLine("Glyph Right");
     }
-    void tapeFinder() {
-        while (opMode.opModeIsActive() && (colorSensor.red() < RED_THRESHOLD)) {
 
-            telemetry.addData("Color Sensor: Red", colorSensor.red());
+    void tapeFinder() {
+        while (opMode.opModeIsActive() && (tapeSensor.red() < 9)) {
+
+            telemetry.addData("Tape Sensor: Red", tapeSensor.red());
             telemetry.update(); //Tells the intensity of the color we are looking for
         }
         leftFrontMotor.setPower(0);

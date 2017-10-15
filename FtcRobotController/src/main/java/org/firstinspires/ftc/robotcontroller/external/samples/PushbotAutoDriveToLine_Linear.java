@@ -105,7 +105,7 @@ public class PushbotAutoDriveToLine_Linear extends LinearOpMode {
         robot.rightDrive.setPower(APPROACH_SPEED);
 
         // run until the white line is seen OR the driver presses STOP;
-        while (opModeIsActive() && (lightSensor.getcolorred() < WHITE_THRESHOLD)) {
+        while (opModeIsActive() && (lightSensor.getLightDetected() < WHITE_THRESHOLD)) {
 
             // Display the light level while we are looking for the line
             telemetry.addData("Light Level",  lightSensor.getLightDetected());
