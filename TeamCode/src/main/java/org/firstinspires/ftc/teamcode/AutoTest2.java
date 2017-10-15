@@ -30,48 +30,53 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import ftclib.FtcOpMode;
 
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
  */
-@Autonomous(name = "2 Servo Test", group = "Concept")
+@Autonomous(name = "Auto 1", group = "Concept")
 //@Disabled
-public class TwoServoTest extends LinearOpMode {
+public class AutoTest2 extends FtcOpMode {
 
-    static final double INCREMENT   = 0.01;     // amount to slew leftServo each CYCLE_MS cycle
-    static final int    CYCLE_MS    =   2000;     // period of each cycle
-    static final double MAX_POS     =  1.0;     // Maximum rotational position
-    static final double MIN_POS     =  0.0;     // Minimum rotational position
+    AutonomousActions auto = new AutonomousActions();
 
     // Define class members
-    Servo leftServo;
-    Servo rightServo;
+    Servo   servo;
     double  position = .55;//(MAX_POS - MIN_POS) / 2; // Start at halfway position
     boolean rampUp = true;
 
 
     @Override
-    public void runOpMode() {
+    public void initRobot() {
 
-        // Connect to leftServo (Assume PushBot Left Hand)
-        // Change the text in quotes to match any leftServo name on your robot.
-        leftServo = hardwareMap.get(Servo.class, "leftWheel");
-        rightServo = hardwareMap.get(Servo.class, "rightWheel");
+    }
 
-        // Wait for the start button
-        telemetry.addData(">", "Press Start to scan Servo." );
-        telemetry.update();
-        waitForStart();
+    @Override
+    public void runOpMode() throws InterruptedException{
 
-        leftServo.setPosition(-2.0);
-        rightServo.setPosition(-1.0);
+        auto.initOpmode(this, hardwareMap);
+        auto.initAlliance(AllianceColor.RED);
+        auto.initJewelHardware();
+        while (!isStarted()) {
+            telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
+            telemetry.update();
 
-        while (opModeIsActive());
+        }
 
-        // Signal done;
-        telemetry.addData(">", "Done");
-        telemetry.update();
+        //auto.jewelColor();
+        auto.glyphPickup();
+
+        //sleep(5000);
+        while (opModeIsActive()) {
+            telemetry.addData("Moving Away:", auto.moveAwayFromColor());
+            telemetry.update();
+        }
+
+        //auto.initVuforia();
+        //auto.pictographID(); //run Vuforia method, includes initVuforia()
+
     }
 }
