@@ -63,11 +63,12 @@ public class AutoTest4 extends FtcOpMode {
     public void runOpMode() throws InterruptedException{
 
         auto.initOpmode(this, hardwareMap);
-        //auto.initVuforia();
-        auto.initAlliance(AllianceColor.RED);
+        auto.initVuforia();
+        auto.initAlliance(AllianceColor.BLUE);
         auto.initJewelHardware(IMU);
         while (!isStarted()) {
-            //telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
+            telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
+            telemetry.addData("Color Sensor red", auto.colorSensor.red());
             telemetry.addData("Angle X", auto.getAngleX());
             telemetry.addData("Angle Y", auto.getAngleY());
             telemetry.addData("Angle Z", auto.getAngleZ());
@@ -76,8 +77,8 @@ public class AutoTest4 extends FtcOpMode {
             telemetry.update();
         }
 
-        //auto.pictographID();
-        auto.jewelColor();
+        auto.pictographID();
+        //auto.jewelColor();
         //auto.driveToCryptobox();
         //sleep(5000);
         while (opModeIsActive()) {

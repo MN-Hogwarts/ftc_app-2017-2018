@@ -160,15 +160,16 @@ public class AutonomousActions {
         colorSensor = hardwareMap.get(ColorSensor.class, "color");
         jewelArm = hardwareMap.get(Servo.class, "jewel_arm");
         jewelArm.setPosition(1);
+
         leftFrontMotor = new FtcDcMotor("left_front");
         rightFrontMotor = new FtcDcMotor("right_front");
         leftBackMotor = new FtcDcMotor("left_rear");
         rightBackMotor = new FtcDcMotor("right_rear");
 
-        leftFrontMotor.setInverted(false);
-        rightFrontMotor.setInverted(true);
-        leftBackMotor.setInverted(false);
-        rightBackMotor.setInverted(true);
+        leftFrontMotor.setInverted(true);
+        rightFrontMotor.setInverted(false);
+        leftBackMotor.setInverted(true);
+        rightBackMotor.setInverted(false);
 
         mecanumDrive = new TrcDriveBase(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
 
@@ -199,13 +200,10 @@ public class AutonomousActions {
         leftServo.setPosition(0);
         rightServo.setPosition(0);
     }
-// find the Target Device section under the General tab on the Android Application page
+
     public void pictographID() {
 
         //initVuforia();
-
-        telemetry.addLine("Hi");
-        telemetry.update();
 
         relicTrackables.activate();
         ElapsedTime time = new ElapsedTime();
@@ -249,12 +247,12 @@ public class AutonomousActions {
     void jewelColor() throws InterruptedException {
 
         double timeLimit = 1.0;
-        jewelArm.setPosition(0.45);
+        jewelArm.setPosition(0.4);
         colorSensor.enableLed(true);
         telemetry.addLine("Alliance Color: " + allianceColor);
         ElapsedTime time = new ElapsedTime();
 
-        opMode.sleep(700);
+        opMode.sleep(1000);
         if (moveAwayFromColor()) {
             telemetry.addLine("Moving right"); // TODO: move arm to side without color sensor
             turn(-10, 0.4);
@@ -276,6 +274,7 @@ public class AutonomousActions {
             */
         }
         telemetry.update();
+        jewelArm.setPosition(1);
         turn(0);
         //colorSensor.enableLed(false);
     }
@@ -508,9 +507,11 @@ public class AutonomousActions {
 
     private double turnPower(double difference) {
         if (Math.abs(difference) < 20) {
-            return 0.15;
+            //return 0.15;
+            return 0.35;
         } else if (Math.abs(difference) < 45) {
-            return 0.3;
+            //return 0.3;
+            return 0.5;
         } else if (Math.abs(difference) < 90) {
             return 0.6;
         } else return 0.8;
