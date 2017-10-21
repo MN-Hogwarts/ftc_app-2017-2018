@@ -63,21 +63,24 @@ public class AutoTest4 extends FtcOpMode {
     public void runOpMode() throws InterruptedException{
 
         auto.initOpmode(this, hardwareMap);
-        auto.initVuforia();
-        auto.initAlliance(AllianceColor.BLUE);
-        auto.initJewelHardware(IMU);
+
+        //auto.initVuforia();
+        //auto.initAlliance(AllianceColor.BLUE);
+        //auto.initJewelHardware(IMU);
+        auto.initGlyphHardware();
         while (!isStarted()) {
-            telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
-            telemetry.addData("Color Sensor red", auto.colorSensor.red());
-            telemetry.addData("Angle X", auto.getAngleX());
-            telemetry.addData("Angle Y", auto.getAngleY());
-            telemetry.addData("Angle Z", auto.getAngleZ());
+            telemetry.addLine("Hi");
+            //telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
+            //telemetry.addData("Color Sensor red", auto.colorSensor.red());
+            //telemetry.addData("Angle X", auto.getAngleX());
+            //telemetry.addData("Angle Y", auto.getAngleY());
+            //telemetry.addData("Angle Z", auto.getAngleZ());
             //telemetry.addData("Left distance", auto.leftRange.getDistance(DistanceUnit.CM));
             //telemetry.addData("Right distance", auto.rightRange.getDistance(DistanceUnit.CM));
             telemetry.update();
         }
 
-        auto.pictographID();
+        auto.ejectGlyph();
         //auto.jewelColor();
         //auto.driveToCryptobox();
         //sleep(5000);

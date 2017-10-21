@@ -47,13 +47,14 @@ public class AutonomousActions {
     AllianceColor allianceColor;
     AngleMeasureHw angleMeasureHw;
 
+    PickupHardware pickupHw = new PickupHardware();
+
     FtcDcMotor leftFrontMotor   = null;
     FtcDcMotor rightFrontMotor  = null;
     FtcDcMotor leftBackMotor    = null;
     FtcDcMotor rightBackMotor   = null;
     TrcDriveBase mecanumDrive   = null;
     DigitalChannel touchSensor  = null;
-
 
     Servo leftServo;
     Servo rightServo;
@@ -177,8 +178,10 @@ public class AutonomousActions {
 
     void initGlyphHardware() {
 
-        leftRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "left_range");
-        rightRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "right_range");
+        //leftRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "left_range");
+        //rightRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "right_range");
+
+        pickupHw.init(hardwareMap);
 
     }
 
@@ -282,8 +285,8 @@ public class AutonomousActions {
     void driveToCryptobox() throws InterruptedException {
 
         while (opMode.opModeIsActive()) {
-            telemetry.addData("Left distance", leftRange.getDistance(DistanceUnit.CM));
-            telemetry.addData("Right distance", rightRange.getDistance(DistanceUnit.CM));
+            //telemetry.addData("Left distance", leftRange.getDistance(DistanceUnit.CM));
+            //telemetry.addData("Right distance", rightRange.getDistance(DistanceUnit.CM));
             telemetry.update();
         }
         /*
@@ -293,6 +296,16 @@ public class AutonomousActions {
 
         turn(90);
         */
+    }
+
+    void ejectGlyph() {
+        ElapsedTime time = new ElapsedTime();
+        pickupHw.leftServo.setPosition(-1.0);
+        pickupHw.rightServo.setPosition(1.0);
+        while (opMode.opModeIsActive() && time.seconds() < 2);
+        pickupHw.leftServo.setPosition(0.52);
+        pickupHw.rightServo.setPosition(0.5
+        );
     }
 
     public void turn(int turnAngle, double power) throws InterruptedException {
