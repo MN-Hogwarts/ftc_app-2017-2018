@@ -115,7 +115,8 @@ public class PushbotAutoDriveByTime_Linear extends LinearOpMode {
         // Step 4:  Stop and close the claw.
         robot.leftDrive.setPower(0);
         robot.rightDrive.setPower(0);
-
+      //  robot.leftClaw.setPosition(1.0);
+      //PushbotAutoDriveByTime_Linear  robot.rightClaw.setPosition(0.0);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
