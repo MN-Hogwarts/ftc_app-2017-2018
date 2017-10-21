@@ -123,10 +123,10 @@ public class PushbotTeleopTank_Iterative extends OpMode{
 
         // Run wheels backwards if 'B' is pressed. If not, stop servos; starts neg
     if (gamepad1.b) {
-        leftServo.setPosition(-1.0);
-        rightServo.setPosition(1.0);
-        left_Servo.setPosition(-1.0);
-        right_Servo.setPosition(1.0);
+        leftServo.setPosition(-3);
+        rightServo.setPosition(3);
+        left_Servo.setPosition(-3);
+        right_Servo.setPosition(3);
     telemetry.addData("Right Servo Value", right_Servo.getPosition()) ;
     telemetry.update() ;
     }
@@ -145,10 +145,10 @@ public class PushbotTeleopTank_Iterative extends OpMode{
     telemetry.update() ;
     }
     else if (gamepad1.a) {
-        leftServo.setPosition(1.0);
-        rightServo.setPosition(-1.0);
-        left_Servo.setPosition(1.0);
-        right_Servo.setPosition(-1.0);
+        leftServo.setPosition(3);
+        rightServo.setPosition(-3);
+        left_Servo.setPosition(3);
+        right_Servo.setPosition(-3);
     telemetry.addData("Left Servo Value", left_Servo.getPosition()) ;
     telemetry.update() ;
     }

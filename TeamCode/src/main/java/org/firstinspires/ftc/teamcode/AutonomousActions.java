@@ -154,9 +154,9 @@ public class AutonomousActions {
     }
 
     void initJewelHardware() {
-        colorSensor = hardwareMap.get(ColorSensor.class, "color");
+      /*  colorSensor = hardwareMap.get(ColorSensor.class, "color");
         jewelArm = hardwareMap.get(Servo.class, "jewel_arm");
-        jewelArm.setPosition(0.1);
+        jewelArm.setPosition(0.1); */
         leftFrontMotor = new FtcDcMotor("left_front");
         rightFrontMotor = new FtcDcMotor("right_front");
         leftBackMotor = new FtcDcMotor("left_rear");
