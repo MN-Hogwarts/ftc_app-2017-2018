@@ -40,6 +40,8 @@ enum AllianceColor {RED, BLUE}
 enum AngleMeasureHw {GYRO, IMU}
 
 public class AutonomousActions {
+    int   RED_THRESHOLD  = (9);
+    int   BLUE_THRESHOLD = (9);
 
     FtcOpMode opMode;
     HardwareMap hardwareMap;
@@ -47,13 +49,14 @@ public class AutonomousActions {
     AllianceColor allianceColor;
     AngleMeasureHw angleMeasureHw;
 
+    PickupHardware pickupHw = new PickupHardware();
+
     FtcDcMotor leftFrontMotor   = null;
     FtcDcMotor rightFrontMotor  = null;
     FtcDcMotor leftBackMotor    = null;
     FtcDcMotor rightBackMotor   = null;
     TrcDriveBase mecanumDrive   = null;
     DigitalChannel touchSensor  = null;
-
 
     Servo leftServo;
     Servo rightServo;
@@ -72,6 +75,7 @@ public class AutonomousActions {
     RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.UNKNOWN;
 
     ColorSensor colorSensor = null;
+    ColorSensor tapeSensor = null;
     Servo jewelArm          = null;
 
 
@@ -160,15 +164,16 @@ public class AutonomousActions {
         colorSensor = hardwareMap.get(ColorSensor.class, "color");
         jewelArm = hardwareMap.get(Servo.class, "jewel_arm");
         jewelArm.setPosition(1);
+
         leftFrontMotor = new FtcDcMotor("left_front");
         rightFrontMotor = new FtcDcMotor("right_front");
         leftBackMotor = new FtcDcMotor("left_rear");
         rightBackMotor = new FtcDcMotor("right_rear");
 
-        leftFrontMotor.setInverted(false);
-        rightFrontMotor.setInverted(true);
-        leftBackMotor.setInverted(false);
-        rightBackMotor.setInverted(true);
+        leftFrontMotor.setInverted(true);
+        rightFrontMotor.setInverted(false);
+        leftBackMotor.setInverted(true);
+        rightBackMotor.setInverted(false);
 
         mecanumDrive = new TrcDriveBase(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
 
@@ -176,8 +181,13 @@ public class AutonomousActions {
 
     void initGlyphHardware() {
 
-        leftRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "left_range");
-        rightRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "right_range");
+        //leftRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "left_range");
+        //rightRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "right_range");
+
+        pickupHw.init(hardwareMap);
+
+        tapeSensor = hardwareMap.get(ColorSensor.class, "bottom_color");
+        tapeSensor.enableLed(true);
 
     }
 
@@ -199,13 +209,10 @@ public class AutonomousActions {
         leftServo.setPosition(0);
         rightServo.setPosition(0);
     }
-// find the Target Device section under the General tab on the Android Application page
+
     public void pictographID() {
 
         //initVuforia();
-
-        telemetry.addLine("Hi");
-        telemetry.update();
 
         relicTrackables.activate();
         ElapsedTime time = new ElapsedTime();
@@ -242,19 +249,15 @@ public class AutonomousActions {
             telemetry.addLine("Glyph Right");
     }
 
-    String format(OpenGLMatrix transformationMatrix) {
-        return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
-    }
-
     void jewelColor() throws InterruptedException {
 
         double timeLimit = 1.0;
-        jewelArm.setPosition(0.45);
+        jewelArm.setPosition(0.4);
         colorSensor.enableLed(true);
         telemetry.addLine("Alliance Color: " + allianceColor);
         ElapsedTime time = new ElapsedTime();
 
-        opMode.sleep(700);
+        opMode.sleep(1000);
         if (moveAwayFromColor()) {
             telemetry.addLine("Moving right"); // TODO: move arm to side without color sensor
             turn(-10, 0.4);
@@ -276,6 +279,7 @@ public class AutonomousActions {
             */
         }
         telemetry.update();
+        jewelArm.setPosition(1);
         turn(0);
         //colorSensor.enableLed(false);
     }
@@ -283,8 +287,8 @@ public class AutonomousActions {
     void driveToCryptobox() throws InterruptedException {
 
         while (opMode.opModeIsActive()) {
-            telemetry.addData("Left distance", leftRange.getDistance(DistanceUnit.CM));
-            telemetry.addData("Right distance", rightRange.getDistance(DistanceUnit.CM));
+            //telemetry.addData("Left distance", leftRange.getDistance(DistanceUnit.CM));
+            //telemetry.addData("Right distance", rightRange.getDistance(DistanceUnit.CM));
             telemetry.update();
         }
         /*
@@ -294,6 +298,30 @@ public class AutonomousActions {
 
         turn(90);
         */
+    }
+
+    void tapeFinder() {
+        while (opMode.opModeIsActive() && (tapeSensor.red() < 9)) {
+
+            telemetry.addData("Tape Sensor: Red", tapeSensor.red());
+            telemetry.update(); //Tells the intensity of the color we are looking for
+        }
+        leftFrontMotor.setPower(0);
+        rightFrontMotor.setPower(0);
+        leftBackMotor.setPower(0);
+        rightBackMotor.setPower(0);
+    }
+    String format(OpenGLMatrix transformationMatrix) {
+        return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
+    }
+
+    void ejectGlyph() {
+        ElapsedTime time = new ElapsedTime();
+        pickupHw.leftServo.setPosition(-1.0);
+        pickupHw.rightServo.setPosition(1.0);
+        while (opMode.opModeIsActive() && time.seconds() < 2);
+        pickupHw.leftServo.setPosition(0.52);
+        pickupHw.rightServo.setPosition(0.5);
     }
 
     public void turn(int turnAngle, double power) throws InterruptedException {
@@ -508,9 +536,11 @@ public class AutonomousActions {
 
     private double turnPower(double difference) {
         if (Math.abs(difference) < 20) {
-            return 0.15;
+            //return 0.15;
+            return 0.35;
         } else if (Math.abs(difference) < 45) {
-            return 0.3;
+            //return 0.3;
+            return 0.5;
         } else if (Math.abs(difference) < 90) {
             return 0.6;
         } else return 0.8;
