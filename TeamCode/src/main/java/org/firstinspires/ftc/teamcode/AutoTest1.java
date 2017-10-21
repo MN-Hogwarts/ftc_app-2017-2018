@@ -33,7 +33,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 import ftclib.FtcOpMode;
+
+import static org.firstinspires.ftc.teamcode.AngleMeasureHw.GYRO;
 
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
@@ -59,18 +63,27 @@ public class AutoTest1 extends FtcOpMode {
     public void runOpMode() throws InterruptedException{
 
         auto.initOpmode(this, hardwareMap);
+        auto.initVuforia();
         auto.initAlliance(AllianceColor.RED);
-        auto.initJewelHardware();
+        auto.initJewelHardware(GYRO);
+        auto.initGlyphHardware();
         while (!isStarted()) {
             telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
+            telemetry.addData("Angle X", auto.getAngleX());
+            telemetry.addData("Angle Y", auto.getAngleY());
+            telemetry.addData("Angle Z", auto.getAngleZ());
+            telemetry.addData("Left distance", auto.leftRange.getDistance(DistanceUnit.CM));
+            telemetry.addData("Right distance", auto.rightRange.getDistance(DistanceUnit.CM));
             telemetry.update();
-
         }
 
-        auto.jewelColor();
+        //auto.pictographID();
+        //auto.jewelColor();
+        auto.driveToCryptobox();
         //sleep(5000);
         while (opModeIsActive()) {
-            telemetry.addData("Moving Away:", auto.moveAwayFromColor());
+            //telemetry.addData("Moving Away:", auto.moveAwayFromColor());
+            auto.place1stGlyph();
             telemetry.update();
         }
 
