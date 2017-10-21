@@ -65,8 +65,8 @@ public class AutoTest4 extends FtcOpMode {
         auto.initOpmode(this, hardwareMap);
 
         //auto.initVuforia();
-        //auto.initAlliance(AllianceColor.BLUE);
-        //auto.initJewelHardware(IMU);
+        auto.initAlliance(AllianceColor.BLUE);
+        auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
             telemetry.addLine("Hi");
@@ -80,9 +80,9 @@ public class AutoTest4 extends FtcOpMode {
             telemetry.update();
         }
 
-        auto.ejectGlyph();
-        //auto.jewelColor();
-        //auto.driveToCryptobox();
+        auto.jewelColor();
+        auto.driveToCryptobox();
+        //auto.ejectGlyph();
         //sleep(5000);
         while (opModeIsActive()) {
             //telemetry.addData("Moving Away:", auto.moveAwayFromColor());
