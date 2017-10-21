@@ -26,7 +26,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 import ftclib.FtcDcMotor;
 import ftclib.FtcOpMode;
-import trclib.TrcDriveBase;
+import swlib.SwDriveBase;
 
 import static org.firstinspires.ftc.teamcode.AngleMeasureHw.GYRO;
 import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
@@ -55,7 +55,7 @@ public class AutonomousActions {
     FtcDcMotor rightFrontMotor  = null;
     FtcDcMotor leftBackMotor    = null;
     FtcDcMotor rightBackMotor   = null;
-    TrcDriveBase mecanumDrive   = null;
+    SwDriveBase mecanumDrive   = null;
     DigitalChannel touchSensor  = null;
 
     Servo leftServo;
@@ -175,7 +175,7 @@ public class AutonomousActions {
         leftBackMotor.setInverted(true);
         rightBackMotor.setInverted(false);
 
-        mecanumDrive = new TrcDriveBase(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
+        mecanumDrive = new SwDriveBase(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
 
     }
 
@@ -286,11 +286,27 @@ public class AutonomousActions {
 
     void driveToCryptobox() throws InterruptedException {
 
-        while (opMode.opModeIsActive()) {
+        if (allianceColor == AllianceColor.BLUE) {
+            mecanumDrive.mecanumDrive_XPolar(1, 270, 0);
+        } else if (allianceColor == AllianceColor.RED) {
+            mecanumDrive.mecanumDrive_XPolar(1, 90, 0);
+        }
+
+        ElapsedTime time = new ElapsedTime();
+        while (opMode.opModeIsActive() && time.seconds() < 1.5) {
             //telemetry.addData("Left distance", leftRange.getDistance(DistanceUnit.CM));
             //telemetry.addData("Right distance", rightRange.getDistance(DistanceUnit.CM));
             telemetry.update();
         }
+
+        mecanumDrive.stop();
+
+        if (allianceColor == AllianceColor.BLUE) {
+            turn(90);
+        } else if (allianceColor == AllianceColor.RED) {
+            turn(270);
+        }
+
         /*
         mecanumDrive.mecanumDrive_Polar(0.6, 90, 0);
         opMode.sleep(2000);
@@ -301,15 +317,13 @@ public class AutonomousActions {
     }
 
     void tapeFinder() {
+        mecanumDrive.mecanumDrive_XPolar(0.7, 0, 0);
         while (opMode.opModeIsActive() && (tapeSensor.red() < 9)) {
 
             telemetry.addData("Tape Sensor: Red", tapeSensor.red());
             telemetry.update(); //Tells the intensity of the color we are looking for
         }
-        leftFrontMotor.setPower(0);
-        rightFrontMotor.setPower(0);
-        leftBackMotor.setPower(0);
-        rightBackMotor.setPower(0);
+        mecanumDrive.stop();
     }
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
@@ -537,12 +551,12 @@ public class AutonomousActions {
     private double turnPower(double difference) {
         if (Math.abs(difference) < 20) {
             //return 0.15;
-            return 0.35;
+            return 0.4;
         } else if (Math.abs(difference) < 45) {
             //return 0.3;
-            return 0.5;
-        } else if (Math.abs(difference) < 90) {
             return 0.6;
+        } else if (Math.abs(difference) < 90) {
+            return 0.7;
         } else return 0.8;
     }
 
