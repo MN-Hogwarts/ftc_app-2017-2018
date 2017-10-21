@@ -249,10 +249,6 @@ public class AutonomousActions {
             telemetry.addLine("Glyph Right");
     }
 
-    String format(OpenGLMatrix transformationMatrix) {
-        return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
-    }
-
     void jewelColor() throws InterruptedException {
 
         double timeLimit = 1.0;
@@ -317,14 +313,15 @@ public class AutonomousActions {
     }
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
+    }
+
     void ejectGlyph() {
         ElapsedTime time = new ElapsedTime();
         pickupHw.leftServo.setPosition(-1.0);
         pickupHw.rightServo.setPosition(1.0);
         while (opMode.opModeIsActive() && time.seconds() < 2);
         pickupHw.leftServo.setPosition(0.52);
-        pickupHw.rightServo.setPosition(0.5
-        );
+        pickupHw.rightServo.setPosition(0.5);
     }
 
     public void turn(int turnAngle, double power) throws InterruptedException {

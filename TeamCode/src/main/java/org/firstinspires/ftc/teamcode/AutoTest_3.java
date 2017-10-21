@@ -60,7 +60,7 @@ public class AutoTest_3 extends FtcOpMode {
         auto.initOpmode(this, hardwareMap);
         auto.initAlliance(AllianceColor.RED);
 
-        auto.initJewelHardware();
+
         auto.initGlyphHardware();
         while (!isStarted()) {
             telemetry.addData("Color Sensor red", auto.tapeSensor.red());
