@@ -71,6 +71,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
     private TrcServo jewelServo = null;
     private Servo wristServo;
     private Servo leftPickupServo, rightPickupServo;
+    private DigitalChannel touchSensor ;
     static double wristServoValue = 0.04;
 
     @Override
@@ -98,14 +99,13 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
     @Override
     public void init() {
         dashboard = HalDashboard.createInstance(this.telemetry);
-        jewelServo = new FtcServo(this.hardwareMap, "jewelServo");
+        jewelServo = new FtcServo(this.hardwareMap, "jewelArm");
         jewelServo.setPosition(0.9);
 
-        /*
         leftPickupServo = this.hardwareMap.get(Servo.class, "leftPickup");
         rightPickupServo = this.hardwareMap.get(Servo.class, "rightPickup");
         wristServo = this.hardwareMap.get(Servo.class, "wristServo");
-         */
+        touchSensor = hardwareMap.get(DigitalChannel.class, "touchSensor") ;
 
         gyro = new SWIMUGyro(hardwareMap, "imu", null);
         gyro.calibrate();
@@ -177,30 +177,44 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         //driveBase.mecanumDrive_XPolarFieldCentric(magnitude, direction, rotation);
         driveBase.mecanumDrive_XPolar(magnitude, direction, rotation);
 
-
-        /*
-        if(gamepad1.x){
-            //leftPickupServo.setPosition(0.5);
-            //rightPickupServo.setPosition(0.5);
-        } else if (gamepad1.b){
-            //leftPickupServo.setPosition(-0.5);
-            //rightPickupServo.setPosition(-0.5);
-        } else {
-            //leftPickupServo.setPosition(0);
-            //rightPickupServo.setPosition(0);
+        if (gamepad1.b) {
+            leftPickupServo.setPosition(-1.0);
+            rightPickupServo.setPosition(1.0);
+            telemetry.addData("Right Servo Value", rightPickupServo.getPosition());
+            telemetry.update();
+        } //If touch sensor is pressed, stop wheels. If 'A' is pressed, run wheels. If neither is pressed, stop wheels
+        else if (!touchSensor.getState()) {
+            leftPickupServo.setPosition(0.53);
+            rightPickupServo.setPosition(0.5);
+            telemetry.addData("Left Servo Value", leftPickupServo.getPosition());
+            telemetry.update();
+        } //Turn inward
+        else if (gamepad1.a) {
+            leftPickupServo.setPosition(1.0);
+            rightPickupServo.setPosition(-1.0);
+            telemetry.addData("Left Servo Value", leftPickupServo.getPosition());
+            telemetry.update();
+        } //Stop wheels
+        else {
+            leftPickupServo.setPosition(0.53);
+            rightPickupServo.setPosition(0.5);
+            telemetry.addData("Left Servo Value", leftPickupServo.getPosition());
+            telemetry.update();
         }
 
         if(gamepad1.a){
             //wristServo.setPosition(0.5);
             wristServoValue = wristServoValue - 0.05;
         } else if (gamepad1.y){
-            //wristServo.setPosition(-0.5);
-            wristServoValue = wristServoValue + 0.05;
+            wristServo.setPosition(1);
+            //wristServoValue = wristServoValue + 0.05;
         } else if (gamepad1.x) {
             wristServoValue = Range.clip(wristServoValue, -1.0, 1.0);
-            wristServo.setPosition(wristServoValue);
+            //wristServo.setPosition(wristServoValue);
+            wristServo.setPosition(0);
+        } else {
+            wristServo.setPosition(0.5);
         }
-        */
 
         /*
         if(SHOOTER_MOTORS_REVERSE){

@@ -162,13 +162,13 @@ public class AutonomousActions {
         }
 
         colorSensor = hardwareMap.get(ColorSensor.class, "color");
-        jewelArm = hardwareMap.get(Servo.class, "jewel_arm");
+        jewelArm = hardwareMap.get(Servo.class, "jewelArm");
         jewelArm.setPosition(1);
 
-        leftFrontMotor = new FtcDcMotor("left_front");
-        rightFrontMotor = new FtcDcMotor("right_front");
-        leftBackMotor = new FtcDcMotor("left_rear");
-        rightBackMotor = new FtcDcMotor("right_rear");
+        leftFrontMotor = new FtcDcMotor("leftFront");
+        rightFrontMotor = new FtcDcMotor("rightFront");
+        leftBackMotor = new FtcDcMotor("leftRear");
+        rightBackMotor = new FtcDcMotor("rightRear");
 
         leftFrontMotor.setInverted(true);
         rightFrontMotor.setInverted(false);
@@ -191,6 +191,7 @@ public class AutonomousActions {
 
     }
 
+    // DON"T USE THIS YET
     public void glyphPickup() {
         leftServo = hardwareMap.get(Servo.class, "leftWheel");
         rightServo = hardwareMap.get(Servo.class, "rightWheel");
@@ -258,6 +259,15 @@ public class AutonomousActions {
         ElapsedTime time = new ElapsedTime();
 
         opMode.sleep(1000);
+        /*
+        while (opMode.opModeIsActive()) {
+            telemetry.addData("Color Sensor blue", colorSensor.blue());
+            telemetry.addData("Color Sensor red", colorSensor.red());
+            telemetry.log().add("Move away: " + moveAwayFromColor());
+            telemetry.update();
+        }
+        */
+
         if (moveAwayFromColor()) {
             telemetry.addLine("Moving right"); // TODO: move arm to side without color sensor
             turn(-10, 0.4);
@@ -287,13 +297,16 @@ public class AutonomousActions {
     void driveToCryptobox() throws InterruptedException {
 
         if (allianceColor == AllianceColor.BLUE) {
-            mecanumDrive.mecanumDrive_XPolar(1, 270, 0);
+            turn(90);
         } else if (allianceColor == AllianceColor.RED) {
-            mecanumDrive.mecanumDrive_XPolar(1, 90, 0);
+            turn(270);
         }
 
         ElapsedTime time = new ElapsedTime();
-        while (opMode.opModeIsActive() && time.seconds() < 1.5) {
+        time.reset();
+        mecanumDrive.mecanumDrive_BoxPolar(0.8, 0, 0);
+
+        while (opMode.opModeIsActive() && time.seconds() < 1) {
             //telemetry.addData("Left distance", leftRange.getDistance(DistanceUnit.CM));
             //telemetry.addData("Right distance", rightRange.getDistance(DistanceUnit.CM));
             telemetry.update();
@@ -302,10 +315,19 @@ public class AutonomousActions {
         mecanumDrive.stop();
 
         if (allianceColor == AllianceColor.BLUE) {
-            turn(90);
+            mecanumDrive.mecanumDrive_BoxPolar(1, 270, 0);
         } else if (allianceColor == AllianceColor.RED) {
-            turn(270);
+            mecanumDrive.mecanumDrive_BoxPolar(1, 90, 0);
         }
+
+        time.reset();
+        while (opMode.opModeIsActive() && time.seconds() < 1) {
+            //telemetry.addData("Left distance", leftRange.getDistance(DistanceUnit.CM));
+            //telemetry.addData("Right distance", rightRange.getDistance(DistanceUnit.CM));
+            telemetry.update();
+        }
+
+        mecanumDrive.stop();
 
         /*
         mecanumDrive.mecanumDrive_Polar(0.6, 90, 0);
@@ -551,7 +573,7 @@ public class AutonomousActions {
     private double turnPower(double difference) {
         if (Math.abs(difference) < 20) {
             //return 0.15;
-            return 0.4;
+            return 0.45;
         } else if (Math.abs(difference) < 45) {
             //return 0.3;
             return 0.6;

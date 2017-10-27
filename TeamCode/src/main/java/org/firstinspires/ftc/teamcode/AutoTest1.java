@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -43,7 +44,7 @@ import static org.firstinspires.ftc.teamcode.AngleMeasureHw.GYRO;
  * Rotates Servo between min and max position or rotatescontinuaou
  */
 @Autonomous(name = "Auto 1", group = "Concept")
-//@Disabled
+@Disabled
 public class AutoTest1 extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();

@@ -131,25 +131,25 @@ public class FourServo extends OpMode{
         rightServo.setPosition(0.5);
         left_Servo.setPosition(0.52);
         right_Servo.setPosition(0.5);
-    telemetry.addData("Left Servo Value", left_Servo.getPosition());
-    telemetry.update() ;
-    }
+        telemetry.addData("Left Servo Value", left_Servo.getPosition());
+        telemetry.update();
+    } //Turn inward
     else if (gamepad1.a) {
         leftServo.setPosition(1.0);
         rightServo.setPosition(-1.0);
         left_Servo.setPosition(1.0);
         right_Servo.setPosition(-1.0);
-    telemetry.addData("Left Servo Value", left_Servo.getPosition()) ;
-    telemetry.update() ;
-    }
-     else {
+        telemetry.addData("Left Servo Value", left_Servo.getPosition());
+        telemetry.update();
+    } //Stop wheels
+    else {
         leftServo.setPosition(0.53);
         rightServo.setPosition(0.5);
         left_Servo.setPosition(0.52);
         right_Servo.setPosition(0.5);
-     telemetry.addData("Left Servo Value", left_Servo.getPosition()) ;
-     telemetry.update() ;
-     }
+        telemetry.addData("Left Servo Value", left_Servo.getPosition());
+        telemetry.update();
+    }
 
         telemetry.addData("Touch sensor value", touchSensor.getState());
         telemetry.update();
