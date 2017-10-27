@@ -301,6 +301,8 @@ public class AutonomousActions {
     }
 
     void tapeFinder() {
+
+        mecanumDrive.mecanumDrive_Polar(0.7, 0, 0);
         while (opMode.opModeIsActive() && (tapeSensor.red() < 9)) {
 
             telemetry.addData("Tape Sensor: Red", tapeSensor.red());
@@ -311,9 +313,9 @@ public class AutonomousActions {
         leftBackMotor.setPower(0);
         rightBackMotor.setPower(0);
     }
-    String format(OpenGLMatrix transformationMatrix) {
+   /* String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
-    }
+    }*/
 
     void ejectGlyph() {
         ElapsedTime time = new ElapsedTime();

@@ -61,6 +61,7 @@ public class AutoTest_3 extends FtcOpMode {
         auto.initAlliance(AllianceColor.RED);
 
 
+        auto.initJewelHardware(AngleMeasureHw.GYRO);
         auto.initGlyphHardware();
         while (!isStarted()) {
             telemetry.addData("Color Sensor red", auto.tapeSensor.red());
