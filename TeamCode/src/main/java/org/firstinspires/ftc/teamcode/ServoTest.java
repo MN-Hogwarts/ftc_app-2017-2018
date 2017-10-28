@@ -92,13 +92,13 @@ public class ServoTest extends LinearOpMode {
             telemetry.update();
 
             // Set the leftServo to the new position and pause;
-/*
-            leftServo.setPosition(position);
+
+            servo.setPosition(position);
             sleep(CYCLE_MS);
             position += .45;
-            leftServo.setPosition(position);
+            servo.setPosition(position);
             sleep(CYCLE_MS);
-*/
+
             position -= .45;
             idle();
         }

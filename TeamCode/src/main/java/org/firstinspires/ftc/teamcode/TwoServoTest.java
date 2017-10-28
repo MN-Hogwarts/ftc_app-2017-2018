@@ -65,7 +65,7 @@ public class TwoServoTest extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-        leftServo.setPosition(1.0);
+        leftServo.setPosition(-2.0);
         rightServo.setPosition(-1.0);
 
         while (opModeIsActive());

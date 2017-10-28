@@ -1,36 +1,9 @@
-/* Copyright (c) 2017 FIRST. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided that
- * the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this list
- * of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice, this
- * list of conditions and the following disclaimer in the documentation and/or
- * other materials provided with the distribution.
- *
- * Neither the name of FIRST nor the names of its contributors may be used to endorse or
- * promote products derived from this software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
- * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -41,6 +14,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuMarkInstanceId;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -49,8 +26,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 import ftclib.FtcDcMotor;
 import ftclib.FtcOpMode;
-import swlib.SWIMUGyro;
 import trclib.TrcDriveBase;
+
+import static org.firstinspires.ftc.teamcode.AngleMeasureHw.GYRO;
+import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
 
 /**
  * This class will contain all methods for autonomous,
@@ -58,6 +37,7 @@ import trclib.TrcDriveBase;
  */
 
 enum AllianceColor {RED, BLUE}
+enum AngleMeasureHw {GYRO, IMU}
 
 public class AutonomousActions {
 
@@ -65,6 +45,9 @@ public class AutonomousActions {
     HardwareMap hardwareMap;
     Telemetry telemetry;
     AllianceColor allianceColor;
+    AngleMeasureHw angleMeasureHw;
+
+    PickupHardware pickupHw = new PickupHardware();
 
     FtcDcMotor leftFrontMotor   = null;
     FtcDcMotor rightFrontMotor  = null;
@@ -72,7 +55,6 @@ public class AutonomousActions {
     FtcDcMotor rightBackMotor   = null;
     TrcDriveBase mecanumDrive   = null;
     DigitalChannel touchSensor  = null;
-
 
     Servo leftServo;
     Servo rightServo;
@@ -88,7 +70,7 @@ public class AutonomousActions {
     VuforiaLocalizer vuforia;
     VuforiaTrackables relicTrackables;
     VuforiaTrackable relicTemplate;
-    RelicRecoveryVuMark vuMark;
+    RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.UNKNOWN;
 
     ColorSensor colorSensor = null;
     Servo jewelArm          = null;
@@ -97,6 +79,9 @@ public class AutonomousActions {
     ModernRoboticsI2cGyro gyro  = null;
     BNO055IMU imu           = null;
     double angleZ;
+
+    ModernRoboticsI2cRangeSensor leftRange = null;
+    ModernRoboticsI2cRangeSensor rightRange = null;
 
     void initOpmode(FtcOpMode opMode, HardwareMap hardwareMap) {
         this.opMode = opMode;
@@ -153,26 +138,52 @@ public class AutonomousActions {
 
     }
 
-    void initJewelHardware() {
-      /*  colorSensor = hardwareMap.get(ColorSensor.class, "color");
+    void initJewelHardware(AngleMeasureHw angleMeasureHw) {
+
+        this.angleMeasureHw = angleMeasureHw;
+
+        if (this.angleMeasureHw == GYRO) {
+            gyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");
+        }
+        else {
+            BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+            parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+            parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+            parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+            parameters.loggingEnabled      = true;
+            parameters.loggingTag          = "IMU";
+            parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+            imu = hardwareMap.get(BNO055IMU.class, "imu");
+            imu.initialize(parameters);
+        }
+
+        colorSensor = hardwareMap.get(ColorSensor.class, "color");
         jewelArm = hardwareMap.get(Servo.class, "jewel_arm");
-        jewelArm.setPosition(0.1); */
+        jewelArm.setPosition(1);
+
         leftFrontMotor = new FtcDcMotor("left_front");
         rightFrontMotor = new FtcDcMotor("right_front");
         leftBackMotor = new FtcDcMotor("left_rear");
         rightBackMotor = new FtcDcMotor("right_rear");
-        leftFrontMotor.setInverted(false);
-        rightFrontMotor.setInverted(true);
-        leftBackMotor.setInverted(false);
-        rightBackMotor.setInverted(true);
+
+        leftFrontMotor.setInverted(true);
+        rightFrontMotor.setInverted(false);
+        leftBackMotor.setInverted(true);
+        rightBackMotor.setInverted(false);
 
         mecanumDrive = new TrcDriveBase(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
-    }
-
-    public void moveSirvo(){
 
     }
 
+    void initGlyphHardware() {
+
+        //leftRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "left_range");
+        //rightRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "right_range");
+
+        pickupHw.init(hardwareMap);
+
+    }
 
     public void glyphPickup() {
         leftServo = hardwareMap.get(Servo.class, "leftWheel");
@@ -192,10 +203,10 @@ public class AutonomousActions {
         leftServo.setPosition(0);
         rightServo.setPosition(0);
     }
-// find the Target Device section under the General tab on the Android Application page
+
     public void pictographID() {
 
-        initVuforia();
+        //initVuforia();
 
         relicTrackables.activate();
         ElapsedTime time = new ElapsedTime();
@@ -210,43 +221,10 @@ public class AutonomousActions {
              * UNKNOWN will be returned by {@link RelicRecoveryVuMark#from(VuforiaTrackable)}.
              */
             vuMark = RelicRecoveryVuMark.from(relicTemplate);
-            opMode.telemetry.addData("VuMark", "not visible");
-            opMode.telemetry.update();
+            telemetry.addData("VuMark", "not visible");
+            telemetry.addData("Time", time.seconds());
+            telemetry.update();
         }
-    }
-
-    void jewelColor() throws InterruptedException {
-
-        double timeLimit = 1.0;
-        jewelArm.setPosition(0.84);
-        colorSensor.enableLed(true);
-        telemetry.addLine("Alliance Color: " + allianceColor);
-        ElapsedTime time = new ElapsedTime();
-
-        opMode.sleep(700);
-        if (moveAwayFromColor()) {
-            telemetry.addLine("Moving left"); // TODO: move arm to side without color sensor
-            turn(10);
-
-            /*
-            turnLeftWithoutAngle(0.5);
-            while (opMode.opModeIsActive() && time.seconds() < timeLimit);
-            mecanumDrive.stop();
-            */
-        }
-        else {
-            telemetry.addLine("Moving right"); // TODO: move arm to side with color sensor
-            turn(-10);
-
-            /*
-            turnRightWithoutAngle(0.5);
-            while (opMode.opModeIsActive() && time.seconds() < timeLimit);
-            mecanumDrive.stop();
-            */
-        }
-        telemetry.update();
-        turn(0);
-        //colorSensor.enableLed(false);
     }
 
     boolean moveAwayFromColor() {
@@ -256,28 +234,89 @@ public class AutonomousActions {
 
     void place1stGlyph() { // TODO: place glyph in correct column
         if (vuMark == RelicRecoveryVuMark.UNKNOWN)
-            opMode.telemetry.addLine("VuMark Unknown");
+            telemetry.addLine("VuMark Unknown");
         if (vuMark == RelicRecoveryVuMark.LEFT)
-            opMode.telemetry.addLine("Glyph Left");
+            telemetry.addLine("Glyph Left");
         if (vuMark == RelicRecoveryVuMark.CENTER)
-            opMode.telemetry.addLine("Glyph Center");
+            telemetry.addLine("Glyph Center");
         if (vuMark == RelicRecoveryVuMark.RIGHT)
-            opMode.telemetry.addLine("Glyph Right");
+            telemetry.addLine("Glyph Right");
     }
 
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
     }
 
-    public void turn(int turnAngle) throws InterruptedException {
+    void jewelColor() throws InterruptedException {
+
+        double timeLimit = 1.0;
+        jewelArm.setPosition(0.4);
+        colorSensor.enableLed(true);
+        telemetry.addLine("Alliance Color: " + allianceColor);
+        ElapsedTime time = new ElapsedTime();
+
+        opMode.sleep(1000);
+        if (moveAwayFromColor()) {
+            telemetry.addLine("Moving right"); // TODO: move arm to side without color sensor
+            turn(-10, 0.4);
+
+            /*
+            turnLeftWithoutAngle(0.5);
+            while (opMode.opModeIsActive() && time.seconds() < timeLimit);
+            mecanumDrive.stop();
+            */
+        }
+        else {
+            telemetry.addLine("Moving left"); // TODO: move arm to side with color sensor
+            turn(10, 0.4);
+
+            /*
+            turnRightWithoutAngle(0.5);
+            while (opMode.opModeIsActive() && time.seconds() < timeLimit);
+            mecanumDrive.stop();
+            */
+        }
+        telemetry.update();
+        jewelArm.setPosition(1);
+        turn(0);
+        //colorSensor.enableLed(false);
+    }
+
+    void driveToCryptobox() throws InterruptedException {
+
+        while (opMode.opModeIsActive()) {
+            //telemetry.addData("Left distance", leftRange.getDistance(DistanceUnit.CM));
+            //telemetry.addData("Right distance", rightRange.getDistance(DistanceUnit.CM));
+            telemetry.update();
+        }
+        /*
+        mecanumDrive.mecanumDrive_Polar(0.6, 90, 0);
+        opMode.sleep(2000);
+        mecanumDrive.stop();
+
+        turn(90);
+        */
+    }
+
+    void ejectGlyph() {
+        ElapsedTime time = new ElapsedTime();
+        pickupHw.leftServo.setPosition(-1.0);
+        pickupHw.rightServo.setPosition(1.0);
+        while (opMode.opModeIsActive() && time.seconds() < 2);
+        pickupHw.leftServo.setPosition(0.52);
+        pickupHw.rightServo.setPosition(0.5
+        );
+    }
+
+    public void turn(int turnAngle, double power) throws InterruptedException {
 
         // leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         // rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         // int leftPos = leftMotor.getCurrentPosition();
         // int rightPos = rightMotor.getCurrentPosition();
 
-        double startAngle = getHeading();
-        angleZ = getHeading();
+        double startAngle = getAngleX();
+        angleZ = getAngleX();
 
         double angDiff = (turnAngle - angleZ) % 360;
         if (360 - Math.abs(angDiff) < Math.abs(angDiff))
@@ -292,7 +331,105 @@ public class AutonomousActions {
 
             while (opMode.opModeIsActive() && angDiff < 0) {
 
-                angleZ = getHeading();
+                angleZ = getAngleX();
+                angDiff = (turnAngle - angleZ) % 360;
+                if (360 - Math.abs(angDiff) < Math.abs(angDiff))
+                    angDiff = -(360 * Math.signum(angDiff) - angDiff);
+
+                telemetry.addData("Angle", angleZ);
+                telemetry.addData("Difference", angDiff);
+                telemetry.update();
+
+                turnRightWithoutAngle(power);
+                /*
+                leftFrontMotor.setPower(turnPower(angDiff));
+                rightFrontMotor.setPower(-turnPower(angDiff));
+                leftBackMotor.setPower(turnPower(angDiff));
+                rightBackMotor.setPower(-turnPower(angDiff));
+                */
+                telemetry.addData("Power", leftFrontMotor.getPower());
+
+                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, -90, false);
+                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, angDiff);
+
+                /* if (leftMotor.getCurrentPosition() - 100 > leftPos
+                        && rightMotor.getCurrentPosition() + 100 < rightPos
+                        && IMUheading() == startAngle) {
+                    resetIMuandPos(leftPos, rightPos);
+                } */
+
+                opMode.idle(); // Always call opMode.idle() at the bottom of your while(opModeIsActive()) loop
+            }
+        } else if (angDiff > 0) { //turns left
+            //leftMotor.setPower(-APPROACH_SPEED);
+            //rightMotor.setPower(APPROACH_SPEED);
+
+            while (opMode.opModeIsActive() && angDiff > 0) {
+
+                angleZ = getAngleX();
+                angDiff = (turnAngle - angleZ) % 360;
+                if (360 - Math.abs(angDiff) < Math.abs(angDiff))
+                    angDiff = -(360 * Math.signum(angDiff) - angDiff);
+
+                telemetry.addData("Angle", angleZ);
+                telemetry.addData("Difference", angDiff);
+                telemetry.update();
+
+                turnLeftWithoutAngle(power);
+                /*
+                leftFrontMotor.setPower(turnPower(angDiff));
+                rightFrontMotor.setPower(-turnPower(angDiff));
+                leftBackMotor.setPower(turnPower(angDiff));
+                rightBackMotor.setPower(-turnPower(angDiff));
+                telemetry.addData("Power", leftFrontMotor.getPower());
+                */
+
+                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, 90, false);
+                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, angDiff);
+
+                /* if (leftMotor.getCurrentPosition() + 100 < leftPos
+                        && rightMotor.getCurrentPosition() - 100 > rightPos
+                        && IMUheading() == startAngle) {
+                    resetIMuandPos(leftPos, rightPos);
+                } */
+
+                opMode.idle(); // Always call opMode.idle() at the bottom of your while(opModeIsActive()) loop
+            }
+        }
+
+        mecanumDrive.stop();
+        /*
+        leftFrontMotor.setPower(0);
+        rightFrontMotor.setPower(0);
+        leftBackMotor.setPower(0);
+        rightBackMotor.setPower(0);
+        */
+    }
+
+    public void turn(int turnAngle) throws InterruptedException {
+
+        // leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // int leftPos = leftMotor.getCurrentPosition();
+        // int rightPos = rightMotor.getCurrentPosition();
+
+        double startAngle = getAngleX();
+        angleZ = getAngleX();
+
+        double angDiff = (turnAngle - angleZ) % 360;
+        if (360 - Math.abs(angDiff) < Math.abs(angDiff))
+            angDiff = -(360 * Math.signum(angDiff) - angDiff);
+
+        telemetry.log().add("Angle Difference: " + angDiff);
+        telemetry.update();
+
+        if (angDiff < 0) { //turns right
+            //leftMotor.setPower(APPROACH_SPEED * .6 );
+            //rightMotor.setPower(-APPROACH_SPEED * .6);
+
+            while (opMode.opModeIsActive() && angDiff < 0) {
+
+                angleZ = getAngleX();
                 angDiff = (turnAngle - angleZ) % 360;
                 if (360 - Math.abs(angDiff) < Math.abs(angDiff))
                     angDiff = -(360 * Math.signum(angDiff) - angDiff);
@@ -327,7 +464,7 @@ public class AutonomousActions {
 
             while (opMode.opModeIsActive() && angDiff > 0) {
 
-                angleZ = getHeading();
+                angleZ = getAngleX();
                 angDiff = (turnAngle - angleZ) % 360;
                 if (360 - Math.abs(angDiff) < Math.abs(angDiff))
                     angDiff = -(360 * Math.signum(angDiff) - angDiff);
@@ -383,19 +520,39 @@ public class AutonomousActions {
 
     private double turnPower(double difference) {
         if (Math.abs(difference) < 20) {
-            return 0.1;
+            //return 0.15;
+            return 0.35;
         } else if (Math.abs(difference) < 45) {
-            return 0.15;
+            //return 0.3;
+            return 0.5;
         } else if (Math.abs(difference) < 90) {
-            return 0.3;
-        } else return 0.4;
+            return 0.6;
+        } else return 0.8;
     }
 
-    double getHeading() {
-        if (gyro != null) {
+    double getAngleX() {
+        if (angleMeasureHw == IMU) {
+            return imu.getAngularOrientation().firstAngle;
+        }
+        else {
+            return 0;
+        }
+    }
+
+    double getAngleY() {
+        if (angleMeasureHw == IMU) {
+            return imu.getAngularOrientation().secondAngle;
+        }
+        else {
+            return 0;
+        }
+    }
+
+    double getAngleZ() {
+        if (angleMeasureHw == GYRO) {
             return gyro.getHeading();
         }
-        else if (imu != null) {
+        else if (angleMeasureHw == IMU) {
             return imu.getAngularOrientation().thirdAngle;
         }
         else {

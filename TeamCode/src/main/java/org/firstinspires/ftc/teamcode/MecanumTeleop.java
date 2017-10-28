@@ -13,11 +13,14 @@ import com.qualcomm.robotcore.util.Range;
 import java.util.HashMap;
 
 import ftclib.FtcDcMotor;
+import ftclib.FtcServo;
 import hallib.HalDashboard;
 import swlib.SWGamePad;
 import swlib.SWIMUGyro;
 import swlib.SwDriveBase;
+import trclib.TrcGyro;
 import trclib.TrcRobot;
+import trclib.TrcServo;
 import trclib.TrcTaskMgr;
 
 /**
@@ -65,6 +68,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
     private boolean setXInverted = false;
     private TrcTaskMgr taskMgr = new TrcTaskMgr();
     private HashMap<Integer, ElapsedTime> toggleTimeTracker = new HashMap<>();
+    private TrcServo jewelServo = null;
 
     @Override
     public void init_loop() {
@@ -86,25 +90,13 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         OP_MODE_IS_ACTIVE = false;
     }
 
-    @Override
-    public void internalPreInit() {
-        super.internalPreInit();
-    }
 
-    @Override
-    public void internalPostInitLoop() {
-        super.internalPostInitLoop();
-    }
-
-    @Override
-    public void internalPostLoop() {
-        super.internalPostLoop();
-        taskMgr.executeTaskType(TrcTaskMgr.TaskType.POSTPERIODIC_TASK, TrcRobot.RunMode.TELEOP_MODE);
-    }
 
     @Override
     public void init() {
         dashboard = HalDashboard.createInstance(this.telemetry);
+        jewelServo = new FtcServo(this.hardwareMap, "jewelServo");
+        jewelServo.setPosition(0.9);
 
         gyro = new SWIMUGyro(hardwareMap, "imu", null);
         gyro.calibrate();
@@ -132,7 +124,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         gamepad = new SWGamePad("driver gamepad", gamepad1, 0.05F);
         gamepad.enableDebug(true);
 
-        driveBase.enableGyroAssist(0.0001, 0.05);
+        driveBase.enableGyroAssist(0.01, 0.8);
         /*
         triggerServo = hardwareMap.servo.get("triggerServo");
         angularServo = hardwareMap.servo.get("pixyyaxis");
@@ -172,8 +164,8 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         if(gamepad.getLeftStickX() == 0 && gamepad.getLeftStickY() == 0)
             magnitude = 0;
 
-        driveBase.mecanumDrive_XPolarFieldCentric(magnitude, direction, rotation);
-
+        //driveBase.mecanumDrive_XPolarFieldCentric(magnitude, direction, rotation);
+        driveBase.mecanumDrive_XPolar(magnitude, direction, rotation);
 
         /*
         if(gamepad1.x){
@@ -205,6 +197,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         dashboard.displayPrintf(2, LABEL_WIDTH, "servo position: ", "%1.3f", triggerServo.getPosition());
         dashboard.displayPrintf(4, LABEL_WIDTH, "rotation: ", "%.2f", rotation);
         */
+        dashboard.displayPrintf(4, LABEL_WIDTH, "gamepad left stick mag: ", "%.2f", magnitude);
         dashboard.displayPrintf(5, LABEL_WIDTH, "gamepad left stick direction true: ", "%.2f", gamepad.getLeftStickDirectionDegrees(true));
         dashboard.displayPrintf(6, LABEL_WIDTH, "gamepad left stick direction false: ", "%.2f", gamepad.getLeftStickDirectionDegrees(false));
         dashboard.displayPrintf(7, LABEL_WIDTH, "gamepad right stick x: ", "%1.2f", gamepad.getRightStickX());
@@ -212,6 +205,9 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         dashboard.displayPrintf(9, LABEL_WIDTH, "y inverted: ", "%b", setYInverted);
         dashboard.displayPrintf(10, LABEL_WIDTH, "x inverted: ", "%b", setXInverted);
         dashboard.displayPrintf(11, LABEL_WIDTH, "fixedOnTarget: ", "%b", fixedOnTarget);
+        dashboard.displayPrintf(12, LABEL_WIDTH, "imu x: ", "%.2f", gyro.getRawXData(TrcGyro.DataType.HEADING).value);
+        dashboard.displayPrintf(13, LABEL_WIDTH, "imu y: ", "%.2f", gyro.getRawYData(TrcGyro.DataType.HEADING).value);
+        dashboard.displayPrintf(14, LABEL_WIDTH, "imu z: ", "%.2f", gyro.getRawZData(TrcGyro.DataType.HEADING).value);
     }
 
     private ElapsedTime getButtonElapsedTime(int button){

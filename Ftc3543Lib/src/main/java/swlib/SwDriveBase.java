@@ -1008,7 +1008,7 @@ public class SwDriveBase implements TrcTaskMgr.Task
     {
         final String funcName = "mecanumDrive_Polar";
 
-        double originalDirection = direction;
+        direction *= -1;
 
         if (debugEnabled)
         {
@@ -1032,6 +1032,11 @@ public class SwDriveBase implements TrcTaskMgr.Task
         double cosD = Math.cos(dirInRad);
         double sinD = Math.sin(dirInRad);
 
+        double leftRearWheelDir = 1;
+        double leftFrontWheelDir = 1;
+        double rightFrontWheelDir = 1;
+        double rightRearWheelDir = 1;
+
         if (gyroAssistEnabled)
         {
             rotation += TrcUtil.clipRange(gyroAssistKp*(rotation - gyroRateScale*gyro.getZRotationRate().value));
@@ -1044,21 +1049,12 @@ public class SwDriveBase implements TrcTaskMgr.Task
         wheelSpeeds[MotorType.LEFT_REAR.value] = (cosD*magnitude + rotation);
         wheelSpeeds[MotorType.RIGHT_REAR.value] = (sinD*magnitude - rotation);
         */
-        wheelSpeeds[MotorType.LEFT_FRONT.value] = (sinD*magnitude - rotation);
-        wheelSpeeds[MotorType.RIGHT_FRONT.value] = (cosD*magnitude + rotation);
-        wheelSpeeds[MotorType.LEFT_REAR.value] = (cosD*magnitude - rotation);
-        wheelSpeeds[MotorType.RIGHT_REAR.value] = (sinD*magnitude + rotation);
+        wheelSpeeds[MotorType.LEFT_FRONT.value] = (sinD*magnitude*leftFrontWheelDir - rotation);
+        wheelSpeeds[MotorType.RIGHT_FRONT.value] = (cosD*magnitude*rightFrontWheelDir + rotation);
+        wheelSpeeds[MotorType.LEFT_REAR.value] = (cosD*magnitude*leftRearWheelDir - rotation);
+        wheelSpeeds[MotorType.RIGHT_REAR.value] = (sinD*magnitude*rightRearWheelDir + rotation);
         normalize(wheelSpeeds);
 
-        /*
-        if(originalDirection < 0){
-            wheelSpeeds[MotorType.LEFT_FRONT.value] *= -1;
-            wheelSpeeds[MotorType.LEFT_REAR.value] *= -1;
-        } else if(originalDirection > 0){
-            wheelSpeeds[MotorType.RIGHT_FRONT.value] *= -1;
-            wheelSpeeds[MotorType.RIGHT_REAR.value] *= -1;
-        }
-        */
 
         for (int i = 0; i < wheelSpeeds.length; i++)
         {

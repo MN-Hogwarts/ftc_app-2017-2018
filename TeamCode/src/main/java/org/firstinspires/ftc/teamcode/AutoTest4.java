@@ -32,6 +32,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 import ftclib.FtcOpMode;
 
 import static org.firstinspires.ftc.teamcode.AngleMeasureHw.GYRO;
@@ -40,9 +42,9 @@ import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
  */
-@Autonomous(name = "Auto 2", group = "Concept")
+@Autonomous(name = "Auto 4", group = "Concept")
 //@Disabled
-public class AutoTest2 extends FtcOpMode {
+public class AutoTest4 extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
 
@@ -61,20 +63,30 @@ public class AutoTest2 extends FtcOpMode {
     public void runOpMode() throws InterruptedException{
 
         auto.initOpmode(this, hardwareMap);
-        auto.initAlliance(AllianceColor.RED);
-        auto.initJewelHardware(IMU);
-        while (!isStarted()) {
-            telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
-            telemetry.update();
 
+        //auto.initVuforia();
+        //auto.initAlliance(AllianceColor.BLUE);
+        //auto.initJewelHardware(IMU);
+        auto.initGlyphHardware();
+        while (!isStarted()) {
+            telemetry.addLine("Hi");
+            //telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
+            //telemetry.addData("Color Sensor red", auto.colorSensor.red());
+            //telemetry.addData("Angle X", auto.getAngleX());
+            //telemetry.addData("Angle Y", auto.getAngleY());
+            //telemetry.addData("Angle Z", auto.getAngleZ());
+            //telemetry.addData("Left distance", auto.leftRange.getDistance(DistanceUnit.CM));
+            //telemetry.addData("Right distance", auto.rightRange.getDistance(DistanceUnit.CM));
+            telemetry.update();
         }
 
+        auto.ejectGlyph();
         //auto.jewelColor();
-        auto.glyphPickup();
-
+        //auto.driveToCryptobox();
         //sleep(5000);
         while (opModeIsActive()) {
-            telemetry.addData("Moving Away:", auto.moveAwayFromColor());
+            //telemetry.addData("Moving Away:", auto.moveAwayFromColor());
+            auto.place1stGlyph();
             telemetry.update();
         }
 
