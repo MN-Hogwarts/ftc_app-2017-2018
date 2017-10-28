@@ -90,6 +90,7 @@ public class AutoTest4 extends FtcOpMode {
 //        auto.jewelColor();
         auto.driveToCryptobox();
         auto.ejectGlyph();
+        auto.turn(0);
         //sleep(5000);
         while (opModeIsActive()) {
             //telemetry.addData("Moving Away:", auto.moveAwayFromColor());

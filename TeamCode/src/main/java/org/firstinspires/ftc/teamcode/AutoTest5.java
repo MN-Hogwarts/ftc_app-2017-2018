@@ -86,6 +86,7 @@ public class AutoTest5 extends FtcOpMode {
 //        auto.jewelColor();
         auto.driveToCryptobox();
         auto.ejectGlyph();
+        auto.turn(0);
         //auto.ejectGlyph();
         //sleep(5000);
         while (opModeIsActive()) {

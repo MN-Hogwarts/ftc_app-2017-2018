@@ -33,8 +33,8 @@ enum AllianceColor {RED, BLUE}
 enum AngleMeasureHw {GYRO, IMU}
 
 public class AutonomousActions {
-    int   RED_THRESHOLD  = (45);
-    int   BLUE_THRESHOLD = (35);
+    int   RED_THRESHOLD  = (100);
+    int   BLUE_THRESHOLD = (60);
 
     FtcOpMode opMode;
     HardwareMap hardwareMap;
@@ -303,10 +303,12 @@ public class AutonomousActions {
         mecanumDriveBase.mecanumDrive.stop();
 
         if (allianceColor == AllianceColor.BLUE) {
-            turn(115);
+            turn(105);
         } else if (allianceColor == AllianceColor.RED) {
             turn(235);
         }
+
+        tapeFinder();
 
 //        ElapsedTime time = new ElapsedTime();
 //        time.reset();
@@ -345,15 +347,18 @@ public class AutonomousActions {
     }
 
     void tapeFinder() {
+        mecanumDriveBase.leftFrontMotor.setBrakeModeEnabled(true);
+        mecanumDriveBase.rightFrontMotor.setBrakeModeEnabled(true);
+        mecanumDriveBase.leftBackMotor.setBrakeModeEnabled(true);
+        mecanumDriveBase.rightBackMotor.setBrakeModeEnabled(true);
+        mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(0.5, 0, 0);
         if (allianceColor == AllianceColor.BLUE) {
-            mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(0.7, 0, 0);
             while (opMode.opModeIsActive() && (tapeSensor.blue() < BLUE_THRESHOLD)) {
 
                 telemetry.addData("Tape Sensor: Blue", tapeSensor.blue());
                 telemetry.update(); //Tells the intensity of the blue color we are looking for
             }
         } else if (allianceColor == AllianceColor.RED) {
-            mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(0.7, 0, 0);
             while (opMode.opModeIsActive() && (tapeSensor.red() < RED_THRESHOLD)) {
 
                 telemetry.addData("Tape Sensor: Red", tapeSensor.red());
@@ -361,6 +366,10 @@ public class AutonomousActions {
             }
         }
         mecanumDriveBase.mecanumDrive.stop();
+        mecanumDriveBase.leftFrontMotor.setBrakeModeEnabled(false);
+        mecanumDriveBase.rightFrontMotor.setBrakeModeEnabled(false);
+        mecanumDriveBase.leftBackMotor.setBrakeModeEnabled(false);
+        mecanumDriveBase.rightBackMotor.setBrakeModeEnabled(false);
     }
 
     void ejectGlyph() {
