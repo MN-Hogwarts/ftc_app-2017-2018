@@ -51,7 +51,7 @@ public class AutonomousActions {
 
     PickupHardware pickupHw = new PickupHardware();
 
-    MecanumMotors mecanumMotors = null;
+    MecanumMotors mecanumMotors = new MecanumMotors();
 
     DigitalChannel touchSensor  = null;
 
@@ -91,6 +91,20 @@ public class AutonomousActions {
 
     void initAlliance(AllianceColor allianceColor) {
         this.allianceColor = allianceColor;
+    }
+
+    void initMecanum() {
+
+        mecanumMotors.init(hardwareMap);
+        telemetry.addLine("2A");
+        telemetry.update();
+
+
+        mecanumMotors.leftFrontMotor.setInverted(true);
+        mecanumMotors.rightFrontMotor.setInverted(false);
+        mecanumMotors.leftBackMotor.setInverted(true);
+        mecanumMotors.rightBackMotor.setInverted(false);
+
     }
 
     void initVuforia() {
@@ -165,13 +179,6 @@ public class AutonomousActions {
         colorSensor = hardwareMap.get(ColorSensor.class, "color");
         jewelArm = hardwareMap.get(Servo.class, "jewelArm");
         jewelArm.setPosition(1);
-
-        mecanumMotors.init(hardwareMap);
-
-        mecanumMotors.leftFrontMotor.setInverted(true);
-        mecanumMotors.rightFrontMotor.setInverted(false);
-        mecanumMotors.leftBackMotor.setInverted(true);
-        mecanumMotors.rightBackMotor.setInverted(false);
 
     }
 

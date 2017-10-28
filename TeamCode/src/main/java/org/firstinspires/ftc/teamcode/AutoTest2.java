@@ -62,6 +62,7 @@ public class AutoTest2 extends FtcOpMode {
     public void runOpMode() throws InterruptedException{
 
         auto.initOpmode(this, hardwareMap);
+        auto.initMecanum();
         auto.initAlliance(AllianceColor.RED);
         auto.initJewelHardware(IMU);
         while (!isStarted()) {
