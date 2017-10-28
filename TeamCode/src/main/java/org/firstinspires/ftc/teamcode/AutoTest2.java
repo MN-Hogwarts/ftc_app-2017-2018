@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import ftclib.FtcOpMode;
@@ -41,7 +42,7 @@ import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
  * Rotates Servo between min and max position or rotatescontinuaou
  */
 @Autonomous(name = "Auto 2", group = "Concept")
-//@Disabled
+@Disabled
 public class AutoTest2 extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
