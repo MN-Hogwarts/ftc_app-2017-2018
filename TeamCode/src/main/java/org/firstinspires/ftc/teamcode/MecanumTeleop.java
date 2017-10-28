@@ -177,7 +177,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         //driveBase.mecanumDrive_XPolarFieldCentric(magnitude, direction, rotation);
         driveBase.mecanumDrive_XPolar(magnitude, direction, rotation);
 
-        if (gamepad1.b) {
+        if (gamepad2.b) {
             leftPickupServo.setPosition(-1.0);
             rightPickupServo.setPosition(1.0);
             telemetry.addData("Right Servo Value", rightPickupServo.getPosition());
@@ -189,7 +189,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
             telemetry.addData("Left Servo Value", leftPickupServo.getPosition());
             telemetry.update();
         } //Turn inward
-        else if (gamepad1.a) {
+        else if (gamepad2.a) {
             leftPickupServo.setPosition(1.0);
             rightPickupServo.setPosition(-1.0);
             telemetry.addData("Left Servo Value", leftPickupServo.getPosition());
@@ -202,13 +202,13 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
             telemetry.update();
         }
 
-        if(gamepad1.a){
+        if(gamepad2.a){
             //wristServo.setPosition(0.5);
             wristServoValue = wristServoValue - 0.05;
-        } else if (gamepad1.y){
+        } else if (gamepad2.y){
             wristServo.setPosition(1);
             //wristServoValue = wristServoValue + 0.05;
-        } else if (gamepad1.x) {
+        } else if (gamepad2.x) {
             wristServoValue = Range.clip(wristServoValue, -1.0, 1.0);
             //wristServo.setPosition(wristServoValue);
             wristServo.setPosition(0);
