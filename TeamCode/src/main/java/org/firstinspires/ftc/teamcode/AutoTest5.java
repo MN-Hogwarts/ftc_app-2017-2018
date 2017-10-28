@@ -30,22 +30,18 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import ftclib.FtcOpMode;
 
-import static org.firstinspires.ftc.teamcode.AngleMeasureHw.GYRO;
+import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
 
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
  */
-@Autonomous(name = "Auto 1", group = "Concept")
-@Disabled
-public class AutoTest1 extends FtcOpMode {
+@Autonomous(name = "Auto Blue", group = "Concept")
+//@Disabled
+public class AutoTest5 extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
 
@@ -65,23 +61,32 @@ public class AutoTest1 extends FtcOpMode {
 
         auto.initOpmode(this, hardwareMap);
         auto.initMecanum();
-        auto.initVuforia();
-        auto.initAlliance(AllianceColor.RED);
-        auto.initJewelHardware(GYRO);
+
+        //auto.initVuforia();
+        auto.initAlliance(AllianceColor.BLUE);
+        auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
+            telemetry.addLine("Hi");
             telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
+            telemetry.addData("Color Sensor red", auto.colorSensor.red());
             telemetry.addData("Angle X", auto.getAngleX());
             telemetry.addData("Angle Y", auto.getAngleY());
             telemetry.addData("Angle Z", auto.getAngleZ());
-            telemetry.addData("Left distance", auto.leftRange.getDistance(DistanceUnit.CM));
-            telemetry.addData("Right distance", auto.rightRange.getDistance(DistanceUnit.CM));
+            //telemetry.addData("Left distance", auto.leftRange.getDistance(DistanceUnit.CM));
+            //telemetry.addData("Right distance", auto.rightRange.getDistance(DistanceUnit.CM));
             telemetry.update();
         }
 
-        //auto.pictographID();
-        //auto.jewelColor();
+//        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 0, 0);
+//        sleep(500);
+//        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 90, 0);
+//        sleep(500);
+//        auto.mecanumDrive.stop();
+//        auto.jewelColor();
         auto.driveToCryptobox();
+        auto.ejectGlyph();
+        //auto.ejectGlyph();
         //sleep(5000);
         while (opModeIsActive()) {
             //telemetry.addData("Moving Away:", auto.moveAwayFromColor());

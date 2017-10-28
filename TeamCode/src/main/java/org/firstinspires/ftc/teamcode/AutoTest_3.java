@@ -30,22 +30,16 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import ftclib.FtcOpMode;
 
-import static org.firstinspires.ftc.teamcode.AngleMeasureHw.GYRO;
-
 /**
- * Rotates Servo between min and max position or rotatescontinuaou
+ * Rotates Servo between min and max position or rotates continuously
  */
-@Autonomous(name = "Auto 1", group = "Concept")
-@Disabled
-public class AutoTest1 extends FtcOpMode {
+@Autonomous(name = "Auto 3", group = "Concept")
+//@Disabled
+public class AutoTest_3 extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
 
@@ -65,28 +59,22 @@ public class AutoTest1 extends FtcOpMode {
 
         auto.initOpmode(this, hardwareMap);
         auto.initMecanum();
-        auto.initVuforia();
         auto.initAlliance(AllianceColor.RED);
-        auto.initJewelHardware(GYRO);
+
+
+        auto.initJewelHardware(AngleMeasureHw.IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
-            telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
-            telemetry.addData("Angle X", auto.getAngleX());
-            telemetry.addData("Angle Y", auto.getAngleY());
-            telemetry.addData("Angle Z", auto.getAngleZ());
-            telemetry.addData("Left distance", auto.leftRange.getDistance(DistanceUnit.CM));
-            telemetry.addData("Right distance", auto.rightRange.getDistance(DistanceUnit.CM));
+            telemetry.addData("Color Sensor red", auto.tapeSensor.red());
             telemetry.update();
-        }
 
-        //auto.pictographID();
-        //auto.jewelColor();
-        auto.driveToCryptobox();
+        }
+        auto.tapeFinder();
+//        auto.jewelColor();
         //sleep(5000);
         while (opModeIsActive()) {
-            //telemetry.addData("Moving Away:", auto.moveAwayFromColor());
-            auto.place1stGlyph();
-            telemetry.update();
+            telemetry.addData("Tape Sensor: Red", auto.tapeSensor.red());
+            telemetry.update(); //Tells the intensity of the color we are looking for
         }
 
         //auto.initVuforia();

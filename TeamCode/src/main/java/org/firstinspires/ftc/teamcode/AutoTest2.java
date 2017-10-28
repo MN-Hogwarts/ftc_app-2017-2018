@@ -30,15 +30,19 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import ftclib.FtcOpMode;
 
+import static org.firstinspires.ftc.teamcode.AngleMeasureHw.GYRO;
+import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
+
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
  */
-@Autonomous(name = "Auto 1", group = "Concept")
-//@Disabled
+@Autonomous(name = "Auto 2", group = "Concept")
+@Disabled
 public class AutoTest2 extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
@@ -58,8 +62,9 @@ public class AutoTest2 extends FtcOpMode {
     public void runOpMode() throws InterruptedException{
 
         auto.initOpmode(this, hardwareMap);
+        auto.initMecanum();
         auto.initAlliance(AllianceColor.RED);
-        auto.initJewelHardware();
+        auto.initJewelHardware(IMU);
         while (!isStarted()) {
             telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
             telemetry.update();
