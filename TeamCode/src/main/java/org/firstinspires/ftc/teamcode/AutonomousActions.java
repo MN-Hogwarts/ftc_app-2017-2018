@@ -182,7 +182,7 @@ public class AutonomousActions {
 
         pickupHw.init(hardwareMap);
 
-        tapeSensor = hardwareMap.get(ColorSensor.class, "bottom_color");
+        tapeSensor = hardwareMap.get(ColorSensor.class, "bottomColor");
         tapeSensor.enableLed(true);
 
     }
