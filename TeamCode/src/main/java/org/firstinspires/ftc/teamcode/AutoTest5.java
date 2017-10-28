@@ -60,6 +60,7 @@ public class AutoTest5 extends FtcOpMode {
     public void runOpMode() throws InterruptedException{
 
         auto.initOpmode(this, hardwareMap);
+        auto.initMecanum();
 
         //auto.initVuforia();
         auto.initAlliance(AllianceColor.BLUE);

@@ -303,7 +303,7 @@ public class SWIMUGyro extends TrcGyro
 
         if (dataType == DataType.ROTATION_RATE)
         {
-            zRateData = gyro.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX).firstAngle;
+            zRateData = gyro.getAngularVelocity().zRotationRate;
             value = zRateData;
         }
         else if (dataType == DataType.HEADING)

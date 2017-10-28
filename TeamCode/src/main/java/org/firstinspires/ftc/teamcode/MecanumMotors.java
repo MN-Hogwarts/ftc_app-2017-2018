@@ -34,6 +34,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import ftclib.FtcDcMotor;
+import swlib.SwDriveBase;
+
 /**
  * This is NOT an opmode.
  *
@@ -43,10 +46,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class MecanumMotors
 {
     /* Public OpMode members. */
-    public DcMotor  leftFrontDrive   = null;
-    public DcMotor  rightFrontDrive  = null;
-    public DcMotor  leftRearDrive   = null;
-    public DcMotor  rightRearDrive  = null;
+    FtcDcMotor leftFrontMotor   = null;
+    FtcDcMotor rightFrontMotor  = null;
+    FtcDcMotor leftBackMotor    = null;
+    FtcDcMotor rightBackMotor   = null;
+
+    SwDriveBase mecanumDrive   = null;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -63,11 +68,12 @@ public class MecanumMotors
         hwMap = ahwMap;
 
         // Define and Initialize Motors
-        leftFrontDrive  = hwMap.get(DcMotor.class, "left_front");
-        rightFrontDrive = hwMap.get(DcMotor.class, "right_front");
-        leftRearDrive  = hwMap.get(DcMotor.class, "left_rear");
-        rightRearDrive = hwMap.get(DcMotor.class, "right_rear");
+        leftFrontMotor = new FtcDcMotor("leftFront");
+        rightFrontMotor = new FtcDcMotor("rightFront");
+        leftBackMotor = new FtcDcMotor("leftRear");
+        rightBackMotor = new FtcDcMotor("rightRear");
 
+        /*
         // Set all motors to zero power
         leftFrontDrive.setPower(0);
         rightFrontDrive.setPower(0);
@@ -80,7 +86,9 @@ public class MecanumMotors
         rightFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftRearDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightRearDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        */
 
+        //mecanumDrive = new SwDriveBase(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
         // Define and initialize ALL installed servos.
     }
  }
