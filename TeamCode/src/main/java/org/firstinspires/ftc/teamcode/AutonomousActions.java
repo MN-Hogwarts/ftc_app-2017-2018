@@ -96,9 +96,6 @@ public class AutonomousActions {
     void initMecanum() {
 
         mecanumMotors.init(hardwareMap);
-        telemetry.addLine("2A");
-        telemetry.update();
-
 
         mecanumMotors.leftFrontMotor.setInverted(true);
         mecanumMotors.rightFrontMotor.setInverted(false);
@@ -295,37 +292,52 @@ public class AutonomousActions {
     void driveToCryptobox() throws InterruptedException {
 
         if (allianceColor == AllianceColor.BLUE) {
+            mecanumMotors.mecanumDrive.mecanumDrive_BoxPolar(1, 90, 0);
+        } else if (allianceColor == AllianceColor.RED) {
+            mecanumMotors.mecanumDrive.mecanumDrive_BoxPolar(1, 270, 0);
+        }
+
+        opMode.sleep(500);
+
+        while (opMode.opModeIsActive() && (Math.abs(getAngleY()) > 2 || Math.abs(getAngleZ()) > 2)) {
+            telemetry.addData("Angle Y", getAngleY());
+            telemetry.addData("Angle Z", getAngleZ());
+            telemetry.update();
+        }
+
+        opMode.sleep(2000);
+        if (allianceColor == AllianceColor.BLUE) {
             turn(90);
         } else if (allianceColor == AllianceColor.RED) {
             turn(270);
         }
 
-        ElapsedTime time = new ElapsedTime();
-        time.reset();
-        mecanumMotors.mecanumDrive.mecanumDrive_BoxPolar(0.8, 0, 0);
-
-        while (opMode.opModeIsActive() && time.seconds() < 1) {
-            //telemetry.addData("Left distance", leftRange.getDistance(DistanceUnit.CM));
-            //telemetry.addData("Right distance", rightRange.getDistance(DistanceUnit.CM));
-            telemetry.update();
-        }
-
-        mecanumMotors.mecanumDrive.stop();
-
-        if (allianceColor == AllianceColor.BLUE) {
-            mecanumMotors.mecanumDrive.mecanumDrive_BoxPolar(1, 270, 0);
-        } else if (allianceColor == AllianceColor.RED) {
-            mecanumMotors.mecanumDrive.mecanumDrive_BoxPolar(1, 90, 0);
-        }
-
-        time.reset();
-        while (opMode.opModeIsActive() && time.seconds() < 1) {
-            //telemetry.addData("Left distance", leftRange.getDistance(DistanceUnit.CM));
-            //telemetry.addData("Right distance", rightRange.getDistance(DistanceUnit.CM));
-            telemetry.update();
-        }
-
-        mecanumMotors.mecanumDrive.stop();
+//        ElapsedTime time = new ElapsedTime();
+//        time.reset();
+//        mecanumMotors.mecanumDrive.mecanumDrive_BoxPolar(0.8, 0, 0);
+//
+//        while (opMode.opModeIsActive() && time.seconds() < 1) {
+//            //telemetry.addData("Left distance", leftRange.getDistance(DistanceUnit.CM));
+//            //telemetry.addData("Right distance", rightRange.getDistance(DistanceUnit.CM));
+//            telemetry.update();
+//        }
+//
+//        mecanumMotors.mecanumDrive.stop();
+//
+//        if (allianceColor == AllianceColor.BLUE) {
+//            mecanumMotors.mecanumDrive.mecanumDrive_BoxPolar(1, 270, 0);
+//        } else if (allianceColor == AllianceColor.RED) {
+//            mecanumMotors.mecanumDrive.mecanumDrive_BoxPolar(1, 90, 0);
+//        }
+//
+//        time.reset();
+//        while (opMode.opModeIsActive() && time.seconds() < 1) {
+//            //telemetry.addData("Left distance", leftRange.getDistance(DistanceUnit.CM));
+//            //telemetry.addData("Right distance", rightRange.getDistance(DistanceUnit.CM));
+//            telemetry.update();
+//        }
+//
+//        mecanumMotors.mecanumDrive.stop();
 
         /*
         mecanumDrive.mecanumDrive_Polar(0.6, 90, 0);

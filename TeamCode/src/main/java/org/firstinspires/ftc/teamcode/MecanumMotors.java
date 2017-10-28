@@ -88,7 +88,7 @@ public class MecanumMotors
         rightRearDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         */
 
-        //mecanumDrive = new SwDriveBase(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
+        mecanumDrive = new SwDriveBase(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
         // Define and initialize ALL installed servos.
     }
  }

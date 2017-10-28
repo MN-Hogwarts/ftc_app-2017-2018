@@ -63,26 +63,16 @@ public class AutoTest4 extends FtcOpMode {
     public void runOpMode() throws InterruptedException{
 
         auto.initOpmode(this, hardwareMap);
-        telemetry.addLine("1");
-        telemetry.update();
         auto.initMecanum();
-        telemetry.addLine("2");
-        telemetry.update();
 
         //auto.initVuforia();
         auto.initAlliance(AllianceColor.RED);
-        telemetry.addLine("3");
-        telemetry.update();
         auto.initJewelHardware(IMU);
-        telemetry.addLine("4");
-        telemetry.update();
         auto.initGlyphHardware();
-        telemetry.addLine("5");
-        telemetry.update();
         while (!isStarted()) {
             telemetry.addLine("Hi");
-            //telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
-            //telemetry.addData("Color Sensor red", auto.colorSensor.red());
+            telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
+            telemetry.addData("Color Sensor red", auto.colorSensor.red());
             telemetry.addData("Angle X", auto.getAngleX());
             telemetry.addData("Angle Y", auto.getAngleY());
             telemetry.addData("Angle Z", auto.getAngleZ());
