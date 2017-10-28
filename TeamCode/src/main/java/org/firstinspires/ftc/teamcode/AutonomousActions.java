@@ -33,8 +33,8 @@ enum AllianceColor {RED, BLUE}
 enum AngleMeasureHw {GYRO, IMU}
 
 public class AutonomousActions {
-    int   RED_THRESHOLD  = (9);
-    int   BLUE_THRESHOLD = (9);
+    int   RED_THRESHOLD  = (45);
+    int   BLUE_THRESHOLD = (35);
 
     FtcOpMode opMode;
     HardwareMap hardwareMap;
@@ -345,11 +345,20 @@ public class AutonomousActions {
     }
 
     void tapeFinder() {
-        mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(0.7, 0, 0);
-        while (opMode.opModeIsActive() && (tapeSensor.red() < 9)) {
+        if (allianceColor == AllianceColor.BLUE) {
+            mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(0.7, 0, 0);
+            while (opMode.opModeIsActive() && (tapeSensor.blue() < BLUE_THRESHOLD)) {
 
-            telemetry.addData("Tape Sensor: Red", tapeSensor.red());
-            telemetry.update(); //Tells the intensity of the color we are looking for
+                telemetry.addData("Tape Sensor: Blue", tapeSensor.blue());
+                telemetry.update(); //Tells the intensity of the blue color we are looking for
+            }
+        } else if (allianceColor == AllianceColor.RED) {
+            mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(0.7, 0, 0);
+            while (opMode.opModeIsActive() && (tapeSensor.red() < RED_THRESHOLD)) {
+
+                telemetry.addData("Tape Sensor: Red", tapeSensor.red());
+                telemetry.update(); //Tells the intensity of the red color we are looking for
+            }
         }
         mecanumDriveBase.mecanumDrive.stop();
     }
