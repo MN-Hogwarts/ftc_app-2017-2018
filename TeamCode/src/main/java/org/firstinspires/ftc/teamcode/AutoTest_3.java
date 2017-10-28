@@ -65,7 +65,8 @@ public class AutoTest_3 extends FtcOpMode {
         auto.initJewelHardware(AngleMeasureHw.IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
-            telemetry.addData("Color Sensor red", auto.tapeSensor.red());
+            telemetry.addData("Color Sensor: Blue", auto.tapeSensor.blue());
+            telemetry.addData("Color Sensor: Red", auto.tapeSensor.red());
             telemetry.update();
 
         }
