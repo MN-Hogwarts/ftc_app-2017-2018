@@ -580,10 +580,10 @@ public class AutonomousActions {
     private double turnPower(double difference) {
         if (Math.abs(difference) < 20) {
             //return 0.15;
-            return 0.45;
+            return 0.4;
         } else if (Math.abs(difference) < 45) {
             //return 0.3;
-            return 0.6;
+            return 0.55;
         } else if (Math.abs(difference) < 90) {
             return 0.7;
         } else return 0.8;

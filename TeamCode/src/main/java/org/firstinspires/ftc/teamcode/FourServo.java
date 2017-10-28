@@ -118,7 +118,7 @@ public class FourServo extends OpMode{
         robot.rightMotor.setPower(right);
 
         // Run wheels backwards if 'B' is pressed. If not, stop servos
-    if (gamepad1.b) {
+    if (gamepad2.b) {
         leftServo.setPosition(-1.0);
         rightServo.setPosition(1.0);
         left_Servo.setPosition(-1.0);
@@ -134,7 +134,7 @@ public class FourServo extends OpMode{
         telemetry.addData("Left Servo Value", left_Servo.getPosition());
         telemetry.update();
     } //Turn inward
-    else if (gamepad1.a) {
+    else if (gamepad2.a) {
         leftServo.setPosition(1.0);
         rightServo.setPosition(-1.0);
         left_Servo.setPosition(1.0);
