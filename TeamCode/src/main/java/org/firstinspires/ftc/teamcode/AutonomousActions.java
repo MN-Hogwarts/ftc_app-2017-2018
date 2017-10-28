@@ -5,7 +5,6 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -14,19 +13,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuMarkInstanceId;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
-import ftclib.FtcDcMotor;
 import ftclib.FtcOpMode;
-import swlib.SwDriveBase;
 
 import static org.firstinspires.ftc.teamcode.AngleMeasureHw.GYRO;
 import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
@@ -51,7 +44,7 @@ public class AutonomousActions {
 
     PickupHardware pickupHw = new PickupHardware();
 
-    MecanumMotors mecanumMotors = new MecanumMotors();
+    MecanumDriveBase mecanumDriveBase = new MecanumDriveBase();
 
     DigitalChannel touchSensor  = null;
 
@@ -95,15 +88,12 @@ public class AutonomousActions {
 
     void initMecanum() {
 
-        mecanumMotors.init(hardwareMap);
-        telemetry.addLine("2A");
-        telemetry.update();
+        mecanumDriveBase.init(hardwareMap);
 
-
-        mecanumMotors.leftFrontMotor.setInverted(true);
-        mecanumMotors.rightFrontMotor.setInverted(false);
-        mecanumMotors.leftBackMotor.setInverted(true);
-        mecanumMotors.rightBackMotor.setInverted(false);
+        mecanumDriveBase.leftFrontMotor.setInverted(true);
+        mecanumDriveBase.rightFrontMotor.setInverted(false);
+        mecanumDriveBase.leftBackMotor.setInverted(true);
+        mecanumDriveBase.rightBackMotor.setInverted(false);
 
     }
 
@@ -195,11 +185,11 @@ public class AutonomousActions {
         leftServo = hardwareMap.get(Servo.class, "leftWheel");
         rightServo = hardwareMap.get(Servo.class, "rightWheel");
 
-        mecanumMotors.mecanumDrive.mecanumDrive_BoxPolar(0.5, 0, 0);
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 0, 0);
 
         while (opMode.opModeIsActive() && touchSensor.getState() == false) ;
 
-        mecanumMotors.mecanumDrive.stop();
+        mecanumDriveBase.mecanumDrive.stop();
 
         leftServo.setPosition(0);
         rightServo.setPosition(0);
@@ -290,38 +280,56 @@ public class AutonomousActions {
 
     void driveToCryptobox() throws InterruptedException {
 
+        /*
         if (allianceColor == AllianceColor.BLUE) {
-            turn(90);
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(1, 90, 0);
         } else if (allianceColor == AllianceColor.RED) {
-            turn(270);
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(1, 270, 0);
         }
+        */
 
-        ElapsedTime time = new ElapsedTime();
-        time.reset();
-        mecanumMotors.mecanumDrive.mecanumDrive_BoxPolar(0.8, 0, 0);
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(1, 0, 0);
+        opMode.sleep(500);
 
-        while (opMode.opModeIsActive() && time.seconds() < 1) {
-            //telemetry.addData("Left distance", leftRange.getDistance(DistanceUnit.CM));
-            //telemetry.addData("Right distance", rightRange.getDistance(DistanceUnit.CM));
+        while (opMode.opModeIsActive() && (Math.abs(getAngleY()) > 2 || Math.abs(getAngleZ()) > 2)) {
+            telemetry.addData("Angle Y", getAngleY());
+            telemetry.addData("Angle Z", getAngleZ());
             telemetry.update();
         }
-
-        mecanumMotors.mecanumDrive.stop();
+        mecanumDriveBase.mecanumDrive.stop();
 
         if (allianceColor == AllianceColor.BLUE) {
-            mecanumMotors.mecanumDrive.mecanumDrive_BoxPolar(1, 270, 0);
+            turn(115);
         } else if (allianceColor == AllianceColor.RED) {
-            mecanumMotors.mecanumDrive.mecanumDrive_BoxPolar(1, 90, 0);
+            turn(235);
         }
 
-        time.reset();
-        while (opMode.opModeIsActive() && time.seconds() < 1) {
-            //telemetry.addData("Left distance", leftRange.getDistance(DistanceUnit.CM));
-            //telemetry.addData("Right distance", rightRange.getDistance(DistanceUnit.CM));
-            telemetry.update();
-        }
-
-        mecanumMotors.mecanumDrive.stop();
+//        ElapsedTime time = new ElapsedTime();
+//        time.reset();
+//        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.8, 0, 0);
+//
+//        while (opMode.opModeIsActive() && time.seconds() < 1) {
+//            //telemetry.addData("Left distance", leftRange.getDistance(DistanceUnit.CM));
+//            //telemetry.addData("Right distance", rightRange.getDistance(DistanceUnit.CM));
+//            telemetry.update();
+//        }
+//
+//        mecanumDriveBase.mecanumDrive.stop();
+//
+//        if (allianceColor == AllianceColor.BLUE) {
+//            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(1, 270, 0);
+//        } else if (allianceColor == AllianceColor.RED) {
+//            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(1, 90, 0);
+//        }
+//
+//        time.reset();
+//        while (opMode.opModeIsActive() && time.seconds() < 1) {
+//            //telemetry.addData("Left distance", leftRange.getDistance(DistanceUnit.CM));
+//            //telemetry.addData("Right distance", rightRange.getDistance(DistanceUnit.CM));
+//            telemetry.update();
+//        }
+//
+//        mecanumDriveBase.mecanumDrive.stop();
 
         /*
         mecanumDrive.mecanumDrive_Polar(0.6, 90, 0);
@@ -334,14 +342,14 @@ public class AutonomousActions {
 
     void tapeFinder() {
         if (allianceColor == AllianceColor.BLUE) {
-            mecanumMotors.mecanumDrive.mecanumDrive_XPolar(0.7, 0, 0);
+            mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(0.7, 0, 0);
             while (opMode.opModeIsActive() && (tapeSensor.blue() < BLUE_THRESHOLD)) {
 
                 telemetry.addData("Tape Sensor: Blue", tapeSensor.blue());
                 telemetry.update(); //Tells the intensity of the blue color we are looking for
             }
         } else if (allianceColor == AllianceColor.RED) {
-            mecanumMotors.mecanumDrive.mecanumDrive_XPolar(0.7, 0, 0);
+            mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(0.7, 0, 0);
             while (opMode.opModeIsActive() && (tapeSensor.red() < RED_THRESHOLD)) {
 
                 telemetry.addData("Tape Sensor: Red", tapeSensor.red());
@@ -366,6 +374,7 @@ public class AutonomousActions {
 
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
+        mecanumDriveBase.mecanumDrive.stop();
     }
 
     void ejectGlyph() {
@@ -416,7 +425,7 @@ public class AutonomousActions {
                 leftBackMotor.setPower(turnPower(angDiff));
                 rightBackMotor.setPower(-turnPower(angDiff));
                 */
-                telemetry.addData("Power", mecanumMotors.leftFrontMotor.getPower());
+                telemetry.addData("Power", mecanumDriveBase.leftFrontMotor.getPower());
 
                 // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, -90, false);
                 // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, angDiff);
@@ -466,7 +475,7 @@ public class AutonomousActions {
             }
         }
 
-        mecanumMotors.mecanumDrive.stop();
+        mecanumDriveBase.mecanumDrive.stop();
         /*
         leftFrontMotor.setPower(0);
         rightFrontMotor.setPower(0);
@@ -514,7 +523,7 @@ public class AutonomousActions {
                 leftBackMotor.setPower(turnPower(angDiff));
                 rightBackMotor.setPower(-turnPower(angDiff));
                 */
-                telemetry.addData("Power", mecanumMotors.leftFrontMotor.getPower());
+                telemetry.addData("Power", mecanumDriveBase.leftFrontMotor.getPower());
 
                 // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, -90, false);
                 // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, angDiff);
@@ -564,7 +573,7 @@ public class AutonomousActions {
             }
         }
 
-        mecanumMotors.mecanumDrive.stop();
+        mecanumDriveBase.mecanumDrive.stop();
         /*
         leftFrontMotor.setPower(0);
         rightFrontMotor.setPower(0);
@@ -574,23 +583,23 @@ public class AutonomousActions {
     }
 
     private void turnLeftWithoutAngle(double power) {
-        mecanumMotors.leftFrontMotor.setPower(-power);
-        mecanumMotors.rightFrontMotor.setPower(power);
-        mecanumMotors.leftBackMotor.setPower(-power);
-        mecanumMotors.rightBackMotor.setPower(power);
+        mecanumDriveBase.leftFrontMotor.setPower(-power);
+        mecanumDriveBase.rightFrontMotor.setPower(power);
+        mecanumDriveBase.leftBackMotor.setPower(-power);
+        mecanumDriveBase.rightBackMotor.setPower(power);
     }
 
     private void turnRightWithoutAngle(double power) {
-        mecanumMotors.leftFrontMotor.setPower(power);
-        mecanumMotors.rightFrontMotor.setPower(-power);
-        mecanumMotors.leftBackMotor.setPower(power);
-        mecanumMotors.rightBackMotor.setPower(-power);
+        mecanumDriveBase.leftFrontMotor.setPower(power);
+        mecanumDriveBase.rightFrontMotor.setPower(-power);
+        mecanumDriveBase.leftBackMotor.setPower(power);
+        mecanumDriveBase.rightBackMotor.setPower(-power);
     }
 
     private double turnPower(double difference) {
         if (Math.abs(difference) < 20) {
             //return 0.15;
-            return 0.4;
+            return 0.45;
         } else if (Math.abs(difference) < 45) {
             //return 0.3;
             return 0.55;
