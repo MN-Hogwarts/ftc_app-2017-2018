@@ -73,6 +73,8 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
     private Servo leftPickupServo, rightPickupServo;
     private DigitalChannel touchSensor ;
     static double wristServoValue = 0.04;
+    private static double gyroKp = 0.3;
+    private static double gyroScale = 0.5;
 
     @Override
     public void init_loop() {
@@ -105,7 +107,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         leftPickupServo = this.hardwareMap.get(Servo.class, "leftPickup");
         rightPickupServo = this.hardwareMap.get(Servo.class, "rightPickup");
         wristServo = this.hardwareMap.get(Servo.class, "wristServo");
-        touchSensor = hardwareMap.get(DigitalChannel.class, "touchSensor") ;
+        touchSensor = hardwareMap.get(DigitalChannel.class, "touchSensor");
 
         gyro = new SWIMUGyro(hardwareMap, "imu", null);
         gyro.calibrate();
@@ -133,7 +135,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         gamepad = new SWGamePad("driver gamepad", gamepad1, 0.05F);
         gamepad.enableDebug(true);
 
-        //driveBase.enableGyroAssist(0.01, 0.8);
+        driveBase.enableGyroAssist(gyroScale, gyroKp);
         /*
         triggerServo = hardwareMap.servo.get("triggerServo");
         angularServo = hardwareMap.servo.get("pixyyaxis");
@@ -160,7 +162,6 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
 
     @Override
     public void loop() {
-        jewelServo.setPosition(0.9);
         taskMgr.executeTaskType(TrcTaskMgr.TaskType.PREPERIODIC_TASK, TrcRobot.RunMode.TELEOP_MODE);
         taskMgr.executeTaskType(TrcTaskMgr.TaskType.PRECONTINUOUS_TASK, TrcRobot.RunMode.TELEOP_MODE);
         taskMgr.executeTaskType(TrcTaskMgr.TaskType.PREPERIODIC_TASK, TrcRobot.RunMode.AUTO_MODE);
@@ -174,41 +175,49 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         if(gamepad.getLeftStickX() == 0 && gamepad.getLeftStickY() == 0)
             magnitude = 0;
 
-        //driveBase.mecanumDrive_XPolarFieldCentric(magnitude, direction, rotation);
-        driveBase.mecanumDrive_XPolar(magnitude, direction, rotation);
+        driveBase.mecanumDrive_XPolarFieldCentric(magnitude, direction, rotation);
+        //driveBase.mecanumDrive_XPolar(magnitude, direction, rotation);
 
-        if (gamepad1.b) {
+        if(gamepad1.left_bumper){
+            gyroScale += 0.05;
+        } else if(gamepad1.left_trigger > 0.3){
+            gyroScale -= 0.05;
+        } else {
+            driveBase.enableGyroAssist(gyroScale, gyroKp);
+        }
+
+        if(gamepad1.right_bumper){
+            gyroKp += 0.05;
+        } else if(gamepad1.right_trigger > 0.3){
+            gyroKp -= 0.05;
+        } else {
+            driveBase.enableGyroAssist(gyroScale, gyroKp);
+        }
+
+        if (gamepad2.b) {
             leftPickupServo.setPosition(-1.0);
             rightPickupServo.setPosition(1.0);
-            telemetry.addData("Right Servo Value", rightPickupServo.getPosition());
-            telemetry.update();
         } //If touch sensor is pressed, stop wheels. If 'A' is pressed, run wheels. If neither is pressed, stop wheels
         else if (!touchSensor.getState()) {
             leftPickupServo.setPosition(0.53);
             rightPickupServo.setPosition(0.5);
-            telemetry.addData("Left Servo Value", leftPickupServo.getPosition());
-            telemetry.update();
         } //Turn inward
-        else if (gamepad1.a) {
+        else if (gamepad2.a) {
             leftPickupServo.setPosition(1.0);
             rightPickupServo.setPosition(-1.0);
-            telemetry.addData("Left Servo Value", leftPickupServo.getPosition());
-            telemetry.update();
         } //Stop wheels
         else {
             leftPickupServo.setPosition(0.53);
             rightPickupServo.setPosition(0.5);
-            telemetry.addData("Left Servo Value", leftPickupServo.getPosition());
-            telemetry.update();
         }
 
-        if(gamepad1.a){
+        if(gamepad2.a){
             //wristServo.setPosition(0.5);
             wristServoValue = wristServoValue - 0.05;
-        } else if (gamepad1.y){
+        } else if (gamepad2.y){
             wristServo.setPosition(1);
             //wristServoValue = wristServoValue + 0.05;
-        } else if (gamepad1.x) {
+        } else if (gamepad2.x) {
             wristServoValue = Range.clip(wristServoValue, -1.0, 1.0);
             //wristServo.setPosition(wristServoValue);
             wristServo.setPosition(0);
@@ -232,19 +241,24 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         dashboard.displayPrintf(2, LABEL_WIDTH, "servo position: ", "%1.3f", triggerServo.getPosition());
         dashboard.displayPrintf(4, LABEL_WIDTH, "rotation: ", "%.2f", rotation);
         */
-        dashboard.displayPrintf(2, LABEL_WIDTH, "imu z: ", "%.2f", gyro.getRawZData(TrcGyro.DataType.ROTATION_RATE).value);
+        dashboard.displayPrintf(2, LABEL_WIDTH, "imu z: ", "%.2f", gyro.getZRotationRate().value);
         dashboard.displayPrintf(3, LABEL_WIDTH, "gamepad left stick mag: ", "%.2f", magnitude);
-        dashboard.displayPrintf(4, LABEL_WIDTH, "wristValue: ", "%1.2f", wristServoValue);
-        dashboard.displayPrintf(5, LABEL_WIDTH, "gamepad left stick direction true: ", "%.2f", gamepad.getLeftStickDirectionDegrees(true));
-        dashboard.displayPrintf(6, LABEL_WIDTH, "gamepad left stick direction false: ", "%.2f", gamepad.getLeftStickDirectionDegrees(false));
-        dashboard.displayPrintf(7, LABEL_WIDTH, "gamepad right stick x: ", "%1.2f", gamepad.getRightStickX());
-        dashboard.displayPrintf(8, LABEL_WIDTH, "gamepad right stick y: ", "%1.2f", gamepad.getRightStickY());
-        dashboard.displayPrintf(9, LABEL_WIDTH, "y inverted: ", "%b", setYInverted);
-        dashboard.displayPrintf(10, LABEL_WIDTH, "x inverted: ", "%b", setXInverted);
-        dashboard.displayPrintf(11, LABEL_WIDTH, "fixedOnTarget: ", "%b", fixedOnTarget);
-        dashboard.displayPrintf(12, LABEL_WIDTH, "imu x: ", "%.2f", gyro.getRawXData(TrcGyro.DataType.HEADING).value);
-        dashboard.displayPrintf(13, LABEL_WIDTH, "imu y: ", "%.2f", gyro.getRawYData(TrcGyro.DataType.HEADING).value);
-        dashboard.displayPrintf(14, LABEL_WIDTH, "imu z: ", "%.2f", gyro.getRawZData(TrcGyro.DataType.HEADING).value);
+        dashboard.displayPrintf(4, LABEL_WIDTH, "wristValue: ", "%1.2f", wristServo.getPosition());
+        dashboard.displayPrintf(5, LABEL_WIDTH, "leftPickupServo: ", "%1.2f", leftPickupServo.getPosition());
+        dashboard.displayPrintf(6, LABEL_WIDTH, "rightPickupServo: ", "%1.2f", rightPickupServo.getPosition());
+        dashboard.displayPrintf(7, LABEL_WIDTH, "gamepad left stick direction true: ", "%.2f", gamepad.getLeftStickDirectionDegrees(true));
+        dashboard.displayPrintf(8, LABEL_WIDTH, "gamepad left stick direction false: ", "%.2f", gamepad.getLeftStickDirectionDegrees(false));
+        dashboard.displayPrintf(9, LABEL_WIDTH, "gamepad right stick x: ", "%1.2f", gamepad.getRightStickX());
+        dashboard.displayPrintf(10, LABEL_WIDTH, "gamepad right stick y: ", "%1.2f", gamepad.getRightStickY());
+        dashboard.displayPrintf(11, LABEL_WIDTH, "y inverted: ", "%b", setYInverted);
+        dashboard.displayPrintf(12, LABEL_WIDTH, "x inverted: ", "%b", setXInverted);
+        dashboard.displayPrintf(13, LABEL_WIDTH, "fixedOnTarget: ", "%b", fixedOnTarget);
+        dashboard.displayPrintf(14, LABEL_WIDTH, "imu x: ", "%.2f", gyro.getRawXData(TrcGyro.DataType.HEADING).value);
+        dashboard.displayPrintf(15, LABEL_WIDTH, "imu y: ", "%.2f", gyro.getRawYData(TrcGyro.DataType.HEADING).value);
+        dashboard.displayPrintf(16, LABEL_WIDTH, "imu z: ", "%.2f", gyro.getRawZData(TrcGyro.DataType.HEADING).value);
+        dashboard.displayPrintf(17, LABEL_WIDTH, "gyro scale: ", "%.2f", gyroScale);
+        dashboard.displayPrintf(18, LABEL_WIDTH, "gyro kp: ", "%.2f", gyroKp);
+        jewelServo.setPosition(0.9);
     }
 
     private ElapsedTime getButtonElapsedTime(int button){
@@ -284,6 +298,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
                 case SWGamePad.GAMEPAD_RBUMPER:
                     break;
 
+                /*
                 case SWGamePad.GAMEPAD_DPAD_DOWN:
                     break;
 
@@ -296,6 +311,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
                         getButtonElapsedTime(button).reset();
                     }
                     break;
+                 */
 
                 case SWGamePad.GAMEPAD_DPAD_LEFT:
                     break;
