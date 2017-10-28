@@ -32,19 +32,16 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
 import ftclib.FtcOpMode;
 
-import static org.firstinspires.ftc.teamcode.AngleMeasureHw.GYRO;
 import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
 
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
  */
-@Autonomous(name = "Auto Red", group = "Concept")
+@Autonomous(name = "Auto Blue", group = "Concept")
 //@Disabled
-public class AutoTest4 extends FtcOpMode {
+public class AutoTest5 extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
 
@@ -65,7 +62,7 @@ public class AutoTest4 extends FtcOpMode {
         auto.initOpmode(this, hardwareMap);
 
         //auto.initVuforia();
-        auto.initAlliance(AllianceColor.RED);
+        auto.initAlliance(AllianceColor.BLUE);
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
@@ -85,10 +82,10 @@ public class AutoTest4 extends FtcOpMode {
 //        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 90, 0);
 //        sleep(500);
 //        auto.mecanumDrive.stop();
-        //auto.ejectGlyph();
         auto.jewelColor();
         auto.driveToCryptobox();
         auto.ejectGlyph();
+        //auto.ejectGlyph();
         //sleep(5000);
         while (opModeIsActive()) {
             //telemetry.addData("Moving Away:", auto.moveAwayFromColor());
