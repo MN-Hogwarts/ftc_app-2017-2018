@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import ftclib.FtcDcMotor;
+import swlib.SWIMUGyro;
 import swlib.SwDriveBase;
 
 /**
@@ -43,13 +44,15 @@ import swlib.SwDriveBase;
  * This class can be used to define all the specific hardware for a single robot.
  * In this case that robot is a Pushbot.
  */
-public class MecanumMotors
+public class MecanumDriveBase
 {
     /* Public OpMode members. */
     FtcDcMotor leftFrontMotor   = null;
     FtcDcMotor rightFrontMotor  = null;
     FtcDcMotor leftBackMotor    = null;
     FtcDcMotor rightBackMotor   = null;
+
+    SWIMUGyro gyro              = null;
 
     SwDriveBase mecanumDrive   = null;
 
@@ -58,7 +61,7 @@ public class MecanumMotors
     private ElapsedTime period  = new ElapsedTime();
 
     /* Constructor */
-    public MecanumMotors(){
+    public MecanumDriveBase(){
 
     }
 
@@ -72,6 +75,9 @@ public class MecanumMotors
         rightFrontMotor = new FtcDcMotor("rightFront");
         leftBackMotor = new FtcDcMotor("leftRear");
         rightBackMotor = new FtcDcMotor("rightRear");
+
+        gyro = new SWIMUGyro(hwMap, "imu", null);
+        gyro.calibrate();
 
         /*
         // Set all motors to zero power
@@ -88,7 +94,8 @@ public class MecanumMotors
         rightRearDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         */
 
-        mecanumDrive = new SwDriveBase(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
+        mecanumDrive = new SwDriveBase(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor,
+                gyro);
         // Define and initialize ALL installed servos.
     }
  }
