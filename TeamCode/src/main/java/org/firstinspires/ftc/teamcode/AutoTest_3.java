@@ -70,9 +70,12 @@ public class AutoTest_3 extends FtcOpMode {
             telemetry.update();
 
         }
-        auto.tapeFinder();
+//        auto.tapeFinder();
 //        auto.jewelColor();
         //sleep(5000);
+
+        auto.moveBWFW();
+
         while (opModeIsActive()) {
             telemetry.addData("Tape Sensor: Red", auto.tapeSensor.red());
             telemetry.update(); //Tells the intensity of the color we are looking for

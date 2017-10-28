@@ -152,10 +152,6 @@ public class AutonomousActions {
 
     }
 
-    String format(OpenGLMatrix transformationMatrix) {
-        return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
-    }
-
     void initJewelHardware(AngleMeasureHw angleMeasureHw) {
 
         this.angleMeasureHw = angleMeasureHw;
@@ -338,21 +334,34 @@ public class AutonomousActions {
 
     void tapeFinder() {
         if (allianceColor == AllianceColor.BLUE) {
-            mecanumDrive.mecanumDrive_XPolar(0.7, 0, 0);
+            mecanumMotors.mecanumDrive.mecanumDrive_XPolar(0.7, 0, 0);
             while (opMode.opModeIsActive() && (tapeSensor.blue() < BLUE_THRESHOLD)) {
 
                 telemetry.addData("Tape Sensor: Blue", tapeSensor.blue());
                 telemetry.update(); //Tells the intensity of the blue color we are looking for
             }
         } else if (allianceColor == AllianceColor.RED) {
-            mecanumDrive.mecanumDrive_XPolar(0.7, 0, 0);
+            mecanumMotors.mecanumDrive.mecanumDrive_XPolar(0.7, 0, 0);
             while (opMode.opModeIsActive() && (tapeSensor.red() < RED_THRESHOLD)) {
 
                 telemetry.addData("Tape Sensor: Red", tapeSensor.red());
                 telemetry.update(); //Tells the intensity of the red color we are looking for
             }
         }
-        mecanumDrive.stop();
+        mecanumMotors.mecanumDrive.stop();
+    }
+
+    void moveBWFW() {
+        ElapsedTime     runtime = new ElapsedTime();
+
+        while (opMode.opModeIsActive() && (runtime.seconds() < 1.0)) {
+            mecanumMotors.mecanumDrive.mecanumDrive_XPolar(0.5, 0, 0);
+        }
+        runtime.reset();
+        while (opMode.opModeIsActive() && (runtime.seconds() < 1.0)) {
+            mecanumMotors.mecanumDrive.mecanumDrive_XPolar(-0.5, 0, 0);
+        }
+        mecanumMotors.mecanumDrive.stop();
     }
 
     String format(OpenGLMatrix transformationMatrix) {
