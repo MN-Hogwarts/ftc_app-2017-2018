@@ -284,12 +284,15 @@ public class AutonomousActions {
 
     void driveToCryptobox() throws InterruptedException {
 
+        /*
         if (allianceColor == AllianceColor.BLUE) {
             mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(1, 90, 0);
         } else if (allianceColor == AllianceColor.RED) {
             mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(1, 270, 0);
         }
+        */
 
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(1, 0, 0);
         opMode.sleep(500);
 
         while (opMode.opModeIsActive() && (Math.abs(getAngleY()) > 2 || Math.abs(getAngleZ()) > 2)) {
@@ -297,12 +300,12 @@ public class AutonomousActions {
             telemetry.addData("Angle Z", getAngleZ());
             telemetry.update();
         }
+        mecanumDriveBase.mecanumDrive.stop();
 
-        opMode.sleep(2000);
         if (allianceColor == AllianceColor.BLUE) {
-            turn(90);
+            turn(115);
         } else if (allianceColor == AllianceColor.RED) {
-            turn(270);
+            turn(235);
         }
 
 //        ElapsedTime time = new ElapsedTime();
@@ -573,7 +576,7 @@ public class AutonomousActions {
     private double turnPower(double difference) {
         if (Math.abs(difference) < 20) {
             //return 0.15;
-            return 0.4;
+            return 0.45;
         } else if (Math.abs(difference) < 45) {
             //return 0.3;
             return 0.55;
