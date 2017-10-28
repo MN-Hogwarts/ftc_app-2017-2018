@@ -1039,7 +1039,13 @@ public class SwDriveBase implements TrcTaskMgr.Task
 
         if (gyroAssistEnabled)
         {
-            rotation += TrcUtil.clipRange(gyroAssistKp*(rotation - gyroRateScale*gyro.getZRotationRate().value));
+            double addRotation = gyroRateScale*gyro.getZRotationRate().value;
+            /*
+            if(gyro.getZRotationRate().value < 0.1){
+                addRotation = 0;
+            }*/
+
+            rotation += TrcUtil.clipRange(gyroAssistKp*(rotation - addRotation));
         }
 
         double wheelSpeeds[] = new double[4];
