@@ -105,7 +105,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         leftPickupServo = this.hardwareMap.get(Servo.class, "leftPickup");
         rightPickupServo = this.hardwareMap.get(Servo.class, "rightPickup");
         wristServo = this.hardwareMap.get(Servo.class, "wristServo");
-        touchSensor = hardwareMap.get(DigitalChannel.class, "touchSensor") ;
+        touchSensor = hardwareMap.get(DigitalChannel.class, "touchSensor");
 
         gyro = new SWIMUGyro(hardwareMap, "imu", null);
         gyro.calibrate();

@@ -51,11 +51,8 @@ public class AutonomousActions {
 
     PickupHardware pickupHw = new PickupHardware();
 
-    FtcDcMotor leftFrontMotor   = null;
-    FtcDcMotor rightFrontMotor  = null;
-    FtcDcMotor leftBackMotor    = null;
-    FtcDcMotor rightBackMotor   = null;
-    SwDriveBase mecanumDrive   = null;
+    MecanumMotors mecanumMotors = null;
+
     DigitalChannel touchSensor  = null;
 
     Servo leftServo;
@@ -141,6 +138,10 @@ public class AutonomousActions {
 
     }
 
+    String format(OpenGLMatrix transformationMatrix) {
+        return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
+    }
+
     void initJewelHardware(AngleMeasureHw angleMeasureHw) {
 
         this.angleMeasureHw = angleMeasureHw;
@@ -165,17 +166,12 @@ public class AutonomousActions {
         jewelArm = hardwareMap.get(Servo.class, "jewelArm");
         jewelArm.setPosition(1);
 
-        leftFrontMotor = new FtcDcMotor("leftFront");
-        rightFrontMotor = new FtcDcMotor("rightFront");
-        leftBackMotor = new FtcDcMotor("leftRear");
-        rightBackMotor = new FtcDcMotor("rightRear");
+        mecanumMotors.init(hardwareMap);
 
-        leftFrontMotor.setInverted(true);
-        rightFrontMotor.setInverted(false);
-        leftBackMotor.setInverted(true);
-        rightBackMotor.setInverted(false);
-
-        mecanumDrive = new SwDriveBase(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
+        mecanumMotors.leftFrontMotor.setInverted(true);
+        mecanumMotors.rightFrontMotor.setInverted(false);
+        mecanumMotors.leftBackMotor.setInverted(true);
+        mecanumMotors.rightBackMotor.setInverted(false);
 
     }
 
@@ -196,16 +192,11 @@ public class AutonomousActions {
         leftServo = hardwareMap.get(Servo.class, "leftWheel");
         rightServo = hardwareMap.get(Servo.class, "rightWheel");
 
-        leftFrontMotor.setPower(0.5);
-        rightFrontMotor.setPower(0.5);
-        leftBackMotor.setPower(0.5);
-        rightBackMotor.setPower(0.5);
+        mecanumMotors.mecanumDrive.mecanumDrive_BoxPolar(0.5, 0, 0);
 
         while (opMode.opModeIsActive() && touchSensor.getState() == false) ;
-        leftFrontMotor.setPower(0);
-        rightFrontMotor.setPower(0);
-        leftBackMotor.setPower(0);
-        rightBackMotor.setPower(0);
+
+        mecanumMotors.mecanumDrive.stop();
 
         leftServo.setPosition(0);
         rightServo.setPosition(0);
@@ -304,7 +295,7 @@ public class AutonomousActions {
 
         ElapsedTime time = new ElapsedTime();
         time.reset();
-        mecanumDrive.mecanumDrive_BoxPolar(0.8, 0, 0);
+        mecanumMotors.mecanumDrive.mecanumDrive_BoxPolar(0.8, 0, 0);
 
         while (opMode.opModeIsActive() && time.seconds() < 1) {
             //telemetry.addData("Left distance", leftRange.getDistance(DistanceUnit.CM));
@@ -312,12 +303,12 @@ public class AutonomousActions {
             telemetry.update();
         }
 
-        mecanumDrive.stop();
+        mecanumMotors.mecanumDrive.stop();
 
         if (allianceColor == AllianceColor.BLUE) {
-            mecanumDrive.mecanumDrive_BoxPolar(1, 270, 0);
+            mecanumMotors.mecanumDrive.mecanumDrive_BoxPolar(1, 270, 0);
         } else if (allianceColor == AllianceColor.RED) {
-            mecanumDrive.mecanumDrive_BoxPolar(1, 90, 0);
+            mecanumMotors.mecanumDrive.mecanumDrive_BoxPolar(1, 90, 0);
         }
 
         time.reset();
@@ -327,7 +318,7 @@ public class AutonomousActions {
             telemetry.update();
         }
 
-        mecanumDrive.stop();
+        mecanumMotors.mecanumDrive.stop();
 
         /*
         mecanumDrive.mecanumDrive_Polar(0.6, 90, 0);
@@ -339,16 +330,13 @@ public class AutonomousActions {
     }
 
     void tapeFinder() {
-        mecanumDrive.mecanumDrive_XPolar(0.7, 0, 0);
+        mecanumMotors.mecanumDrive.mecanumDrive_XPolar(0.7, 0, 0);
         while (opMode.opModeIsActive() && (tapeSensor.red() < 9)) {
 
             telemetry.addData("Tape Sensor: Red", tapeSensor.red());
             telemetry.update(); //Tells the intensity of the color we are looking for
         }
-        mecanumDrive.stop();
-    }
-    String format(OpenGLMatrix transformationMatrix) {
-        return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
+        mecanumMotors.mecanumDrive.stop();
     }
 
     void ejectGlyph() {
@@ -399,7 +387,7 @@ public class AutonomousActions {
                 leftBackMotor.setPower(turnPower(angDiff));
                 rightBackMotor.setPower(-turnPower(angDiff));
                 */
-                telemetry.addData("Power", leftFrontMotor.getPower());
+                telemetry.addData("Power", mecanumMotors.leftFrontMotor.getPower());
 
                 // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, -90, false);
                 // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, angDiff);
@@ -449,7 +437,7 @@ public class AutonomousActions {
             }
         }
 
-        mecanumDrive.stop();
+        mecanumMotors.mecanumDrive.stop();
         /*
         leftFrontMotor.setPower(0);
         rightFrontMotor.setPower(0);
@@ -497,7 +485,7 @@ public class AutonomousActions {
                 leftBackMotor.setPower(turnPower(angDiff));
                 rightBackMotor.setPower(-turnPower(angDiff));
                 */
-                telemetry.addData("Power", leftFrontMotor.getPower());
+                telemetry.addData("Power", mecanumMotors.leftFrontMotor.getPower());
 
                 // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, -90, false);
                 // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, angDiff);
@@ -547,7 +535,7 @@ public class AutonomousActions {
             }
         }
 
-        mecanumDrive.stop();
+        mecanumMotors.mecanumDrive.stop();
         /*
         leftFrontMotor.setPower(0);
         rightFrontMotor.setPower(0);
@@ -557,17 +545,17 @@ public class AutonomousActions {
     }
 
     private void turnLeftWithoutAngle(double power) {
-        leftFrontMotor.setPower(-power);
-        rightFrontMotor.setPower(power);
-        leftBackMotor.setPower(-power);
-        rightBackMotor.setPower(power);
+        mecanumMotors.leftFrontMotor.setPower(-power);
+        mecanumMotors.rightFrontMotor.setPower(power);
+        mecanumMotors.leftBackMotor.setPower(-power);
+        mecanumMotors.rightBackMotor.setPower(power);
     }
 
     private void turnRightWithoutAngle(double power) {
-        leftFrontMotor.setPower(power);
-        rightFrontMotor.setPower(-power);
-        leftBackMotor.setPower(power);
-        rightBackMotor.setPower(-power);
+        mecanumMotors.leftFrontMotor.setPower(power);
+        mecanumMotors.rightFrontMotor.setPower(-power);
+        mecanumMotors.leftBackMotor.setPower(power);
+        mecanumMotors.rightBackMotor.setPower(-power);
     }
 
     private double turnPower(double difference) {
