@@ -83,10 +83,11 @@ public class AutoTest5 extends FtcOpMode {
 //        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 90, 0);
 //        sleep(500);
 //        auto.mecanumDrive.stop();
-//        auto.jewelColor();
+        auto.jewelColor();
         auto.driveToCryptobox();
         auto.ejectGlyph();
         auto.turn(0);
+        auto.moveBWFW();
         //auto.ejectGlyph();
         //sleep(5000);
         while (opModeIsActive()) {

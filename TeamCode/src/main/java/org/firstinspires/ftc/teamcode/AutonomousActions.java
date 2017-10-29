@@ -361,29 +361,35 @@ public class AutonomousActions {
                 telemetry.update(); //Tells the intensity of the red color we are looking for
             }
         }
-        mecanumMotors.mecanumDrive.stop();
+        mecanumDriveBase.mecanumDrive.stop();
     }
 
     void moveBWFW() {
+
+        mecanumDriveBase.leftFrontMotor.setBrakeModeEnabled(true);
+        mecanumDriveBase.rightFrontMotor.setBrakeModeEnabled(true);
+        mecanumDriveBase.leftBackMotor.setBrakeModeEnabled(true);
+        mecanumDriveBase.rightBackMotor.setBrakeModeEnabled(true);
+
         ElapsedTime     runtime = new ElapsedTime();
 
-        while (opMode.opModeIsActive() && (runtime.seconds() < 1.0)) {
-            mecanumMotors.mecanumDrive.mecanumDrive_XPolar(0.5, 0, 0);
+        while (opMode.opModeIsActive() && (runtime.seconds() < 0.3)) {
+            mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(0.5, 0, 0);
         }
         runtime.reset();
-        while (opMode.opModeIsActive() && (runtime.seconds() < 1.0)) {
-            mecanumMotors.mecanumDrive.mecanumDrive_XPolar(-0.5, 0, 0);
+        while (opMode.opModeIsActive() && (runtime.seconds() < 0.3)) {
+            mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-0.5, 0, 0);
         }
-        mecanumMotors.mecanumDrive.stop();
-    }
-
-    String format(OpenGLMatrix transformationMatrix) {
-        return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
         mecanumDriveBase.mecanumDrive.stop();
+
         mecanumDriveBase.leftFrontMotor.setBrakeModeEnabled(false);
         mecanumDriveBase.rightFrontMotor.setBrakeModeEnabled(false);
         mecanumDriveBase.leftBackMotor.setBrakeModeEnabled(false);
         mecanumDriveBase.rightBackMotor.setBrakeModeEnabled(false);
+    }
+
+    String format(OpenGLMatrix transformationMatrix) {
+        return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
     }
 
     void ejectGlyph() {
