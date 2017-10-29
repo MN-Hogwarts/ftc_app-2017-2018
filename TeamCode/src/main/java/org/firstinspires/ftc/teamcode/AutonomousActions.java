@@ -289,7 +289,8 @@ public class AutonomousActions {
         */
 
         mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(1, 0, 0);
-        opMode.sleep(500);
+        opMode.sleep(650);
+
 
         while (opMode.opModeIsActive() && (Math.abs(getAngleY()) > 2 || Math.abs(getAngleZ()) > 2)) {
             telemetry.addData("Angle Y", getAngleY());
@@ -301,7 +302,7 @@ public class AutonomousActions {
         if (allianceColor == AllianceColor.BLUE) {
             turn(105);
         } else if (allianceColor == AllianceColor.RED) {
-            turn(235);
+            turn(242);
         }
 
         tapeFinder();
@@ -343,54 +344,64 @@ public class AutonomousActions {
     }
 
     void tapeFinder() {
+        /*
         mecanumDriveBase.leftFrontMotor.setBrakeModeEnabled(true);
         mecanumDriveBase.rightFrontMotor.setBrakeModeEnabled(true);
         mecanumDriveBase.leftBackMotor.setBrakeModeEnabled(true);
         mecanumDriveBase.rightBackMotor.setBrakeModeEnabled(true);
-        mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(0.5, 0, 0);
+        mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(0.7, 0, 0);
+        ElapsedTime elapsedTime = new ElapsedTime();
         if (allianceColor == AllianceColor.BLUE) {
-            while (opMode.opModeIsActive() && (tapeSensor.blue() < BLUE_THRESHOLD)) {
+            while ((opMode.opModeIsActive() && elapsedTime.seconds() < 1) || (tapeSensor.blue() < BLUE_THRESHOLD)) {
 
                 telemetry.addData("Tape Sensor: Blue", tapeSensor.blue());
                 telemetry.update(); //Tells the intensity of the blue color we are looking for
             }
         } else if (allianceColor == AllianceColor.RED) {
-            while (opMode.opModeIsActive() && (tapeSensor.red() < RED_THRESHOLD)) {
+            while ((opMode.opModeIsActive() && elapsedTime.seconds() < 1) || (tapeSensor.red() < RED_THRESHOLD)) {
 
                 telemetry.addData("Tape Sensor: Red", tapeSensor.red());
                 telemetry.update(); //Tells the intensity of the red color we are looking for
             }
         }
-        mecanumMotors.mecanumDrive.stop();
+        mecanumDriveBase.mecanumDrive.stop();
+        */
+        mecanumDriveBase.leftFrontMotor.setBrakeModeEnabled(true);
+        mecanumDriveBase.rightFrontMotor.setBrakeModeEnabled(true);
+        mecanumDriveBase.leftBackMotor.setBrakeModeEnabled(true);
+        mecanumDriveBase.rightBackMotor.setBrakeModeEnabled(true);
+        mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(0.7, 0, 0);
+        opMode.sleep(1700);
+        mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(0, 0, 0);
     }
 
     void moveBWFW() {
         ElapsedTime     runtime = new ElapsedTime();
 
         while (opMode.opModeIsActive() && (runtime.seconds() < 1.0)) {
-            mecanumMotors.mecanumDrive.mecanumDrive_XPolar(0.5, 0, 0);
+            //mecanumMotors.mecanumDrive.mecanumDrive_XPolar(0.5, 0, 0);
         }
         runtime.reset();
         while (opMode.opModeIsActive() && (runtime.seconds() < 1.0)) {
-            mecanumMotors.mecanumDrive.mecanumDrive_XPolar(-0.5, 0, 0);
+            //mecanumMotors.mecanumDrive.mecanumDrive_XPolar(-0.5, 0, 0);
         }
-        mecanumMotors.mecanumDrive.stop();
+        //mecanumMotors.mecanumDrive.stop();
     }
 
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
-        mecanumDriveBase.mecanumDrive.stop();
-        mecanumDriveBase.leftFrontMotor.setBrakeModeEnabled(false);
-        mecanumDriveBase.rightFrontMotor.setBrakeModeEnabled(false);
-        mecanumDriveBase.leftBackMotor.setBrakeModeEnabled(false);
-        mecanumDriveBase.rightBackMotor.setBrakeModeEnabled(false);
+        //mecanumDriveBase.mecanumDrive.stop();
+        //mecanumDriveBase.leftFrontMotor.setBrakeModeEnabled(false);
+        //mecanumDriveBase.rightFrontMotor.setBrakeModeEnabled(false);
+        //mecanumDriveBase.leftBackMotor.setBrakeModeEnabled(false);
+        //mecanumDriveBase.rightBackMotor.setBrakeModeEnabled(false);
     }
 
     void ejectGlyph() {
         ElapsedTime time = new ElapsedTime();
         pickupHw.leftServo.setPosition(-1.0);
         pickupHw.rightServo.setPosition(1.0);
-        while (opMode.opModeIsActive() && time.seconds() < 2);
+        while (opMode.opModeIsActive() && time.seconds() < 1.5);
         pickupHw.leftServo.setPosition(0.52);
         pickupHw.rightServo.setPosition(0.5);
     }
@@ -608,10 +619,10 @@ public class AutonomousActions {
     private double turnPower(double difference) {
         if (Math.abs(difference) < 20) {
             //return 0.15;
-            return 0.45;
+            return 0.55;
         } else if (Math.abs(difference) < 45) {
             //return 0.3;
-            return 0.55;
+            return 0.65;
         } else if (Math.abs(difference) < 90) {
             return 0.7;
         } else return 0.8;
