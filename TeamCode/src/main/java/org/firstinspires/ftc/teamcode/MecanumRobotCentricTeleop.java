@@ -73,6 +73,7 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
     static double wristServoValue = 0.04;
     private static double gyroKp = 0.3;
     private static double gyroScale = 0.5;
+    private boolean turtleMode = false;
 
     @Override
     public void init_loop() {
@@ -168,6 +169,9 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
         gamepad.setYInverted(setYInverted);
         double rotation = gamepad.getRightStickX()*-1;
         double magnitude = Range.clip(gamepad.getLeftStickMagnitude(), 0, 1);
+        if(turtleMode)
+            magnitude = magnitude/2;
+
         double direction = gamepad.getLeftStickDirectionDegrees(true);
 
         if(gamepad.getLeftStickX() == 0 && gamepad.getLeftStickY() == 0)
@@ -175,6 +179,12 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
 
         //driveBase.mecanumDrive_XPolarFieldCentric(magnitude, direction, rotation);
         driveBase.mecanumDrive_XPolar(magnitude, direction, rotation);
+
+        if(gamepad1.a){
+            turtleMode = true;
+        } else if(gamepad1.b){
+            turtleMode = false;
+        }
 
         if(gamepad1.left_bumper){
             //gyroScale += 0.05;
