@@ -58,7 +58,7 @@ public class AutoTest_3 extends FtcOpMode {
     @Override
     public void runOpMode() throws InterruptedException{
 
-        auto.initOpmode(this, hardwareMap);
+        auto.initOpmode(this);
         auto.initMecanum();
         auto.initAlliance(AllianceColor.RED);
 
@@ -66,8 +66,8 @@ public class AutoTest_3 extends FtcOpMode {
         auto.initJewelHardware(AngleMeasureHw.IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
-            telemetry.addData("Color Sensor: Blue", auto.tapeSensor.blue());
-            telemetry.addData("Color Sensor: Red", auto.tapeSensor.red());
+            telemetry.addData("Color Sensor: Blue", auto.tapeSensorL.blue());
+            telemetry.addData("Color Sensor: Red", auto.tapeSensorL.red());
             telemetry.update();
 
         }
@@ -78,7 +78,7 @@ public class AutoTest_3 extends FtcOpMode {
         auto.moveBWFW();
 
         while (opModeIsActive()) {
-            telemetry.addData("Tape Sensor: Red", auto.tapeSensor.red());
+            telemetry.addData("Tape Sensor: Red", auto.tapeSensorL.red());
             telemetry.update(); //Tells the intensity of the color we are looking for
         }
 
