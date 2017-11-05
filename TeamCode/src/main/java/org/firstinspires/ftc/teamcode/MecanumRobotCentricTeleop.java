@@ -70,6 +70,7 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
     private Servo wristServo;
     private Servo leftPickupServo, rightPickupServo;
     private DigitalChannel touchSensor ;
+    private PickupHardware pickupHw = new PickupHardware();
     static double wristServoValue = 0.04;
     private static double gyroKp = 0.3;
     private static double gyroScale = 0.5;
@@ -107,6 +108,7 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
         rightPickupServo = this.hardwareMap.get(Servo.class, "rightPickup");
         wristServo = this.hardwareMap.get(Servo.class, "wristServo");
         touchSensor = hardwareMap.get(DigitalChannel.class, "touchSensor");
+        pickupHw.init(hardwareMap);
 
         gyro = new SWIMUGyro(hardwareMap, "imu", null);
         gyro.calibrate();
@@ -127,7 +129,7 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
         driveBase = new SwDriveBase(
                 leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor, gyro);
         /*driveBase = new TrcDriveBase(
-                leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor);*/
+                leftFrontMotor, leftRearMotor, rightFrontMo tor, rightRearMotor);*/
 
         gyro.setEnabled(true);
 
