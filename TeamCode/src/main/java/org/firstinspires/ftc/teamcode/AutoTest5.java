@@ -59,7 +59,7 @@ public class AutoTest5 extends FtcOpMode {
     @Override
     public void runOpMode() throws InterruptedException{
 
-        auto.initOpmode(this, hardwareMap);
+        auto.initOpmode(this);
         auto.initMecanum();
 
         //auto.initVuforia();
