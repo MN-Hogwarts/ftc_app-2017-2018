@@ -59,7 +59,7 @@ public class AutoTest5 extends FtcOpMode {
     @Override
     public void runOpMode() throws InterruptedException{
 
-        auto.initOpmode(this, hardwareMap);
+        auto.initOpmode(this);
         auto.initMecanum();
 
         //auto.initVuforia();
@@ -83,9 +83,22 @@ public class AutoTest5 extends FtcOpMode {
 //        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 90, 0);
 //        sleep(500);
 //        auto.mecanumDrive.stop();
-//        auto.jewelColor();
+        auto.jewelColor();
         auto.driveToCryptobox();
         auto.ejectGlyph();
+        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
+        sleep(350);
+        auto.mecanumDriveBase.mecanumDrive.stop();
+
+        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(1.0, 0, 0);
+        sleep(600);
+        auto.mecanumDriveBase.mecanumDrive.stop();
+
+        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
+        sleep(400);
+        auto.mecanumDriveBase.mecanumDrive.stop();
+
+        //auto.turn(0);
         //auto.ejectGlyph();
         //sleep(5000);
         while (opModeIsActive()) {

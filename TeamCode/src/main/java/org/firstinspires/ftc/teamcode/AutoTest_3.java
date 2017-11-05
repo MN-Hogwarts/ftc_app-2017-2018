@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import ftclib.FtcOpMode;
@@ -38,7 +39,7 @@ import ftclib.FtcOpMode;
  * Rotates Servo between min and max position or rotates continuously
  */
 @Autonomous(name = "Auto 3", group = "Concept")
-//@Disabled
+@Disabled
 public class AutoTest_3 extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
@@ -57,7 +58,7 @@ public class AutoTest_3 extends FtcOpMode {
     @Override
     public void runOpMode() throws InterruptedException{
 
-        auto.initOpmode(this, hardwareMap);
+        auto.initOpmode(this);
         auto.initMecanum();
         auto.initAlliance(AllianceColor.RED);
 
@@ -65,15 +66,19 @@ public class AutoTest_3 extends FtcOpMode {
         auto.initJewelHardware(AngleMeasureHw.IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
-            telemetry.addData("Color Sensor red", auto.tapeSensor.red());
+            telemetry.addData("Color Sensor: Blue", auto.tapeSensorL.blue());
+            telemetry.addData("Color Sensor: Red", auto.tapeSensorL.red());
             telemetry.update();
 
         }
-        auto.tapeFinder();
+//        auto.tapeFinder();
 //        auto.jewelColor();
         //sleep(5000);
+
+        auto.moveBWFW();
+
         while (opModeIsActive()) {
-            telemetry.addData("Tape Sensor: Red", auto.tapeSensor.red());
+            telemetry.addData("Tape Sensor: Red", auto.tapeSensorL.red());
             telemetry.update(); //Tells the intensity of the color we are looking for
         }
 

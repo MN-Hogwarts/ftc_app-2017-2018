@@ -3,9 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -26,8 +24,8 @@ import trclib.TrcTaskMgr;
 /**
  * Created by spmeg on 4/15/2017.
  */
-@TeleOp(name = "MecanumTeleop", group = "teleop")
-public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Runnable{
+@TeleOp(name = "MecanumRobotCentricTeleop", group = "teleop")
+public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.ButtonHandler, Runnable{
     /*
     private final double LOADED_POSITION_TRIGGER = 0.557;
     private final double SHOOT_POSITION_TRIGGER = 0.428;
@@ -75,6 +73,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
     static double wristServoValue = 0.04;
     private static double gyroKp = 0.3;
     private static double gyroScale = 0.5;
+    private boolean turtleMode = false;
 
     @Override
     public void init_loop() {
@@ -135,7 +134,7 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         gamepad = new SWGamePad("driver gamepad", gamepad1, 0.05F);
         gamepad.enableDebug(true);
 
-        driveBase.enableGyroAssist(gyroScale, gyroKp);
+        //driveBase.enableGyroAssist(gyroScale, gyroKp);
         /*
         triggerServo = hardwareMap.servo.get("triggerServo");
         angularServo = hardwareMap.servo.get("pixyyaxis");
@@ -170,28 +169,38 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
         gamepad.setYInverted(setYInverted);
         double rotation = gamepad.getRightStickX()*-1;
         double magnitude = Range.clip(gamepad.getLeftStickMagnitude(), 0, 1);
+        if(turtleMode)
+            magnitude = magnitude/2;
+
         double direction = gamepad.getLeftStickDirectionDegrees(true);
 
         if(gamepad.getLeftStickX() == 0 && gamepad.getLeftStickY() == 0)
             magnitude = 0;
 
-        driveBase.mecanumDrive_XPolarFieldCentric(magnitude, direction, rotation);
-        //driveBase.mecanumDrive_XPolar(magnitude, direction, rotation);
+        //driveBase.mecanumDrive_XPolarFieldCentric(magnitude, direction, rotation);
+        driveBase.mecanumDrive_XPolar(magnitude, direction, rotation);
+
+        if(gamepad1.a){
+            turtleMode = true;
+        } else if(gamepad1.b){
+            turtleMode = false;
+        }
 
         if(gamepad1.left_bumper){
-            gyroScale += 0.05;
+            //gyroScale += 0.05;
+            jewelServo.setPosition(0.9);
         } else if(gamepad1.left_trigger > 0.3){
-            gyroScale -= 0.05;
+            //gyroScale -= 0.05;
         } else {
-            driveBase.enableGyroAssist(gyroScale, gyroKp);
+            ////driveBase.enableGyroAssist(gyroScale, gyroKp);
         }
 
         if(gamepad1.right_bumper){
-            gyroKp += 0.05;
+            //gyroKp += 0.05;
         } else if(gamepad1.right_trigger > 0.3){
-            gyroKp -= 0.05;
+            //gyroKp -= 0.05;
         } else {
-            driveBase.enableGyroAssist(gyroScale, gyroKp);
+            //driveBase.enableGyroAssist(gyroScale, gyroKp);
         }
 
         if (gamepad2.b) {
@@ -213,12 +222,12 @@ public class MecanumTeleop extends OpMode implements SWGamePad.ButtonHandler, Ru
 
         if(gamepad2.a){
             //wristServo.setPosition(0.5);
-            wristServoValue = wristServoValue - 0.05;
+            //wristServoValue = wristServoValue - 0.05;
         } else if (gamepad2.y){
             wristServo.setPosition(1);
             //wristServoValue = wristServoValue + 0.05;
         } else if (gamepad2.x) {
-            wristServoValue = Range.clip(wristServoValue, -1.0, 1.0);
+            //wristServoValue = Range.clip(wristServoValue, -1.0, 1.0);
             //wristServo.setPosition(wristServoValue);
             wristServo.setPosition(0);
         } else {

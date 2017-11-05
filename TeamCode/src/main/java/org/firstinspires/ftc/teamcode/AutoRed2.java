@@ -32,19 +32,16 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
 import ftclib.FtcOpMode;
 
-import static org.firstinspires.ftc.teamcode.AngleMeasureHw.GYRO;
 import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
 
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
  */
-@Autonomous(name = "Auto Red", group = "Concept")
+@Autonomous(name = "Auto Red 2", group = "Concept")
 //@Disabled
-public class AutoTest4 extends FtcOpMode {
+public class AutoRed2 extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
 
@@ -87,6 +84,10 @@ public class AutoTest4 extends FtcOpMode {
 //        sleep(500);
 //        auto.mecanumDrive.stop();
         auto.jewelColor();
+        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(1.0, 90, 0);
+        sleep(1500);
+        auto.mecanumDriveBase.mecanumDrive.stop();
+        /*
         auto.driveToCryptobox();
         auto.ejectGlyph();
         auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
@@ -112,6 +113,7 @@ public class AutoTest4 extends FtcOpMode {
 
         //auto.initVuforia();
         //auto.pictographID(); //run Vuforia method, includes initVuforia()
-
+        */
         }
+
 }
