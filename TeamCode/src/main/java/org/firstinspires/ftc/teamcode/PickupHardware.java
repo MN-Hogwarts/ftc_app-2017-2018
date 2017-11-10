@@ -33,7 +33,7 @@ public class PickupHardware
     Servo left_Servo ;
     Servo right_Servo ;
     DigitalChannel touchSensor ;
-    FtcDcMotor arm;
+    FtcDcMotor armMotor;
 
     public static final double MID_SERVO       =  0.5 ;
     public static final double ARM_UP_POWER    =  0.45 ;
@@ -57,7 +57,7 @@ public class PickupHardware
         leftServo = hwMap.get(Servo.class, "leftPickup") ;
         rightServo = hwMap.get(Servo.class, "rightPickup") ;
         wristServo = hwMap.get(Servo.class, "wristServo") ;
-        arm = new FtcDcMotor("arm");
+        armMotor = new FtcDcMotor("arm");
         touchSensor = hwMap.get(DigitalChannel.class, "touchSensor") ;
     }
 }
