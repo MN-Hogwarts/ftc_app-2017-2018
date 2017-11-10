@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import ftclib.FtcDcMotor;
+
 /**
  * This is NOT an opmode.
  *
@@ -27,9 +29,11 @@ public class PickupHardware
     /* Public OpMode members. */
     Servo leftServo ;
     Servo rightServo ;
+    Servo wristServo;
     Servo left_Servo ;
     Servo right_Servo ;
     DigitalChannel touchSensor ;
+    FtcDcMotor arm;
 
     public static final double MID_SERVO       =  0.5 ;
     public static final double ARM_UP_POWER    =  0.45 ;
@@ -52,6 +56,8 @@ public class PickupHardware
         // Define and Initialize Motors
         leftServo = hwMap.get(Servo.class, "leftPickup") ;
         rightServo = hwMap.get(Servo.class, "rightPickup") ;
+        wristServo = hwMap.get(Servo.class, "wristServo") ;
+        arm = new FtcDcMotor("arm");
         touchSensor = hwMap.get(DigitalChannel.class, "touchSensor") ;
     }
 }
