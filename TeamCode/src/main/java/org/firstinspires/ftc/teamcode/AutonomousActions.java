@@ -94,7 +94,6 @@ public class AutonomousActions {
         mecanumDriveBase.rightFrontMotor.setInverted(false);
         mecanumDriveBase.leftBackMotor.setInverted(true);
         mecanumDriveBase.rightBackMotor.setInverted(false);
-
     }
 
     void initVuforia() {
