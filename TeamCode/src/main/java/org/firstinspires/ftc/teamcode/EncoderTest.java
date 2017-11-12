@@ -30,26 +30,25 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import ftclib.FtcOpMode;
 
 import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
 
 /**
- * Rotates Servo between min and max position or rotates continuously
+ * Rotates Servo between min and max position or rotatescontinuaou
  */
-@Autonomous(name = "Auto 3", group = "Concept")
-@Disabled
-public class AutoTest_3 extends FtcOpMode {
+@Autonomous(name = "Encoder Test", group = "Concept")
+//@Disabled
+public class EncoderTest extends FtcOpMode {
 
-    AutonomousActions auto = new AutonomousActions();
 
     // Define class members
-    Servo   servo;
-    double  position = .55;//(MAX_POS - MIN_POS) / 2; // Start at halfway position
-    boolean rampUp = true;
+    DcMotor motor;
 
 
     @Override
@@ -59,32 +58,24 @@ public class AutoTest_3 extends FtcOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException{
-
-        auto.initOpmode(this);
-        auto.initMecanum();
-        //auto.initVuforia();
-        auto.initAlliance(AllianceColor.RED);
-        auto.initJewelHardware(IMU);
-        auto.initGlyphHardware();
+        motor = hardwareMap.get(DcMotor.class, "motor");
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         while (!isStarted()) {
-            telemetry.addData("Color Sensor: Blue", auto.tapeSensorL.blue());
-            telemetry.addData("Color Sensor: Red", auto.tapeSensorL.red());
+            telemetry.addData("Position", motor.getCurrentPosition());
             telemetry.update();
-
-        }
-//        auto.tapeFinder();
-//        auto.jewelColor();
-        //sleep(5000);
-
-        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(-0.4, 42, 0);
-
-        while (opModeIsActive()) {
-            telemetry.addData("Tape Sensor: Red", auto.tapeSensorL.red());
-            telemetry.update(); //Tells the intensity of the color we are looking for
         }
 
-        //auto.initVuforia();
-        //auto.pictographID(); //run Vuforia method, includes initVuforia()
-
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        int target = 1000;
+        motor.setTargetPosition(target);
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor.setPower(0.3);
+        while (opModeIsActive() && motor.isBusy()) {
+            telemetry.addData("Target", target);
+            telemetry.addData("Position", motor.getCurrentPosition());
+            telemetry.update();
+        }
+        motor.setPower(0);
+        while (opModeIsActive());
     }
 }

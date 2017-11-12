@@ -57,7 +57,7 @@ public class PickupHardware
         leftServo = hwMap.get(Servo.class, "leftPickup") ;
         rightServo = hwMap.get(Servo.class, "rightPickup") ;
         wristServo = hwMap.get(Servo.class, "wristServo") ;
-        armMotor = new FtcDcMotor("arm");
+        armMotor = new FtcDcMotor("armMotor");
         touchSensor = hwMap.get(DigitalChannel.class, "touchSensor") ;
     }
 }
