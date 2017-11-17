@@ -428,8 +428,12 @@ public class AutonomousActions {
     }
 
     void positionUsingTape() throws InterruptedException {
-        ElapsedTime time = new ElapsedTime();
-        boolean far = false;
+        //ElapsedTime time = new ElapsedTime();
+
+        boolean current;   // Used to make sure only the 2nd tape is read and not the 1st
+        boolean previous;
+        boolean far = false; // Tells whether 1st sensor reaches 2nd tapee before 2nd sensor reaches 1st tape
+
         if (allianceColor == AllianceColor.BLUE) {
             mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.7, 90, 0);
             while (opMode.opModeIsActive() && tapeSensorL.blue() < BLUE_THRESHOLD) {
@@ -438,13 +442,16 @@ public class AutonomousActions {
                 telemetry.addData("Boolean Far", far);
                 telemetry.update(); //Tells the intensity of the blue color we are looking for
             }
-            time.reset();
+            current = true;
+            //time.reset();
             while (opMode.opModeIsActive() && tapeSensorR.blue() < BLUE_THRESHOLD) {
                 telemetry.addData("Left Tape Sensor: Blue", tapeSensorL.blue());
                 telemetry.addData("Right Tape Sensor: Blue", tapeSensorR.blue());
                 telemetry.addData("Boolean Far", far);
                 telemetry.update(); //Tells the intensity of the blue color we are looking for
-                if (tapeSensorL.blue() > BLUE_THRESHOLD && time.milliseconds() > 300) {
+                previous = current;
+                current = tapeSensorL.blue() > BLUE_THRESHOLD;
+                if (current && !previous) { // 2nd tape is only detected when 1st sensor goes from black to tape
                     far = true;
                 }
             }
@@ -461,7 +468,6 @@ public class AutonomousActions {
                 telemetry.addData("Left Tape Sensor: Blue", tapeSensorL.blue());
                 telemetry.addData("Right Tape Sensor: Blue", tapeSensorR.blue());
                 telemetry.addData("Boolean Far", far);
-                telemetry.addData("Boolean Far", far);
                 telemetry.update(); //Tells the intensity of the blue color we are looking for
             }
         }
@@ -473,13 +479,16 @@ public class AutonomousActions {
                 telemetry.addData("Boolean Far", far);
                 telemetry.update(); //Tells the intensity of the blue color we are looking for
             }
-            time.reset();
+            current = true;
+            //time.reset();
             while (opMode.opModeIsActive() && tapeSensorL.red() < RED_THRESHOLD) {
                 telemetry.addData("Left Tape Sensor: Red", tapeSensorL.red());
                 telemetry.addData("Right Tape Sensor: Red", tapeSensorR.red());
                 telemetry.addData("Boolean Far", far);
                 telemetry.update(); //Tells the intensity of the blue color we are looking for
-                if (tapeSensorR.red() > RED_THRESHOLD && time.milliseconds() > 300) {
+                previous = current;
+                current = tapeSensorR.red() > RED_THRESHOLD;
+                if (current && !previous) { // 2nd tape is only detected when 1st sensor goes from black to tape
                     far = true;
                 }
             }
@@ -680,6 +689,9 @@ public class AutonomousActions {
         double angDiff = (turnAngle - angleZ) % 360;
         if (360 - Math.abs(angDiff) < Math.abs(angDiff))
             angDiff = -(360 * Math.signum(angDiff) - angDiff);
+
+
+
 
         telemetry.log().add("Angle Difference: " + angDiff);
         telemetry.update();
