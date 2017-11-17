@@ -5,6 +5,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -316,6 +317,7 @@ public class AutonomousActions {
             telemetry.update();
         }
         mecanumDriveBase.mecanumDrive.stop();
+        encoderDrive(0.6, 700, 2);
 
         if (allianceColor == AllianceColor.BLUE) {
             turn(90);
@@ -324,13 +326,14 @@ public class AutonomousActions {
         }
 
         //tapeFinder();
-        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.6, 0, 0);
-        opMode.sleep(1000); //TODO: replace with encoder drive
-        mecanumDriveBase.mecanumDrive.stop();
-        positionUsingTape();
-        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 0, 0);
-        opMode.sleep(400);
-        mecanumDriveBase.mecanumDrive.stop();
+        encoderDrive(0.6, 2000, 3);
+//        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.6, 0, 0);
+//        opMode.sleep(1000); //TODO: replace with encoder drive
+//        mecanumDriveBase.mecanumDrive.stop();
+//        positionUsingTape();
+//        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 0, 0);
+//        opMode.sleep(400);
+//        mecanumDriveBase.mecanumDrive.stop();
 
 //        ElapsedTime time = new ElapsedTime();
 //        time.reset();
@@ -577,6 +580,63 @@ public class AutonomousActions {
         pickupHw.leftServo.setPosition(0.52);
         pickupHw.rightServo.setPosition(0.5);
     }
+
+    public void encoderDrive(double speed,
+                             double encoderCounts,
+                             double timeoutS) {
+        int newLeftTarget;
+        int newRightTarget;
+        DcMotor motorL = mecanumDriveBase.leftBackMotor.motor;
+        DcMotor motorR = mecanumDriveBase.rightBackMotor.motor;
+
+        // Ensure that the opmode is still active
+        if (opMode.opModeIsActive()) {
+
+            // Determine new target position, and pass to motor controller
+            newLeftTarget = motorL.getCurrentPosition() + (int)(encoderCounts);
+            newRightTarget = motorR.getTargetPosition() + (int)(encoderCounts);
+            motorL.setTargetPosition(newLeftTarget);
+            motorR.setTargetPosition(newRightTarget);
+
+            // Turn On RUN_TO_POSITION
+            motorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            ElapsedTime runtime = new ElapsedTime();
+            runtime.reset();
+            mecanumDriveBase.setBrakeModeEnabled(true);
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(speed, 0, 0);
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opMode.opModeIsActive() &&
+                    (runtime.seconds() < timeoutS) &&
+                    (motorL.isBusy()) && motorR.isBusy()) {
+
+                // Display it for the driver.
+                telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
+                telemetry.addData("Path2",  "Running at %7d :%7d",
+                        motorL.getCurrentPosition(),
+                        motorR.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            mecanumDriveBase.mecanumDrive.stop();
+
+            // Turn off RUN_TO_POSITION
+            motorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            motorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            //  sleep(250);   // optional pause after each move
+        }
+    }
+
 
     public void turn(int turnAngle, double power) throws InterruptedException {
 
