@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import ftclib.FtcOpMode;
@@ -41,7 +42,7 @@ import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
  * Rotates Servo between min and max position or rotatescontinuaou
  */
 @Autonomous(name = "Auto 2", group = "Concept")
-@Disabled
+//@Disabled
 public class AutoTest2 extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
@@ -82,12 +83,14 @@ public class AutoTest2 extends FtcOpMode {
 
         //auto.jewelColor();
         //auto.glyphPickup();
-        //auto.driveToCryptobox();
-        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 222, 0);
+        auto.encoderDrive(0.6, 700, 2);
+        auto.mecanumDriveBase.leftBackMotor.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        auto.mecanumDriveBase.rightBackMotor.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //sleep(5000);
         while (opModeIsActive()) {
-            telemetry.addData("Moving Away:", auto.moveAwayFromColor());
+            telemetry.addData("Left encoder position:", auto.mecanumDriveBase.leftBackMotor.motor.getCurrentPosition());
+            telemetry.addData("Right encoder position:", auto.mecanumDriveBase.rightBackMotor.motor.getCurrentPosition());
             telemetry.update();
         }
 

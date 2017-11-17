@@ -63,7 +63,7 @@ public class AutoTest1 extends FtcOpMode {
         auto.initOpmode(this);
         auto.initMecanum();
         //auto.initVuforia();
-        auto.initAlliance(AllianceColor.BLUE);
+        auto.initAlliance(AllianceColor.RED);
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
@@ -82,8 +82,7 @@ public class AutoTest1 extends FtcOpMode {
         //sleep(5000);
         auto.driveToCryptobox();
         while (opModeIsActive()) {
-            //telemetry.addData("Moving Away:", auto.moveAwayFromColor());
-            //auto.place1stGlyph();
+            telemetry.addData("Encoder position:", auto.mecanumDriveBase.leftBackMotor.motor.getCurrentPosition());
             telemetry.update();
         }
 
