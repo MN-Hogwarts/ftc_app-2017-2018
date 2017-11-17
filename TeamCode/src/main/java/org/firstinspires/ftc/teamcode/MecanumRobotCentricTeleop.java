@@ -71,13 +71,16 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
     private TrcServo jewelServo = null;
     private Servo wristServo;
     private Servo leftPickupServo, rightPickupServo;
-    private Servo glyphServo;
+    private Servo relicServo;
     private DigitalChannel touchSensor ;
     private PickupHardware pickupHw = new PickupHardware();
     static double wristServoValue = 0.04;
-    private static double gyroKp = 0.3;
+    private static double gyroKp = 0.5;
     private static double gyroScale = 0.5;
     private boolean turtleMode = false;
+    private double magnitude = 0;
+    private boolean adjustGyroScale = true;
+    private double relicServPos = 0.3;
 
     @Override
     public void init_loop() {
@@ -111,7 +114,7 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
         rightPickupServo = this.hardwareMap.get(Servo.class, "rightPickup");
         wristServo = this.hardwareMap.get(Servo.class, "wristServo");
         touchSensor = hardwareMap.get(DigitalChannel.class, "touchSensor");
-        glyphServo = hardwareMap.get(Servo.class, "glyphServo");
+        relicServo = hardwareMap.get(Servo.class, "relicServo");
         //pickupHw.init(hardwareMap);
 
         gyro = new SWIMUGyro(hardwareMap, "imu", null);
@@ -144,7 +147,7 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
         gamepad = new SWGamePad("driver gamepad", gamepad1, 0.05F);
         gamepad.enableDebug(true);
 
-        //driveBase.enableGyroAssist(gyroScale, gyroKp);
+        driveBase.enableGyroAssist(gyroScale, gyroKp);
         /*
         triggerServo = hardwareMap.servo.get("triggerServo");
         angularServo = hardwareMap.servo.get("pixyyaxis");
@@ -167,6 +170,26 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
         */
 
         new Thread(this).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (OP_MODE_IS_ACTIVE){
+                    gamepad.setYInverted(setYInverted);
+                    double rotation = gamepad.getRightStickX()*-1;
+                    magnitude = Range.clip(gamepad.getLeftStickMagnitude(), 0, 1);
+                    if(turtleMode)
+                        magnitude = magnitude/2;
+
+                    double direction = gamepad.getLeftStickDirectionDegrees(true);
+
+                    if(gamepad.getLeftStickX() == 0 && gamepad.getLeftStickY() == 0)
+                        magnitude = 0;
+
+                    //driveBase.mecanumDrive_XPolarFieldCentric(magnitude, direction, rotation);
+                    driveBase.mecanumDrive_XPolar(magnitude, direction, rotation);
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -176,6 +199,7 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
         taskMgr.executeTaskType(TrcTaskMgr.TaskType.PREPERIODIC_TASK, TrcRobot.RunMode.AUTO_MODE);
         taskMgr.executeTaskType(TrcTaskMgr.TaskType.PRECONTINUOUS_TASK, TrcRobot.RunMode.AUTO_MODE);
 
+        /*
         gamepad.setYInverted(setYInverted);
         double rotation = gamepad.getRightStickX()*-1;
         double magnitude = Range.clip(gamepad.getLeftStickMagnitude(), 0, 1);
@@ -189,6 +213,33 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
 
         //driveBase.mecanumDrive_XPolarFieldCentric(magnitude, direction, rotation);
         driveBase.mecanumDrive_XPolar(magnitude, direction, rotation);
+        */
+
+        if(gamepad1.x){
+            adjustGyroScale = true;
+        } else if (gamepad1.y){
+            adjustGyroScale = false;
+        }
+
+        if (adjustGyroScale){
+            if(gamepad1.dpad_up){
+                gyroScale = gyroScale + 0.05;
+                gyroScale = Range.clip(gyroScale, 0, 1);
+            } else if(gamepad1.dpad_down){
+                gyroScale = gyroScale - 0.05;
+                gyroScale = Range.clip(gyroScale, 0, 1);
+            }
+        } else {
+            if(gamepad1.dpad_up){
+                gyroKp = gyroKp + 0.05;
+                gyroKp = Range.clip(gyroKp, 0, 1);
+            } else if(gamepad1.dpad_down){
+                gyroKp = gyroKp - 0.05;
+                gyroKp = Range.clip(gyroKp, 0, 1);
+            }
+        }
+
+        driveBase.enableGyroAssist(gyroScale, gyroKp);
 
         if(gamepad1.a){
             turtleMode = true;
@@ -262,11 +313,15 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
 
         armMotor.setPower(gamepad2.left_stick_y*armMotorSpeedLimiter);
 
-        if (gamepad2.dpad_left){
-            glyphServo.setPosition(0.3);
-        } else if (gamepad2.dpad_right){
-            glyphServo.setPosition(0.4);
+        if (gamepad1.dpad_right){
+            //relicServo.setPosition(0.3);
+            relicServPos = 0.3;
+        } else if (gamepad1.dpad_left){
+            //relicServo.setPosition(0.7);
+            relicServPos = 0.7;
         }
+
+        //relicServo.setPosition(relicServPos);
 
         /*
         if(SHOOTER_MOTORS_REVERSE){
