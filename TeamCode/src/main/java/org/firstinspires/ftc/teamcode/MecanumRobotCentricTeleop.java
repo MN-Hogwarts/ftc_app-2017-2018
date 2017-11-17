@@ -75,8 +75,8 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
     private DigitalChannel touchSensor ;
     private PickupHardware pickupHw = new PickupHardware();
     static double wristServoValue = 0.04;
-    private static double gyroKp = 0.5;
-    private static double gyroScale = 0.5;
+    private static double gyroKp = 0.;
+    private static double gyroScale = 0.;
     private boolean turtleMode = false;
     private double magnitude = 0;
     private boolean adjustGyroScale = true;
@@ -321,7 +321,7 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
             relicServPos = 0.7;
         }
 
-        //relicServo.setPosition(relicServPos);
+        relicServo.setPosition(relicServPos);
 
         /*
         if(SHOOTER_MOTORS_REVERSE){
