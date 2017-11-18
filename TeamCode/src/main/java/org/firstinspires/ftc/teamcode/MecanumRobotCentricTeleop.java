@@ -80,8 +80,9 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
     private boolean turtleMode = false;
     private double magnitude = 0;
     private boolean adjustGyroScale = true;
-    private double relicServPos = 0.3;
+    private double relicServPos = 0.7;
 
+    /*
     @Override
     public void init_loop() {
         super.init_loop();
@@ -89,11 +90,13 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
         taskMgr.executeTaskType(TrcTaskMgr.TaskType.PRECONTINUOUS_TASK, TrcRobot.RunMode.TELEOP_MODE);
     }
 
+
     @Override
     public void start() {
         super.start();
         taskMgr.executeTaskType(TrcTaskMgr.TaskType.START_TASK, TrcRobot.RunMode.TELEOP_MODE);
     }
+    */
 
     @Override
     public void stop() {
@@ -190,6 +193,76 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
                 }
             }
         }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (OP_MODE_IS_ACTIVE){
+                    if(gamepad2.dpad_up){
+                        armMotorSpeedLimiter = armMotorSpeedLimiter + 0.01;
+                    } else if(gamepad2.dpad_down){
+                        armMotorSpeedLimiter = armMotorSpeedLimiter - 0.01;
+                    }
+
+                    armMotorSpeedLimiter = Range.clip(armMotorSpeedLimiter, 0, 1);
+
+                    armMotor.setPower(gamepad2.left_stick_y*armMotorSpeedLimiter);
+
+                    if (gamepad1.dpad_right){
+                        //relicServo.setPosition(0.3);
+                        relicServPos = 0.3;
+                    } else if (gamepad1.dpad_left){
+                        //relicServo.setPosition(0.7);
+                        relicServPos = 0.7;
+                    }
+
+                    relicServo.setPosition(relicServPos);
+                }
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (OP_MODE_IS_ACTIVE){
+                    if (gamepad2.b) {
+                        leftPickupServo.setPosition(-1.0);
+                        rightPickupServo.setPosition(1.0);
+                    } //If touch sensor is pressed, stop wheels. If 'A' is pressed, run wheels. If neither is pressed, stop wheels
+                    else if (!touchSensor.getState()) {
+                        leftPickupServo.setPosition(0.53);
+                        rightPickupServo.setPosition(0.5);
+                    } //Turn inward
+                    else if (gamepad2.a) {
+                        leftPickupServo.setPosition(1.0);
+                        rightPickupServo.setPosition(-1.0);
+                    } //Stop wheels
+                    else if (gamepad2.left_bumper) {
+                        leftPickupServo.setPosition(1.0);
+                        rightPickupServo.setPosition(0.5);
+                    }
+                    else if (gamepad2.right_bumper) {
+                        rightPickupServo.setPosition(-1.0);
+                        leftPickupServo.setPosition(0.53);
+                    }
+                    else {
+                        leftPickupServo.setPosition(0.53);
+                        rightPickupServo.setPosition(0.5);
+                    }
+
+                    if (gamepad2.y){
+                        wristServo.setPosition(1);
+                        //wristServoValue = wristServoValue + 0.05;
+                    } else if (gamepad2.x) {
+                        //wristServoValue = Range.clip(wristServoValue, -1.0, 1.0);
+                        //wristServo.setPosition(wristServoValue);
+                        wristServo.setPosition(0);
+                    } else {
+                        wristServo.setPosition(0.5);
+                    }
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -239,7 +312,7 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
             }
         }
 
-        driveBase.enableGyroAssist(gyroScale, gyroKp);
+        //driveBase.enableGyroAssist(gyroScale, gyroKp);
 
         if(gamepad1.a){
             turtleMode = true;
@@ -250,20 +323,10 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
         if(gamepad1.left_bumper){
             //gyroScale += 0.05;
             jewelServo.setPosition(0.9);
-        } else if(gamepad1.left_trigger > 0.3){
-            //gyroScale -= 0.05;
-        } else {
-            ////driveBase.enableGyroAssist(gyroScale, gyroKp);
         }
 
-        if(gamepad1.right_bumper){
-            //gyroKp += 0.05;
-        } else if(gamepad1.right_trigger > 0.3){
-            //gyroKp -= 0.05;
-        } else {
-            //driveBase.enableGyroAssist(gyroScale, gyroKp);
-        }
 
+        /*
         if (gamepad2.b) {
             leftPickupServo.setPosition(-1.0);
             rightPickupServo.setPosition(1.0);
@@ -289,10 +352,7 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
             rightPickupServo.setPosition(0.5);
         }
 
-        if(gamepad2.a){
-            //wristServo.setPosition(0.5);
-            //wristServoValue = wristServoValue - 0.05;
-        } else if (gamepad2.y){
+        if (gamepad2.y){
             wristServo.setPosition(1);
             //wristServoValue = wristServoValue + 0.05;
         } else if (gamepad2.x) {
@@ -302,7 +362,9 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
         } else {
             wristServo.setPosition(0.5);
         }
+        */
 
+        /*
         if(gamepad2.dpad_up){
             armMotorSpeedLimiter = armMotorSpeedLimiter + 0.01;
         } else if(gamepad2.dpad_down){
@@ -322,6 +384,7 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
         }
 
         relicServo.setPosition(relicServPos);
+        */
 
         /*
         if(SHOOTER_MOTORS_REVERSE){
