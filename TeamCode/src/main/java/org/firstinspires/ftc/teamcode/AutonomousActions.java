@@ -235,6 +235,8 @@ public class AutonomousActions {
             telemetry.addData("Time", time.seconds());
             telemetry.update();
         }
+        telemetry.addData("VuMark", "visible");
+        telemetry.update();
     }
 
     boolean moveAwayFromColor() {
@@ -243,14 +245,28 @@ public class AutonomousActions {
     }
 
     void place1stGlyph() { // TODO: place glyph in correct column
-        if (vuMark == RelicRecoveryVuMark.UNKNOWN)
+
+        if (vuMark == RelicRecoveryVuMark.UNKNOWN) {
             telemetry.addLine("VuMark Unknown");
-        if (vuMark == RelicRecoveryVuMark.LEFT)
+        } if (vuMark == RelicRecoveryVuMark.LEFT) {
             telemetry.addLine("Glyph Left");
-        if (vuMark == RelicRecoveryVuMark.CENTER)
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 90, 0);
+            opMode.sleep(1000);
+            mecanumDriveBase.mecanumDrive.stop();
+        } if (vuMark == RelicRecoveryVuMark.CENTER) {
             telemetry.addLine("Glyph Center");
-        if (vuMark == RelicRecoveryVuMark.RIGHT)
+        } if (vuMark == RelicRecoveryVuMark.RIGHT) {
             telemetry.addLine("Glyph Right");
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 270, 0);
+            opMode.sleep(1000);
+            mecanumDriveBase.mecanumDrive.stop();
+        }
+        telemetry.update();
+
+        pickupHw.wristServo.setPosition(0);
+        opMode.sleep(1000);
+        pickupHw.wristServo.setPosition(0.5);
+
     }
 
     void jewelColor() throws InterruptedException {
@@ -293,7 +309,8 @@ public class AutonomousActions {
         }
         telemetry.update();
         jewelArm.setPosition(1);
-        turn(0);
+        turn(0, 0.3);
+        opMode.sleep(500);
         //colorSensor.enableLed(false);
     }
 
@@ -307,7 +324,7 @@ public class AutonomousActions {
         }
         */
 
-        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(1, 0, 0);
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(.8, 0, 0);
         opMode.sleep(650);
 
 
@@ -317,7 +334,7 @@ public class AutonomousActions {
             telemetry.update();
         }
         mecanumDriveBase.mecanumDrive.stop();
-        encoderDrive(0.6, 700, 2);
+        //encoderDrive(0.5, 400, 2);
 
         if (allianceColor == AllianceColor.BLUE) {
             turn(90);
@@ -326,11 +343,12 @@ public class AutonomousActions {
         }
 
         //tapeFinder();
-        encoderDrive(0.6, 2000, 3);
+        encoderDrive(0.6, 1900, 3);
 //        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.6, 0, 0);
-//        opMode.sleep(1000); //TODO: replace with encoder drive
+//        opMode.sleep(1000);
 //        mecanumDriveBase.mecanumDrive.stop();
-//        positionUsingTape();
+        positionUsingTape();
+        encoderDrive(0.3, 400, 1);
 //        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 0, 0);
 //        opMode.sleep(400);
 //        mecanumDriveBase.mecanumDrive.stop();
@@ -512,6 +530,11 @@ public class AutonomousActions {
             }
         }
         mecanumDriveBase.mecanumDrive.stop();
+        if (allianceColor == AllianceColor.BLUE) {
+            turn(90);
+        } else if (allianceColor == AllianceColor.RED) {
+            turn(270);
+        }
     }
 
     void tapeFinder() {
@@ -550,16 +573,26 @@ public class AutonomousActions {
         mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(0, 0, 0);
     }
 
-    void moveBWFW() {
+    void moveFWBW() {
         ElapsedTime     runtime = new ElapsedTime();
 
-        while (opMode.opModeIsActive() && (runtime.seconds() < 1.0)) {
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 180, 0);
+        while (opMode.opModeIsActive() && (runtime.seconds() < 0.5)) {
             //mecanumMotors.mecanumDrive.mecanumDrive_XPolar(0.5, 0, 0);
         }
+        mecanumDriveBase.mecanumDrive.stop();
         runtime.reset();
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 0, 0);
+        while (opMode.opModeIsActive() && (runtime.seconds() < 0.5)) {
+            //mecanumMotors.mecanumDrive.mecanumDrive_XPolar(0.5, 0, 0);
+        }
+        mecanumDriveBase.mecanumDrive.stop();
+        runtime.reset();
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 180, 0);
         while (opMode.opModeIsActive() && (runtime.seconds() < 0.5)) {
             //mecanumMotors.mecanumDrive.mecanumDrive_XPolar(-0.5, 0, 0);
         }
+        mecanumDriveBase.mecanumDrive.stop();
         //mecanumMotors.mecanumDrive.stop();
     }
 

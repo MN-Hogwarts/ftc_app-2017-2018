@@ -62,7 +62,7 @@ public class AutoTest5 extends FtcOpMode {
         auto.initOpmode(this);
         auto.initMecanum();
 
-        //auto.initVuforia();
+        auto.initVuforia();
         auto.initAlliance(AllianceColor.BLUE);
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
@@ -83,28 +83,31 @@ public class AutoTest5 extends FtcOpMode {
 //        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 90, 0);
 //        sleep(500);
 //        auto.mecanumDrive.stop();
+        auto.pictographID();
         auto.jewelColor();
         auto.driveToCryptobox();
+        auto.place1stGlyph();
         auto.ejectGlyph();
-        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
-        sleep(350);
-        auto.mecanumDriveBase.mecanumDrive.stop();
-
-        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(1.0, 0, 0);
-        sleep(600);
-        auto.mecanumDriveBase.mecanumDrive.stop();
-
-        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
-        sleep(400);
-        auto.mecanumDriveBase.mecanumDrive.stop();
+        auto.moveFWBW();
+//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
+//        sleep(350);
+//        auto.mecanumDriveBase.mecanumDrive.stop();
+//
+//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(1.0, 0, 0);
+//        sleep(600);
+//        auto.mecanumDriveBase.mecanumDrive.stop();
+//
+//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
+//        sleep(400);
+//        auto.mecanumDriveBase.mecanumDrive.stop();
 
         //auto.turn(0);
         //auto.ejectGlyph();
         //sleep(5000);
         while (opModeIsActive()) {
             //telemetry.addData("Moving Away:", auto.moveAwayFromColor());
-            auto.place1stGlyph();
-            telemetry.update();
+//            auto.place1stGlyph();
+//            telemetry.update();
         }
 
         //auto.initVuforia();

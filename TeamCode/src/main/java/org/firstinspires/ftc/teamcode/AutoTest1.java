@@ -82,7 +82,8 @@ public class AutoTest1 extends FtcOpMode {
         //sleep(5000);
         auto.driveToCryptobox();
         while (opModeIsActive()) {
-            telemetry.addData("Encoder position:", auto.mecanumDriveBase.leftBackMotor.motor.getCurrentPosition());
+            telemetry.addData("Left encoder position:", auto.mecanumDriveBase.leftBackMotor.motor.getCurrentPosition());
+            telemetry.addData("Right encoder position:", auto.mecanumDriveBase.rightBackMotor.motor.getCurrentPosition());
             telemetry.update();
         }
 
