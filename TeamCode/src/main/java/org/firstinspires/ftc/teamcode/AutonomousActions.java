@@ -343,10 +343,22 @@ public class AutonomousActions {
         }
 
         //tapeFinder();
-        encoderDrive(0.6, 1900, 3);
+        encoderDrive(0.6, 2500, 3);
 //        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.6, 0, 0);
 //        opMode.sleep(1000);
 //        mecanumDriveBase.mecanumDrive.stop();
+        ElapsedTime     runtime = new ElapsedTime();
+        if (allianceColor == AllianceColor.BLUE) {
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.7, 270, 0);
+        } else if (allianceColor == AllianceColor.RED) {
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.7, 90, 0);
+        }
+
+        while (opMode.opModeIsActive() && (runtime.seconds() < 1)) {
+            //mecanumMotors.mecanumDrive.mecanumDrive_XPolar(0.5, 0, 0);
+        }
+        mecanumDriveBase.mecanumDrive.stop();
+
         positionUsingTape();
         encoderDrive(0.3, 400, 1);
 //        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 0, 0);
@@ -577,19 +589,26 @@ public class AutonomousActions {
         ElapsedTime     runtime = new ElapsedTime();
 
         mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 180, 0);
-        while (opMode.opModeIsActive() && (runtime.seconds() < 0.5)) {
+        while (opMode.opModeIsActive() && (runtime.seconds() < 0.2)) {
             //mecanumMotors.mecanumDrive.mecanumDrive_XPolar(0.5, 0, 0);
+        }
+        mecanumDriveBase.mecanumDrive.stop();
+        opMode.sleep(500);
+        runtime.reset();
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 180, 0);
+        while (opMode.opModeIsActive() && (runtime.seconds() < 0.2)) {
+            //mecanumMotors.mecanumDrive.mecanumDrive_XPolar(-0.5, 0, 0);
         }
         mecanumDriveBase.mecanumDrive.stop();
         runtime.reset();
         mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 0, 0);
-        while (opMode.opModeIsActive() && (runtime.seconds() < 0.5)) {
+        while (opMode.opModeIsActive() && (runtime.seconds() < 0.4)) {
             //mecanumMotors.mecanumDrive.mecanumDrive_XPolar(0.5, 0, 0);
         }
         mecanumDriveBase.mecanumDrive.stop();
         runtime.reset();
         mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 180, 0);
-        while (opMode.opModeIsActive() && (runtime.seconds() < 0.5)) {
+        while (opMode.opModeIsActive() && (runtime.seconds() < 0.4)) {
             //mecanumMotors.mecanumDrive.mecanumDrive_XPolar(-0.5, 0, 0);
         }
         mecanumDriveBase.mecanumDrive.stop();
