@@ -56,6 +56,8 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
     private FtcDcMotor leftRearMotor;
     private FtcDcMotor rightFrontMotor;
     private FtcDcMotor rightRearMotor;
+    private FtcDcMotor armMotor;
+    private double armMotorSpeedLimiter = 0.3;
     private SwDriveBase driveBase = null;
     private SWIMUGyro gyro = null;
     private SWGamePad gamepad;
@@ -70,6 +72,7 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
     private Servo wristServo;
     private Servo leftPickupServo, rightPickupServo;
     private DigitalChannel touchSensor ;
+    private PickupHardware pickupHw = new PickupHardware();
     static double wristServoValue = 0.04;
     private static double gyroKp = 0.3;
     private static double gyroScale = 0.5;
@@ -107,6 +110,7 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
         rightPickupServo = this.hardwareMap.get(Servo.class, "rightPickup");
         wristServo = this.hardwareMap.get(Servo.class, "wristServo");
         touchSensor = hardwareMap.get(DigitalChannel.class, "touchSensor");
+        pickupHw.init(hardwareMap);
 
         gyro = new SWIMUGyro(hardwareMap, "imu", null);
         gyro.calibrate();
@@ -115,6 +119,9 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
         leftRearMotor = new FtcDcMotor(this.hardwareMap, "leftRear", null, null);
         rightFrontMotor = new FtcDcMotor(this.hardwareMap, "rightFront", null, null);
         rightRearMotor = new FtcDcMotor(this.hardwareMap, "rightRear", null, null);
+        armMotor = new FtcDcMotor(this.hardwareMap, "armMotor", null, null);
+
+        armMotor.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         leftFrontMotor.setInverted(true);
         leftRearMotor.setInverted(true);
@@ -127,7 +134,7 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
         driveBase = new SwDriveBase(
                 leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor, gyro);
         /*driveBase = new TrcDriveBase(
-                leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor);*/
+                leftFrontMotor, leftRearMotor, rightFrontMo tor, rightRearMotor);*/
 
         gyro.setEnabled(true);
 
@@ -234,6 +241,16 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
             wristServo.setPosition(0.5);
         }
 
+        if(gamepad2.dpad_up){
+            armMotorSpeedLimiter = armMotorSpeedLimiter + 0.01;
+        } else if(gamepad2.dpad_down){
+            armMotorSpeedLimiter = armMotorSpeedLimiter - 0.01;
+        }
+
+        armMotorSpeedLimiter = Range.clip(armMotorSpeedLimiter, 0, 1);
+
+        armMotor.setPower(gamepad2.left_stick_y*armMotorSpeedLimiter);
+
         /*
         if(SHOOTER_MOTORS_REVERSE){
             leftShooter.setPower(REVERSE_SHOOTER_POWER);
@@ -250,6 +267,7 @@ public class MecanumRobotCentricTeleop extends OpMode implements SWGamePad.Butto
         dashboard.displayPrintf(2, LABEL_WIDTH, "servo position: ", "%1.3f", triggerServo.getPosition());
         dashboard.displayPrintf(4, LABEL_WIDTH, "rotation: ", "%.2f", rotation);
         */
+        dashboard.displayPrintf(1, LABEL_WIDTH, "speedLimiter: ", "%1.6f", armMotorSpeedLimiter);
         dashboard.displayPrintf(2, LABEL_WIDTH, "imu z: ", "%.2f", gyro.getZRotationRate().value);
         dashboard.displayPrintf(3, LABEL_WIDTH, "gamepad left stick mag: ", "%.2f", magnitude);
         dashboard.displayPrintf(4, LABEL_WIDTH, "wristValue: ", "%1.2f", wristServo.getPosition());

@@ -35,7 +35,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import ftclib.FtcOpMode;
 
-import static org.firstinspires.ftc.teamcode.AngleMeasureHw.GYRO;
 import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
 
 /**
@@ -61,7 +60,7 @@ public class AutoTest2 extends FtcOpMode {
     @Override
     public void runOpMode() throws InterruptedException{
 
-        auto.initOpmode(this, hardwareMap);
+        auto.initOpmode(this);
         auto.initMecanum();
 
         //auto.initVuforia();
@@ -72,8 +71,8 @@ public class AutoTest2 extends FtcOpMode {
             telemetry.addLine("Hi");
             telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
             telemetry.addData("Color Sensor red", auto.colorSensor.red());
-            telemetry.addData("Bottom Sensor blue", auto.tapeSensor.blue());
-            telemetry.addData("Bottom Sensor red", auto.tapeSensor.red());
+            telemetry.addData("Bottom Sensor blue", auto.tapeSensorL.blue());
+            telemetry.addData("Bottom Sensor red", auto.tapeSensorL.red());
             telemetry.addData("Angle X", auto.getAngleX());
             telemetry.addData("Angle Y", auto.getAngleY());
             telemetry.addData("Angle Z", auto.getAngleZ());
