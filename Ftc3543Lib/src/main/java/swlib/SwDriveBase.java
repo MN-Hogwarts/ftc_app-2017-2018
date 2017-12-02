@@ -26,7 +26,7 @@ import trclib.TrcDbgTrace;
 import trclib.TrcGyro;
 import trclib.TrcMotorController;
 import trclib.TrcRobot;
-import trclib.TrcTaskMgr;
+//import trclib.TrcTaskMgr;
 import trclib.TrcUtil;
 
 /**
@@ -34,7 +34,7 @@ import trclib.TrcUtil;
  * consist of 2 to 6 motors. It supports tank drive, arcade drive and mecanum drive with motor stalled detection and
  * inverted drive mode. It also supports gyro assisted drive to keep robot driving straight.
  */
-public class SwDriveBase implements TrcTaskMgr.Task
+public class SwDriveBase /*implements TrcTaskMgr.Task*/
 {
     private static final String moduleName = "TrcDriveBase";
     private static final boolean debugEnabled = false;
@@ -134,10 +134,6 @@ public class SwDriveBase implements TrcTaskMgr.Task
         yScale = 1.0;
         rotScale = 1.0;
         resetPosition(true);
-
-        TrcTaskMgr taskMgr = TrcTaskMgr.getInstance();
-        taskMgr.registerTask(moduleName, this, TrcTaskMgr.TaskType.STOP_TASK);
-        taskMgr.registerTask(moduleName, this, TrcTaskMgr.TaskType.PRECONTINUOUS_TASK);
     }   //commonInit
 
     /**
@@ -1339,6 +1335,7 @@ public class SwDriveBase implements TrcTaskMgr.Task
     // Implements TrcTaskMgr.Task
     //
 
+    /*
     @Override
     public void startTask(TrcRobot.RunMode runMode)
     {
@@ -1349,6 +1346,8 @@ public class SwDriveBase implements TrcTaskMgr.Task
      *
      * @param runMode specifies the competition mode that is about to end (e.g. Autonomous, TeleOp, Test).
      */
+
+    /*
     @Override
     public void stopTask(TrcRobot.RunMode runMode)
     {
@@ -1385,6 +1384,8 @@ public class SwDriveBase implements TrcTaskMgr.Task
      *
      * @param runMode specifies the competition mode that is running. (e.g. Autonomous, TeleOp, Test).
      */
+
+    /*
     @Override
     public void preContinuousTask(TrcRobot.RunMode runMode)
     {
@@ -1537,5 +1538,6 @@ public class SwDriveBase implements TrcTaskMgr.Task
     public void postContinuousTask(TrcRobot.RunMode runMode)
     {
     }   //postContinuousTask
+    */
 
 }   //class TrcDriveBase
