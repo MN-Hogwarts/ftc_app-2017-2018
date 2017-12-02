@@ -39,7 +39,7 @@ import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
  */
-@Autonomous(name = "Auto Alliance Detction", group = "Concept")
+@Autonomous(name = "Auto Alliance Detection", group = "Concept")
 //@Disabled
 public class AutoAllianceDetection extends FtcOpMode {
 
@@ -48,7 +48,6 @@ public class AutoAllianceDetection extends FtcOpMode {
     // Define class members
     Servo   servo;
     double  position = .55;//(MAX_POS - MIN_POS) / 2; // Start at halfway position
-    boolean rampUp = true;
 
 
     @Override
