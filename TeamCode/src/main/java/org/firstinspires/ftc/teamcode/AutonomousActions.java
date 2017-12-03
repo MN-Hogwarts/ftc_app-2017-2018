@@ -82,11 +82,11 @@ public class AutonomousActions {
 
     void init(FtcOpMode opMode, AllianceColor allianceColor, AngleMeasureHw angleMeasureHw) {
         initOpmode(opMode);
-        initAlliance(allianceColor);
         initMecanum();
         initVuforia();
         initJewelHardware(angleMeasureHw);
         initGlyphHardware();
+        initAlliance(allianceColor);
     }
 
     void initOpmode(FtcOpMode opMode) {
