@@ -58,6 +58,8 @@ public class AutoBlue2 extends FtcOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException{
+        Servo relicServo = hardwareMap.get(Servo.class, "relicServo");
+        relicServo.setPosition(0.7);
 
         auto.initOpmode(this);
         auto.initMecanum();

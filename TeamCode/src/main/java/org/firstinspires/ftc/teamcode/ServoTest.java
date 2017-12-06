@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -37,7 +38,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Rotates Servo between min and max position or rotatescontinuaou
  */
 @Autonomous(name = "Concept: Scan Servo", group = "Concept")
-//@Disabled
+@Disabled
 public class ServoTest extends LinearOpMode {
 
     static final double INCREMENT   = 0.01;     // amount to slew leftServo each CYCLE_MS cycle

@@ -5,6 +5,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -37,7 +38,8 @@ public class AutonomousActions {
     int   RED_THRESHOLD  = (100);
     int   BLUE_THRESHOLD = (60);
     double WALL_DISTANCE = 20;
-
+    private static double gyroKp = 0.3;
+    private static double gyroScale = 0.5;
     FtcOpMode opMode;
     HardwareMap hardwareMap;
     Telemetry telemetry;
@@ -80,11 +82,11 @@ public class AutonomousActions {
 
     void init(FtcOpMode opMode, AllianceColor allianceColor, AngleMeasureHw angleMeasureHw) {
         initOpmode(opMode);
-        initAlliance(allianceColor);
         initMecanum();
         initVuforia();
         initJewelHardware(angleMeasureHw);
         initGlyphHardware();
+        initAlliance(allianceColor);
     }
 
     void initOpmode(FtcOpMode opMode) {
@@ -94,7 +96,16 @@ public class AutonomousActions {
     }
 
     void initAlliance(AllianceColor allianceColor) {
-        this.allianceColor = allianceColor;
+        if(tapeSensorR.red() > RED_THRESHOLD && tapeSensorL.red() > RED_THRESHOLD) {
+            initAlliance(AllianceColor.RED);
+            telemetry.addLine("Alliance Color: RED");
+            telemetry.update();
+        }
+        else{
+            initAlliance(AllianceColor.BLUE);
+            telemetry.addLine("Alliance Color: BLUE");
+            telemetry.update();
+        }
     }
 
     void initMecanum() {
@@ -233,6 +244,8 @@ public class AutonomousActions {
             telemetry.addData("Time", time.seconds());
             telemetry.update();
         }
+        telemetry.addData("VuMark", "visible");
+        telemetry.update();
     }
 
     boolean moveAwayFromColor() {
@@ -241,14 +254,28 @@ public class AutonomousActions {
     }
 
     void place1stGlyph() { // TODO: place glyph in correct column
-        if (vuMark == RelicRecoveryVuMark.UNKNOWN)
+
+        if (vuMark == RelicRecoveryVuMark.UNKNOWN) {
             telemetry.addLine("VuMark Unknown");
-        if (vuMark == RelicRecoveryVuMark.LEFT)
+        } if (vuMark == RelicRecoveryVuMark.LEFT) {
             telemetry.addLine("Glyph Left");
-        if (vuMark == RelicRecoveryVuMark.CENTER)
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 90, 0);
+            opMode.sleep(1000);
+            mecanumDriveBase.mecanumDrive.stop();
+        } if (vuMark == RelicRecoveryVuMark.CENTER) {
             telemetry.addLine("Glyph Center");
-        if (vuMark == RelicRecoveryVuMark.RIGHT)
+        } if (vuMark == RelicRecoveryVuMark.RIGHT) {
             telemetry.addLine("Glyph Right");
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 270, 0);
+            opMode.sleep(1000);
+            mecanumDriveBase.mecanumDrive.stop();
+        }
+        telemetry.update();
+
+        pickupHw.wristServo.setPosition(0);
+        opMode.sleep(1000);
+        pickupHw.wristServo.setPosition(0.5);
+
     }
 
     void jewelColor() throws InterruptedException {
@@ -291,7 +318,8 @@ public class AutonomousActions {
         }
         telemetry.update();
         jewelArm.setPosition(1);
-        turn(0);
+        turn(0, 0.3);
+        opMode.sleep(500);
         //colorSensor.enableLed(false);
     }
 
@@ -305,7 +333,7 @@ public class AutonomousActions {
         }
         */
 
-        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(1, 0, 0);
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(.8, 0, 0);
         opMode.sleep(650);
 
 
@@ -315,14 +343,36 @@ public class AutonomousActions {
             telemetry.update();
         }
         mecanumDriveBase.mecanumDrive.stop();
+        //encoderDrive(0.5, 400, 2);
 
         if (allianceColor == AllianceColor.BLUE) {
-            turn(105);
+            turn(90);
         } else if (allianceColor == AllianceColor.RED) {
-            turn(260);
+            turn(270);
         }
 
-        tapeFinder();
+        //tapeFinder();
+        encoderDrive(0.6, 2500, 3);
+//        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.6, 0, 0);
+//        opMode.sleep(1000);
+//        mecanumDriveBase.mecanumDrive.stop();
+        ElapsedTime     runtime = new ElapsedTime();
+        if (allianceColor == AllianceColor.BLUE) {
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.7, 270, 0);
+        } else if (allianceColor == AllianceColor.RED) {
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.7, 90, 0);
+        }
+
+        while (opMode.opModeIsActive() && (runtime.seconds() < 1)) {
+            //mecanumMotors.mecanumDrive.mecanumDrive_XPolar(0.5, 0, 0);
+        }
+        mecanumDriveBase.mecanumDrive.stop();
+
+        positionUsingTape();
+        encoderDrive(0.3, 400, 1);
+//        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 0, 0);
+//        opMode.sleep(400);
+//        mecanumDriveBase.mecanumDrive.stop();
 
 //        ElapsedTime time = new ElapsedTime();
 //        time.reset();
@@ -362,7 +412,8 @@ public class AutonomousActions {
 
     void rangeTurn() {
         if (rightRange.getDistance(DistanceUnit.CM) > leftRange.getDistance(DistanceUnit.CM)) {
-            while (Math.abs(rightRange.getDistance(DistanceUnit.CM) - leftRange.getDistance(DistanceUnit.CM)) > 2) {
+            while (opMode.opModeIsActive() &&
+                    Math.abs(rightRange.getDistance(DistanceUnit.CM) - leftRange.getDistance(DistanceUnit.CM)) > 2) {
                 turnLeftWithoutAngle(0.7);
                 telemetry.addData("Right Distance", rightRange.getDistance(DistanceUnit.CM));
                 telemetry.addData("Left Distance", leftRange.getDistance(DistanceUnit.CM));
@@ -370,7 +421,8 @@ public class AutonomousActions {
             }
         }
         else if (rightRange.getDistance(DistanceUnit.CM) < leftRange.getDistance(DistanceUnit.CM)) {
-            while (Math.abs(rightRange.getDistance(DistanceUnit.CM) - leftRange.getDistance(DistanceUnit.CM)) > 2) {
+            while (opMode.opModeIsActive() &&
+                    Math.abs(rightRange.getDistance(DistanceUnit.CM) - leftRange.getDistance(DistanceUnit.CM)) > 2) {
                 turnLeftWithoutAngle(0.7);
                 telemetry.addData("Right Distance", rightRange.getDistance(DistanceUnit.CM));
                 telemetry.addData("Left Distance", leftRange.getDistance(DistanceUnit.CM));
@@ -381,8 +433,9 @@ public class AutonomousActions {
     }
 
     void distanceToWall() {
-        while (Math.abs(leftRange.getDistance(DistanceUnit.CM) - WALL_DISTANCE) > 2
-                || Math.abs(rightRange.getDistance(DistanceUnit.CM) - WALL_DISTANCE) > 2) {
+        while (opMode.opModeIsActive() &&
+                (Math.abs(leftRange.getDistance(DistanceUnit.CM) - WALL_DISTANCE) > 2
+                || Math.abs(rightRange.getDistance(DistanceUnit.CM) - WALL_DISTANCE) > 2)) {
             if (Math.abs(leftRange.getDistance(DistanceUnit.CM) - rightRange.getDistance(DistanceUnit.CM)) > 2) {
                 rangeTurn();
             }
@@ -394,6 +447,115 @@ public class AutonomousActions {
             }
         }
         mecanumDriveBase.mecanumDrive.stop();
+    }
+
+    void distanceToWall1() throws InterruptedException {
+        while (opMode.opModeIsActive() && Math.abs(leftRange.getDistance(DistanceUnit.CM) - WALL_DISTANCE) > 2) {
+            if (getAngleX() > 3) {
+                if (allianceColor == AllianceColor.BLUE) {
+                    turn(90);
+                }
+                else if (allianceColor == AllianceColor.RED) {
+                    turn(270);
+                }
+            }
+            else if (leftRange.getDistance(DistanceUnit.CM) > WALL_DISTANCE) {
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 0, 0);
+            }
+            else if (leftRange.getDistance(DistanceUnit.CM) < WALL_DISTANCE) {
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 180, 0);
+            }
+        }
+        mecanumDriveBase.mecanumDrive.stop();
+    }
+
+    void positionUsingTape() throws InterruptedException {
+        //ElapsedTime time = new ElapsedTime();
+
+        boolean current;   // Used to make sure only the 2nd tape is read and not the 1st
+        boolean previous;
+        boolean far = false; // Tells whether 1st sensor reaches 2nd tapee before 2nd sensor reaches 1st tape
+
+        if (allianceColor == AllianceColor.BLUE) {
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.7, 90, 0);
+            while (opMode.opModeIsActive() && tapeSensorL.blue() < BLUE_THRESHOLD) {
+                telemetry.addData("Left Tape Sensor: Blue", tapeSensorL.blue());
+                telemetry.addData("Right Tape Sensor: Blue", tapeSensorR.blue());
+                telemetry.addData("Boolean Far", far);
+                telemetry.update(); //Tells the intensity of the blue color we are looking for
+            }
+            current = true;
+            //time.reset();
+            while (opMode.opModeIsActive() && tapeSensorR.blue() < BLUE_THRESHOLD) {
+                telemetry.addData("Left Tape Sensor: Blue", tapeSensorL.blue());
+                telemetry.addData("Right Tape Sensor: Blue", tapeSensorR.blue());
+                telemetry.addData("Boolean Far", far);
+                telemetry.update(); //Tells the intensity of the blue color we are looking for
+                previous = current;
+                current = tapeSensorL.blue() > BLUE_THRESHOLD;
+                if (current && !previous) { // 2nd tape is only detected when 1st sensor goes from black to tape
+                    far = true;
+                }
+            }
+            mecanumDriveBase.mecanumDrive.stop();
+            opMode.sleep(400);
+            turn(90);
+            if (far) {
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, -42, 0);
+            }
+            else {
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, -222, 0);
+            }
+            while (opMode.opModeIsActive() && tapeSensorL.blue() < BLUE_THRESHOLD) {
+                telemetry.addData("Left Tape Sensor: Blue", tapeSensorL.blue());
+                telemetry.addData("Right Tape Sensor: Blue", tapeSensorR.blue());
+                telemetry.addData("Boolean Far", far);
+                telemetry.update(); //Tells the intensity of the blue color we are looking for
+            }
+        }
+        else if (allianceColor == AllianceColor.RED) {
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.7, 270, 0);
+            while (opMode.opModeIsActive() && tapeSensorR.red() < RED_THRESHOLD) {
+                telemetry.addData("Left Tape Sensor: Red", tapeSensorL.red());
+                telemetry.addData("Right Tape Sensor: Red", tapeSensorR.red());
+                telemetry.addData("Boolean Far", far);
+                telemetry.update(); //Tells the intensity of the blue color we are looking for
+            }
+            current = true;
+            //time.reset();
+            while (opMode.opModeIsActive() && tapeSensorL.red() < RED_THRESHOLD) {
+                telemetry.addData("Left Tape Sensor: Red", tapeSensorL.red());
+                telemetry.addData("Right Tape Sensor: Red", tapeSensorR.red());
+                telemetry.addData("Boolean Far", far);
+                telemetry.update(); //Tells the intensity of the blue color we are looking for
+                previous = current;
+                current = tapeSensorR.red() > RED_THRESHOLD;
+                if (current && !previous) { // 2nd tape is only detected when 1st sensor goes from black to tape
+                    far = true;
+                }
+            }
+            mecanumDriveBase.mecanumDrive.stop();
+            opMode.sleep(400);
+            turn(270);
+            if (far) {
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 42, 0);
+            }
+            else {
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 222, 0);
+            }
+            while (opMode.opModeIsActive() && tapeSensorR.red() < RED_THRESHOLD) {
+                telemetry.addData("Left Tape Sensor: Red", tapeSensorL.red());
+                telemetry.addData("Right Tape Sensor: Red", tapeSensorR.red());
+                telemetry.addData("Boolean Far", far);
+                telemetry.update(); //Tells the intensity of the blue color we are looking for
+            }
+        }
+        mecanumDriveBase.mecanumDrive.stop();
+        if (allianceColor == AllianceColor.BLUE) {
+            turn(90);
+        } else if (allianceColor == AllianceColor.RED) {
+            turn(270);
+        }
     }
 
     void tapeFinder() {
@@ -432,16 +594,33 @@ public class AutonomousActions {
         mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(0, 0, 0);
     }
 
-    void moveBWFW() {
+    void moveFWBW() {
         ElapsedTime     runtime = new ElapsedTime();
 
-        while (opMode.opModeIsActive() && (runtime.seconds() < 1.0)) {
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 180, 0);
+        while (opMode.opModeIsActive() && (runtime.seconds() < 0.2)) {
             //mecanumMotors.mecanumDrive.mecanumDrive_XPolar(0.5, 0, 0);
         }
+        mecanumDriveBase.mecanumDrive.stop();
+        opMode.sleep(500);
         runtime.reset();
-        while (opMode.opModeIsActive() && (runtime.seconds() < 0.5)) {
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 180, 0);
+        while (opMode.opModeIsActive() && (runtime.seconds() < 0.2)) {
             //mecanumMotors.mecanumDrive.mecanumDrive_XPolar(-0.5, 0, 0);
         }
+        mecanumDriveBase.mecanumDrive.stop();
+        runtime.reset();
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 0, 0);
+        while (opMode.opModeIsActive() && (runtime.seconds() < 0.4)) {
+            //mecanumMotors.mecanumDrive.mecanumDrive_XPolar(0.5, 0, 0);
+        }
+        mecanumDriveBase.mecanumDrive.stop();
+        runtime.reset();
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 180, 0);
+        while (opMode.opModeIsActive() && (runtime.seconds() < 0.4)) {
+            //mecanumMotors.mecanumDrive.mecanumDrive_XPolar(-0.5, 0, 0);
+        }
+        mecanumDriveBase.mecanumDrive.stop();
         //mecanumMotors.mecanumDrive.stop();
     }
 
@@ -462,6 +641,63 @@ public class AutonomousActions {
         pickupHw.leftServo.setPosition(0.52);
         pickupHw.rightServo.setPosition(0.5);
     }
+
+    public void encoderDrive(double speed,
+                             double encoderCounts,
+                             double timeoutS) {
+        int newLeftTarget;
+        int newRightTarget;
+        DcMotor motorL = mecanumDriveBase.leftBackMotor.motor;
+        DcMotor motorR = mecanumDriveBase.rightBackMotor.motor;
+
+        // Ensure that the opmode is still active
+        if (opMode.opModeIsActive()) {
+
+            // Determine new target position, and pass to motor controller
+            newLeftTarget = motorL.getCurrentPosition() + (int)(encoderCounts);
+            newRightTarget = motorR.getTargetPosition() + (int)(encoderCounts);
+            motorL.setTargetPosition(newLeftTarget);
+            motorR.setTargetPosition(newRightTarget);
+
+            // Turn On RUN_TO_POSITION
+            motorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            ElapsedTime runtime = new ElapsedTime();
+            runtime.reset();
+            mecanumDriveBase.setBrakeModeEnabled(true);
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(speed, 0, 0);
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opMode.opModeIsActive() &&
+                    (runtime.seconds() < timeoutS) &&
+                    (motorL.isBusy()) && motorR.isBusy()) {
+
+                // Display it for the driver.
+                telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
+                telemetry.addData("Path2",  "Running at %7d :%7d",
+                        motorL.getCurrentPosition(),
+                        motorR.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            mecanumDriveBase.mecanumDrive.stop();
+
+            // Turn off RUN_TO_POSITION
+            motorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            motorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            //  sleep(250);   // optional pause after each move
+        }
+    }
+
 
     public void turn(int turnAngle, double power) throws InterruptedException {
 
@@ -574,6 +810,9 @@ public class AutonomousActions {
         double angDiff = (turnAngle - angleZ) % 360;
         if (360 - Math.abs(angDiff) < Math.abs(angDiff))
             angDiff = -(360 * Math.signum(angDiff) - angDiff);
+
+
+
 
         telemetry.log().add("Angle Difference: " + angDiff);
         telemetry.update();

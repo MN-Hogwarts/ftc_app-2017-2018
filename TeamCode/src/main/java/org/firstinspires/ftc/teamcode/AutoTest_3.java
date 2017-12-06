@@ -35,6 +35,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import ftclib.FtcOpMode;
 
+import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
+
 /**
  * Rotates Servo between min and max position or rotates continuously
  */
@@ -60,10 +62,9 @@ public class AutoTest_3 extends FtcOpMode {
 
         auto.initOpmode(this);
         auto.initMecanum();
+        //auto.initVuforia();
         auto.initAlliance(AllianceColor.RED);
-
-
-        auto.initJewelHardware(AngleMeasureHw.IMU);
+        auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
             telemetry.addData("Color Sensor: Blue", auto.tapeSensorL.blue());
@@ -75,7 +76,7 @@ public class AutoTest_3 extends FtcOpMode {
 //        auto.jewelColor();
         //sleep(5000);
 
-        auto.moveBWFW();
+        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(-0.4, 42, 0);
 
         while (opModeIsActive()) {
             telemetry.addData("Tape Sensor: Red", auto.tapeSensorL.red());

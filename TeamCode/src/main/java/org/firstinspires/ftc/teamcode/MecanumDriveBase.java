@@ -98,5 +98,12 @@ public class MecanumDriveBase
                 gyro);
         // Define and initialize ALL installed servos.
     }
+
+    void setBrakeModeEnabled(boolean brake) {
+        leftFrontMotor.setBrakeModeEnabled(brake);
+        leftBackMotor.setBrakeModeEnabled(brake);
+        rightFrontMotor.setBrakeModeEnabled(brake);
+        rightBackMotor.setBrakeModeEnabled(brake);
+    }
  }
 

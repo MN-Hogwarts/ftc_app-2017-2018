@@ -39,21 +39,18 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import ftclib.FtcOpMode;
 
 import static org.firstinspires.ftc.teamcode.AngleMeasureHw.GYRO;
+import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
 
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
  */
 @Autonomous(name = "Auto 1", group = "Concept")
-@Disabled
+//@Disabled
 public class AutoTest1 extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
 
     // Define class members
-    Servo   servo;
-    double  position = .55;//(MAX_POS - MIN_POS) / 2; // Start at halfway position
-    boolean rampUp = true;
-
 
     @Override
     public void initRobot() {
@@ -65,9 +62,9 @@ public class AutoTest1 extends FtcOpMode {
 
         auto.initOpmode(this);
         auto.initMecanum();
-        auto.initVuforia();
-        auto.initAlliance(AllianceColor.RED);
-        auto.initJewelHardware(GYRO);
+        //auto.initVuforia();
+        auto.initAlliance(AllianceColor.BLUE);
+        auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
             telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
@@ -81,11 +78,14 @@ public class AutoTest1 extends FtcOpMode {
 
         //auto.pictographID();
         //auto.jewelColor();
-        auto.driveToCryptobox();
+        //auto.distanceToWall1();
         //sleep(5000);
+        auto.driveToCryptobox();
+
+//        auto.moveFWBW();
         while (opModeIsActive()) {
-            //telemetry.addData("Moving Away:", auto.moveAwayFromColor());
-            auto.place1stGlyph();
+            telemetry.addData("Left encoder position:", auto.mecanumDriveBase.leftBackMotor.motor.getCurrentPosition());
+            telemetry.addData("Right encoder position:", auto.mecanumDriveBase.rightBackMotor.motor.getCurrentPosition());
             telemetry.update();
         }
 
