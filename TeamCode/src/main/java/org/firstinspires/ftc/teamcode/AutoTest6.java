@@ -30,8 +30,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import ftclib.FtcOpMode;
@@ -41,11 +39,11 @@ import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
  */
-@Autonomous(name = "Auto 2", group = "Concept")
+@Autonomous(name = "Auto Test 6", group = "Concept")
 //@Disabled
-public class AutoTest2 extends FtcOpMode {
+public class AutoTest6 extends FtcOpMode {
 
-    AutonomousActions auto = new AutonomousActions();
+    PickupHardware pickupHw;
 
     // Define class members
     Servo   servo;
@@ -61,38 +59,45 @@ public class AutoTest2 extends FtcOpMode {
     @Override
     public void runOpMode() throws InterruptedException{
 
-        auto.initOpmode(this);
-        auto.initMecanum();
-        //auto.initVuforia();
-        auto.initAlliance(AllianceColor.RED);
-        auto.initJewelHardware(IMU);
-        auto.initGlyphHardware();
-        while (!isStarted()) {
-            telemetry.addLine("Hi");
-            telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
-            telemetry.addData("Color Sensor red", auto.colorSensor.red());
-            telemetry.addData("Bottom Sensor blue", auto.tapeSensorL.blue());
-            telemetry.addData("Bottom Sensor red", auto.tapeSensorL.red());
-            telemetry.addData("Angle X", auto.getAngleX());
-            telemetry.addData("Angle Y", auto.getAngleY());
-            telemetry.addData("Angle Z", auto.getAngleZ());
-            //telemetry.addData("Left distance", auto.leftRange.getDistance(DistanceUnit.CM));
-            //telemetry.addData("Right distance", auto.rightRange.getDistance(DistanceUnit.CM));
-            telemetry.update();
-        }
+        pickupHw.init(this.hardwareMap);
+        telemetry.log().add("Hi");
+        telemetry.update();
+//        while (!isStarted()) {
+//            telemetry.addLine("Hi");
+//            //telemetry.addData("Left distance", auto.leftRange.getDistance(DistanceUnit.CM));
+//            //telemetry.addData("Right distance", auto.rightRange.getDistance(DistanceUnit.CM));
+//            telemetry.update();
+//        }
 
-        //auto.jewelColor();
-        //auto.glyphPickup();
-//        auto.encoderDrive(0.6, 700, 2);
-        auto.mecanumDriveBase.leftBackMotor.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        auto.mecanumDriveBase.rightBackMotor.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        auto.positionUsingTape();
+//        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 0, 0);
+//        sleep(500);
+//        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 90, 0);
+//        sleep(500);
+//        auto.mecanumDrive.stop();
+        telemetry.addData("Arm motor inverted", pickupHw.armMotor.getInverted());
+        telemetry.update();
+        pickupHw.armMotor.setInverted(true);
+        telemetry.addData("Arm motor inverted", pickupHw.armMotor.getInverted());
+        telemetry.update();
+//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
+//        sleep(350);
+//        auto.mecanumDriveBase.mecanumDrive.stop();
+//
+//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(1.0, 0, 0);
+//        sleep(600);
+//        auto.mecanumDriveBase.mecanumDrive.stop();
+//
+//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
+//        sleep(400);
+//        auto.mecanumDriveBase.mecanumDrive.stop();
 
+        //auto.turn(0);
+        //auto.ejectGlyph();
         //sleep(5000);
         while (opModeIsActive()) {
-            telemetry.addData("Left encoder position:", auto.mecanumDriveBase.leftBackMotor.motor.getCurrentPosition());
-            telemetry.addData("Right encoder position:", auto.mecanumDriveBase.rightBackMotor.motor.getCurrentPosition());
-            telemetry.update();
+            //telemetry.addData("Moving Away:", auto.moveAwayFromColor());
+//            auto.place1stGlyph();
+//            telemetry.update();
         }
 
         //auto.initVuforia();
