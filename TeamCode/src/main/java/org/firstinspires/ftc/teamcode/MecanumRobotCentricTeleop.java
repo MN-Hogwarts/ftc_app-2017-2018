@@ -60,6 +60,14 @@ public class MecanumRobotCentricTeleop extends OpMode{
     private static int maxListSize = 10;
     private static double rotationRate = 0;
 
+    static final double INCREMENT   = 0.3;     // amount to slew servo each CYCLE_MS cycle
+    static final int    CYCLE_MS    =   50;     // period of each cycle
+    static final double MAX_POS     =  0.9;     // Maximum rotational position
+    static final double MIN_POS     =  0.2;     // Minimum rotational position
+
+    double  position = (MAX_POS - MIN_POS) / 2; // Start at halfway position
+    boolean rampUp = false;
+
     @Override
     public void stop() {
         super.stop();
@@ -196,6 +204,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
         new Thread(new Runnable() {
             @Override
             public void run() {
+                double servoPos = (float) 0.0;
                 while (OP_MODE_IS_ACTIVE){
                     if (gamepad2.b) {
                         leftPickupServo.setPosition(-1.0);
@@ -222,6 +231,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
                         rightPickupServo.setPosition(0.5);
                     }
 
+                    /*
                     if (gamepad2.y){
                         wristServo.setPosition(1);
                         //wristServoValue = wristServoValue + 0.05;
@@ -232,6 +242,22 @@ public class MecanumRobotCentricTeleop extends OpMode{
                     } else {
                         wristServo.setPosition(0.5);
                     }
+
+                    if (gamepad2.y){
+                        //wristServo.setPosition(1);
+                        servoPos = 1;
+                        //wristServoValue = wristServoValue + 0.05;
+                    } else if (gamepad2.x) {
+                        //wristServoValue = Range.clip(wristServoValue, -1.0, 1.0);
+                        //wristServo.setPosition(wristServoValue);
+                        servoPos = 0;
+                    } else {
+                        servoPos = 0.5;
+                        //wristServo.setPosition(0.6);
+                    }
+
+                    wristServo.setPosition(servoPos);
+                    */
                 }
             }
         }).start();
@@ -239,6 +265,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
     @Override
     public void loop() {
+        /*
         if(gamepad1.left_bumper)
             maxListSize++;
         else if(gamepad1.left_trigger > 0.3)
@@ -253,6 +280,50 @@ public class MecanumRobotCentricTeleop extends OpMode{
             gyroScale = gyroScale + 0.05;
         else if(gamepad1.dpad_down)
             gyroScale = gyroScale - 0.05;
+
+        if (rampUp) {
+            // Keep stepping up until we hit the max value.
+            position += INCREMENT ;
+            if (position >= MAX_POS ) {
+                position = MAX_POS;
+                rampUp = !rampUp;   // Switch ramp direction
+            }
+        }
+        else {
+            // Keep stepping down until we hit the min value.
+            position -= INCREMENT ;
+            if (position <= MIN_POS ) {
+                position = MIN_POS;
+                rampUp = !rampUp;  // Switch ramp direction
+            }
+        }
+        */
+
+        if (gamepad2.y) {
+            // Keep stepping up until we hit the max value.
+            position += INCREMENT ;
+            if (position >= MAX_POS ) {
+                position = MAX_POS;
+                rampUp = !rampUp;   // Switch ramp direction
+            }
+        }
+        else if(gamepad2.x){
+            // Keep stepping down until we hit the min value.
+            position -= INCREMENT ;
+            if (position <= MIN_POS ) {
+                position = MIN_POS;
+                rampUp = !rampUp;  // Switch ramp direction
+            }
+        } else {
+            position = 0.50;
+        }
+
+        // Display the current value
+        telemetry.addData("Servo Position", "%5.2f", position);
+        telemetry.addData(">", "Press Stop to end test." );
+
+        // Set the servo to the new position and pause;
+        wristServo.setPosition(position);
 
         telemetry.addData("magnitude", magnitude);
         telemetry.addData("Arm Speed Limiter", armMotorSpeedLimiter);
