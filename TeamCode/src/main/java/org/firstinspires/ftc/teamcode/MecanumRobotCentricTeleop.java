@@ -45,7 +45,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
     //private HalDashboard dashboard = null;
     private boolean setYInverted = true;
     private TrcServo jewelServo = null;
-    private Servo wristServo;
+    private Servo wristServo, hingeServo;
     private Servo leftPickupServo, rightPickupServo;
     private Servo relicServo;
     private DigitalChannel touchSensor ;
@@ -65,8 +65,12 @@ public class MecanumRobotCentricTeleop extends OpMode{
     static final double MAX_POS     =  0.9;     // Maximum rotational position
     static final double MIN_POS     =  0.2;     // Minimum rotational position
 
-    double  position = (MAX_POS - MIN_POS) / 2; // Start at halfway position
-    boolean rampUp = false;
+    private boolean hingeUp = true;
+    private boolean pressedTrigger = false;
+    private boolean prevPressedTrigger = false;
+
+    double  position = 0.5;
+    double  hingePosition = 0.5;
 
     @Override
     public void stop() {
@@ -81,6 +85,8 @@ public class MecanumRobotCentricTeleop extends OpMode{
         //dashboard = HalDashboard.createInstance(this.telemetry);
         jewelServo = new FtcServo(this.hardwareMap, "jewelArm");
         jewelServo.setPosition(0.9);
+
+        hingeServo = this.hardwareMap.get(Servo.class, "hingeServo");
 
         leftPickupServo = this.hardwareMap.get(Servo.class, "leftPickup");
         rightPickupServo = this.hardwareMap.get(Servo.class, "rightPickup");
@@ -121,6 +127,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
         //driveBase.enableGyroAssist(gyroScale, gyroKp);
 
+        /*
         new Thread(new Runnable() {
 
             @Override
@@ -179,12 +186,10 @@ public class MecanumRobotCentricTeleop extends OpMode{
             public void run() {
                 while (OP_MODE_IS_ACTIVE){
                     if(gamepad2.dpad_up){
-                        armMotorSpeedLimiter = armMotorSpeedLimiter + 0.01;
+                        armMotorSpeedLimiter = armMotorSpeedLimiter + 0.001;
                     } else if(gamepad2.dpad_down){
-                        armMotorSpeedLimiter = armMotorSpeedLimiter - 0.01;
+                        armMotorSpeedLimiter = armMotorSpeedLimiter - 0.001;
                     }
-
-                    armMotorSpeedLimiter = Range.clip(armMotorSpeedLimiter, 0, 1);
 
                     armMotor.setPower(gamepad2.left_stick_y*armMotorSpeedLimiter);
 
@@ -231,36 +236,10 @@ public class MecanumRobotCentricTeleop extends OpMode{
                         rightPickupServo.setPosition(0.5);
                     }
 
-                    /*
-                    if (gamepad2.y){
-                        wristServo.setPosition(1);
-                        //wristServoValue = wristServoValue + 0.05;
-                    } else if (gamepad2.x) {
-                        //wristServoValue = Range.clip(wristServoValue, -1.0, 1.0);
-                        //wristServo.setPosition(wristServoValue);
-                        wristServo.setPosition(0);
-                    } else {
-                        wristServo.setPosition(0.5);
-                    }
-
-                    if (gamepad2.y){
-                        //wristServo.setPosition(1);
-                        servoPos = 1;
-                        //wristServoValue = wristServoValue + 0.05;
-                    } else if (gamepad2.x) {
-                        //wristServoValue = Range.clip(wristServoValue, -1.0, 1.0);
-                        //wristServo.setPosition(wristServoValue);
-                        servoPos = 0;
-                    } else {
-                        servoPos = 0.5;
-                        //wristServo.setPosition(0.6);
-                    }
-
-                    wristServo.setPosition(servoPos);
-                    */
                 }
             }
         }).start();
+        */
     }
 
     @Override
@@ -298,13 +277,109 @@ public class MecanumRobotCentricTeleop extends OpMode{
             }
         }
         */
+        if(maRotationRate.size() > maxListSize){
+            maRotationRate.remove(0);
+            maRotationRate.add(gyro.getZRotationRate());
+        }
+
+        double sum = 0;
+        for(TrcSensor.SensorData<Double> rateValue: maRotationRate){
+            sum = sum + rateValue.value;
+        }
+
+        rotationRate = sum/maxListSize;
+
+        if(gamepad2.dpad_up){
+            armMotorSpeedLimiter = armMotorSpeedLimiter + 0.001;
+        } else if(gamepad2.dpad_down){
+            armMotorSpeedLimiter = armMotorSpeedLimiter - 0.001;
+        }
+
+        armMotor.setPower(gamepad2.left_stick_y*armMotorSpeedLimiter);
+
+        if (gamepad1.dpad_right){
+            //relicServo.setPosition(0.3);
+            relicServPos = 0.3;
+        } else if (gamepad1.dpad_left){
+            //relicServo.setPosition(0.7);
+            relicServPos = 0.7;
+        }
+
+        relicServo.setPosition(relicServPos);
+
+        gamepad.setYInverted(setYInverted);
+        double rotation = gamepad.getRightStickX()*-1;
+        magnitude = Range.clip(gamepad.getLeftStickMagnitude(), 0, 1);
+        if(turtleMode)
+            magnitude = magnitude/2;
+
+        double direction = gamepad.getLeftStickDirectionDegrees(true);
+
+        if(gamepad.getLeftStickX() == 0 && gamepad.getLeftStickY() == 0)
+            magnitude = 0;
+
+        double addRotation = gyroScale*rotationRate;
+
+        rotation += TrcUtil.clipRange(gyroKp*(rotation - addRotation));
+
+        //driveBase.mecanumDrive_XPolarFieldCentric(magnitude, direction, rotation);
+        driveBase.mecanumDrive_XPolar(magnitude, direction, rotation);
+        jewelServo.setPosition(0.9);
+
+        if(gamepad1.a){
+            turtleMode = true;
+        } else if(gamepad1.b){
+            turtleMode = false;
+        }
+
+        if(gamepad2.dpad_up){
+            armMotorSpeedLimiter = armMotorSpeedLimiter + 0.01;
+        } else if(gamepad2.dpad_down){
+            armMotorSpeedLimiter = armMotorSpeedLimiter - 0.01;
+        }
+
+        armMotor.setPower(gamepad2.left_stick_y*armMotorSpeedLimiter);
+
+        if (gamepad1.dpad_right){
+            //relicServo.setPosition(0.3);
+            relicServPos = 0.3;
+        } else if (gamepad1.dpad_left){
+            //relicServo.setPosition(0.7);
+            relicServPos = 0.7;
+        }
+
+        relicServo.setPosition(relicServPos);
+
+        if (gamepad2.b) {
+            leftPickupServo.setPosition(-1.0);
+            rightPickupServo.setPosition(1.0);
+        } //If touch sensor is pressed, stop wheels. If 'A' is pressed, run wheels. If neither is pressed, stop wheels
+        else if (!touchSensor.getState()) {
+            leftPickupServo.setPosition(0.53);
+            rightPickupServo.setPosition(0.5);
+        } //Turn inward
+        else if (gamepad2.a) {
+            leftPickupServo.setPosition(1.0);
+            rightPickupServo.setPosition(-1.0);
+        } //Stop wheels
+        else if (gamepad2.left_bumper) {
+            leftPickupServo.setPosition(1.0);
+            rightPickupServo.setPosition(0.5);
+        }
+        else if (gamepad2.right_bumper) {
+            rightPickupServo.setPosition(-1.0);
+            leftPickupServo.setPosition(0.53);
+        }
+        else {
+            leftPickupServo.setPosition(0.53);
+            rightPickupServo.setPosition(0.5);
+        }
 
         if (gamepad2.y) {
             // Keep stepping up until we hit the max value.
             position += INCREMENT ;
             if (position >= MAX_POS ) {
                 position = MAX_POS;
-                rampUp = !rampUp;   // Switch ramp direction
             }
         }
         else if(gamepad2.x){
@@ -312,11 +387,28 @@ public class MecanumRobotCentricTeleop extends OpMode{
             position -= INCREMENT ;
             if (position <= MIN_POS ) {
                 position = MIN_POS;
-                rampUp = !rampUp;  // Switch ramp direction
             }
         } else {
             position = 0.50;
         }
+
+        if(gamepad1.right_trigger > 0)
+            pressedTrigger = true;
+        else pressedTrigger = false;
+
+        if (pressedTrigger) {
+            if(hingeUp && prevPressedTrigger != pressedTrigger){
+                hingePosition = 0.7;
+                hingeUp = false;
+                //prevPressedTrigger = pressedTrigger;
+            } else if (prevPressedTrigger != pressedTrigger){
+                hingePosition = 0.2;
+                hingeUp = true;
+                //prevPressedTrigger = pressedTrigger;
+            }
+        }
+
+        hingeServo.setPosition(hingePosition);
 
         // Display the current value
         telemetry.addData("Servo Position", "%5.2f", position);
@@ -325,6 +417,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
         // Set the servo to the new position and pause;
         wristServo.setPosition(position);
 
+        telemetry.addData("hingeServo", hingePosition);
         telemetry.addData("magnitude", magnitude);
         telemetry.addData("Arm Speed Limiter", armMotorSpeedLimiter);
         telemetry.addData("turtle mode", turtleMode);
@@ -334,5 +427,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
         telemetry.addData("gyroKp", gyroKp);
         telemetry.addData("gyroScale", gyroScale);
         telemetry.update();
+
+        prevPressedTrigger = pressedTrigger;
     }
 }
