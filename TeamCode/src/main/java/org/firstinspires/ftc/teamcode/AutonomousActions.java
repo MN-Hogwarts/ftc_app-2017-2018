@@ -82,11 +82,11 @@ public class AutonomousActions {
 
     void init(FtcOpMode opMode, AllianceColor allianceColor, AngleMeasureHw angleMeasureHw) {
         initOpmode(opMode);
-        initAlliance(allianceColor);
         initMecanum();
         initVuforia();
         initJewelHardware(angleMeasureHw);
         initGlyphHardware();
+        initAlliance(allianceColor);
     }
 
     void initOpmode(FtcOpMode opMode) {
@@ -96,7 +96,16 @@ public class AutonomousActions {
     }
 
     void initAlliance(AllianceColor allianceColor) {
-        this.allianceColor = allianceColor;
+        if(tapeSensorR.red() > RED_THRESHOLD && tapeSensorL.red() > RED_THRESHOLD) {
+            initAlliance(AllianceColor.RED);
+            telemetry.addLine("Alliance Color: RED");
+            telemetry.update();
+        }
+        else{
+            initAlliance(AllianceColor.BLUE);
+            telemetry.addLine("Alliance Color: BLUE");
+            telemetry.update();
+        }
     }
 
     void initMecanum() {
