@@ -62,21 +62,10 @@ public class AutoAllianceDetection extends FtcOpMode {
         relicServo.setPosition(0.7);
         auto.initOpmode(this);
         auto.initMecanum();
-
-        //auto.initVuforia();
-        if(auto.tapeSensorR.red() > auto.RED_THRESHOLD && auto.tapeSensorL.red() > auto.RED_THRESHOLD) {
-            auto.initAlliance(AllianceColor.RED);
-            telemetry.addLine("Alliance Color: RED");
-            telemetry.update();
-        }
-        else{
-            auto.initAlliance(AllianceColor.BLUE);
-            telemetry.addLine("Alliance Color: BLUE");
-            telemetry.update();
-        }
-
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
+
+        //auto.initVuforia();
         while (!isStarted()) {
             telemetry.addLine("Hi");
             telemetry.addData("Color Sensor blue", auto.colorSensor.blue());

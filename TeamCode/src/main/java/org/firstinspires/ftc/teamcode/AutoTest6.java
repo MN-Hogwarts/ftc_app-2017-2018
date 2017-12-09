@@ -39,11 +39,11 @@ import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
  */
-@Autonomous(name = "Auto Test 6", group = "Concept")
+@Autonomous(name = "Auto Blue", group = "Concept")
 //@Disabled
-public class AutoTest6 extends FtcOpMode {
+public class AutoTest5 extends FtcOpMode {
 
-    PickupHardware pickupHw;
+    AutonomousActions auto = new AutonomousActions();
 
     // Define class members
     Servo   servo;
@@ -59,26 +59,36 @@ public class AutoTest6 extends FtcOpMode {
     @Override
     public void runOpMode() throws InterruptedException{
 
-        pickupHw.init(this.hardwareMap);
-        telemetry.log().add("Hi");
-        telemetry.update();
-//        while (!isStarted()) {
-//            telemetry.addLine("Hi");
-//            //telemetry.addData("Left distance", auto.leftRange.getDistance(DistanceUnit.CM));
-//            //telemetry.addData("Right distance", auto.rightRange.getDistance(DistanceUnit.CM));
-//            telemetry.update();
-//        }
+        auto.initOpmode(this);
+        auto.initMecanum();
+
+        auto.initVuforia();
+        auto.initAlliance(AllianceColor.BLUE);
+        auto.initJewelHardware(IMU);
+        auto.initGlyphHardware();
+        while (!isStarted()) {
+            telemetry.addLine("Hi");
+            telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
+            telemetry.addData("Color Sensor red", auto.colorSensor.red());
+            telemetry.addData("Angle X", auto.getAngleX());
+            telemetry.addData("Angle Y", auto.getAngleY());
+            telemetry.addData("Angle Z", auto.getAngleZ());
+            //telemetry.addData("Left distance", auto.leftRange.getDistance(DistanceUnit.CM));
+            //telemetry.addData("Right distance", auto.rightRange.getDistance(DistanceUnit.CM));
+            telemetry.update();
+        }
 
 //        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 0, 0);
 //        sleep(500);
 //        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 90, 0);
 //        sleep(500);
 //        auto.mecanumDrive.stop();
-        telemetry.addData("Arm motor inverted", pickupHw.armMotor.getInverted());
-        telemetry.update();
-        pickupHw.armMotor.setInverted(true);
-        telemetry.addData("Arm motor inverted", pickupHw.armMotor.getInverted());
-        telemetry.update();
+        auto.pictographID();
+        auto.jewelColor();
+        auto.driveToCryptobox();
+        auto.place1stGlyph();
+        auto.ejectGlyph();
+        auto.moveFWBW();
 //        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
 //        sleep(350);
 //        auto.mecanumDriveBase.mecanumDrive.stop();

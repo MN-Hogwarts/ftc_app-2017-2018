@@ -16,7 +16,7 @@ apply from: '../build.common.gradle'
 
 dependencies {
     compile project(path: ':Ftc3543Lib-2017-18')
-    compile files('../libs/boofcv-android-0.27.jar/')
+    //compile files('/Applications/Andriod/New FTC/libs/boofcv-android-0.27.jar/')
 }
 android {
     compileOptions {
