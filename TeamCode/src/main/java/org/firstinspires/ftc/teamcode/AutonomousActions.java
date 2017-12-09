@@ -97,14 +97,16 @@ public class AutonomousActions {
     }
 
     void initAlliance(AllianceColor allianceColor) {
+        telemetry.addLine("Alliance Color");
+        telemetry.update();
         if(tapeSensorR.red() > RED_THRESHOLD && tapeSensorL.red() > RED_THRESHOLD) {
-            initAlliance(AllianceColor.RED);
-            telemetry.addLine("Alliance Color: RED");
+            initAlliance(allianceColor.RED);
+            telemetry.addLine("RED");
             telemetry.update();
         }
         else{
-            initAlliance(AllianceColor.BLUE);
-            telemetry.addLine("Alliance Color: BLUE");
+            initAlliance(allianceColor.BLUE);
+            telemetry.addLine("BLUE");
             telemetry.update();
         }
     }
