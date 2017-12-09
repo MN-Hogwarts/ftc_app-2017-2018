@@ -34,6 +34,7 @@ public class PickupHardware
     Servo wristServo;
     Servo left_Servo ;
     Servo right_Servo ;
+    Servo hingeServo;
     DigitalChannel touchSensor ;
     FtcDcMotor armMotor;
 
@@ -67,6 +68,7 @@ public class PickupHardware
         Log.d("Arm Motor", "Initialized");
         touchSensor = hwMap.get(DigitalChannel.class, "touchSensor") ;
         Log.d("Touch Sensor", "Initialized");
+        hingeServo = hwMap.get(Servo.class, "hingeServo") ;
     }
 }
 

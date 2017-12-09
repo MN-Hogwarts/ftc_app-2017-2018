@@ -96,19 +96,23 @@ public class AutonomousActions {
         this.hardwareMap = opMode.hardwareMap;
     }
 
-    void initAlliance(AllianceColor allianceColor) {
+    void initAlliance() {
         telemetry.addLine("Alliance Color");
         telemetry.update();
         if(tapeSensorR.red() > RED_THRESHOLD && tapeSensorL.red() > RED_THRESHOLD) {
-            initAlliance(allianceColor.RED);
+            initAlliance(AllianceColor.RED);
             telemetry.addLine("RED");
             telemetry.update();
         }
-        else{
-            initAlliance(allianceColor.BLUE);
+        else if (tapeSensorR.blue() > BLUE_THRESHOLD && tapeSensorL.blue() > BLUE_THRESHOLD){
+            initAlliance(AllianceColor.BLUE);
             telemetry.addLine("BLUE");
             telemetry.update();
         }
+    }
+
+    void initAlliance(AllianceColor allianceColor) {
+        this.allianceColor = allianceColor;
     }
 
     void initMecanum() {
@@ -203,6 +207,7 @@ public class AutonomousActions {
         rightRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "rightRange");
 
         pickupHw.init(hardwareMap);
+        pickupHw.hingeServo.setPosition(0.2);
 
         tapeSensorL = hardwareMap.get(ColorSensor.class, "bottomColorL");
         tapeSensorL.enableLed(true);
@@ -263,14 +268,14 @@ public class AutonomousActions {
         } if (vuMark == RelicRecoveryVuMark.LEFT) {
             telemetry.addLine("Glyph Left");
             mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 90, 0);
-            opMode.sleep(1000);
+            opMode.sleep(1200);
             mecanumDriveBase.mecanumDrive.stop();
         } if (vuMark == RelicRecoveryVuMark.CENTER) {
             telemetry.addLine("Glyph Center");
         } if (vuMark == RelicRecoveryVuMark.RIGHT) {
             telemetry.addLine("Glyph Right");
             mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 270, 0);
-            opMode.sleep(1000);
+            opMode.sleep(1200);
             mecanumDriveBase.mecanumDrive.stop();
         }
         telemetry.update();
@@ -552,6 +557,11 @@ public class AutonomousActions {
         opMode.sleep(500);
         positionUsingTape();
         encoderDrive(0.3, 400, 1);
+        if (allianceColor == AllianceColor.BLUE) {
+            mecanumDriveBase.turn(90);
+        } else if (allianceColor == AllianceColor.RED) {
+            mecanumDriveBase.turn(270);
+        }
 //        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 0, 0);
 //        opMode.sleep(400);
 //        mecanumDriveBase.mecanumDrive.stop();
@@ -912,7 +922,7 @@ public class AutonomousActions {
         ElapsedTime time = new ElapsedTime();
         pickupHw.leftServo.setPosition(-1.0);
         pickupHw.rightServo.setPosition(1.0);
-        while (opMode.opModeIsActive() && time.seconds() < 1.5);
+        while (opMode.opModeIsActive() && time.seconds() < 2);
         pickupHw.leftServo.setPosition(0.52);
         pickupHw.rightServo.setPosition(0.5);
     }
@@ -935,7 +945,7 @@ public class AutonomousActions {
             startPosR = motorR.getTargetPosition();
             // Determine new target position, and pass to motor controller
             newLeftTarget = motorL.getCurrentPosition() + (int)(encoderCounts);
-            newRightTarget = motorR.getTargetPosition() + (int)(encoderCounts);
+            newRightTarget = motorR.getCurrentPosition() + (int)(encoderCounts);
             motorL.setTargetPosition(newLeftTarget);
             motorR.setTargetPosition(newRightTarget);
 
@@ -961,17 +971,20 @@ public class AutonomousActions {
 
                 if (checkCloserColor()) {
                     firstTapeFound = true;
+                    telemetry.log().add("Left found pos: " + motorL.getCurrentPosition());
+                    telemetry.log().add("Right found pos: " + motorR.getCurrentPosition());
                 }
 
                 if (firstTapeFound
-                        && motorL.getCurrentPosition() - startPosL > minDist
-                        && motorR.getCurrentPosition() - startPosR > minDist) {
+                        && ((motorL.getCurrentPosition() - startPosL) > minDist || (motorR.getCurrentPosition() - startPosR) > minDist)) {
                     mecanumDriveBase.mecanumDrive.stop();
                     motorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     motorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    opMode.sleep(200);
                     return;
                 }
                 // Display it for the driver.
+                telemetry.addData("1st Tape Found", firstTapeFound);
                 telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
                 telemetry.addData("Path2",  "Running at %7d :%7d",
                         motorL.getCurrentPosition(),
@@ -985,6 +998,7 @@ public class AutonomousActions {
             // Turn off RUN_TO_POSITION
             motorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             motorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            opMode.sleep(200);
 
             //  sleep(250);   // optional pause after each move
         }

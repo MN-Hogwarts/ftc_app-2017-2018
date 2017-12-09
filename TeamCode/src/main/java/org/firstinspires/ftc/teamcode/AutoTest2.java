@@ -71,8 +71,10 @@ public class AutoTest2 extends FtcOpMode {
             telemetry.addLine("Hi");
             telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
             telemetry.addData("Color Sensor red", auto.colorSensor.red());
-            telemetry.addData("Bottom Sensor blue", auto.tapeSensorL.blue());
-            telemetry.addData("Bottom Sensor red", auto.tapeSensorL.red());
+            telemetry.addData("Bottom Left blue", auto.tapeSensorL.blue());
+            telemetry.addData("Bottom Left red", auto.tapeSensorL.red());
+            telemetry.addData("Bottom Right blue", auto.tapeSensorR.blue());
+            telemetry.addData("Bottom Right red", auto.tapeSensorR.red());
             telemetry.addData("Angle X", auto.getAngleX());
             telemetry.addData("Angle Y", auto.getAngleY());
             telemetry.addData("Angle Z", auto.getAngleZ());
@@ -84,12 +86,14 @@ public class AutoTest2 extends FtcOpMode {
         //auto.jewelColor();
         //auto.glyphPickup();
 //        auto.encoderDrive(0.6, 700, 2);
-        auto.mecanumDriveBase.leftBackMotor.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        auto.mecanumDriveBase.rightBackMotor.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        auto.mecanumDriveBase.leftBackMotor.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        auto.mecanumDriveBase.rightBackMotor.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        auto.positionUsingTape();
+        auto.encoderColorDrive(0.6, 2500, 500);
 
         //sleep(5000);
         while (opModeIsActive()) {
+            telemetry.addData("1st Tape Found", auto.firstTapeFound);
             telemetry.addData("Left encoder position:", auto.mecanumDriveBase.leftBackMotor.motor.getCurrentPosition());
             telemetry.addData("Right encoder position:", auto.mecanumDriveBase.rightBackMotor.motor.getCurrentPosition());
             telemetry.update();

@@ -88,7 +88,7 @@ public class AutoTest4 extends FtcOpMode {
 //        auto.mecanumDrive.stop();
         auto.pictographID();
         auto.jewelColor();
-        auto.driveToCryptobox();
+        auto.driveToCryptobox2();
         auto.place1stGlyph();
         auto.ejectGlyph();
         auto.moveFWBW();

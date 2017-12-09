@@ -39,9 +39,9 @@ import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
  */
-@Autonomous(name = "Auto Blue", group = "Concept")
+@Autonomous(name = "Auto Test 6", group = "Concept")
 //@Disabled
-public class AutoTest5 extends FtcOpMode {
+public class AutoTest6 extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
 
@@ -63,9 +63,9 @@ public class AutoTest5 extends FtcOpMode {
         auto.initMecanum();
 
         auto.initVuforia();
+        auto.initGlyphHardware();
         auto.initAlliance(AllianceColor.BLUE);
         auto.initJewelHardware(IMU);
-        auto.initGlyphHardware();
         while (!isStarted()) {
             telemetry.addLine("Hi");
             telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
@@ -83,12 +83,12 @@ public class AutoTest5 extends FtcOpMode {
 //        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 90, 0);
 //        sleep(500);
 //        auto.mecanumDrive.stop();
-        auto.pictographID();
-        auto.jewelColor();
-        auto.driveToCryptobox();
-        auto.place1stGlyph();
-        auto.ejectGlyph();
-        auto.moveFWBW();
+//        auto.pictographID();
+//        auto.jewelColor();
+        auto.driveToCryptobox2();
+//        auto.place1stGlyph();
+//        auto.ejectGlyph();
+//        auto.moveFWBW();
 //        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
 //        sleep(350);
 //        auto.mecanumDriveBase.mecanumDrive.stop();
