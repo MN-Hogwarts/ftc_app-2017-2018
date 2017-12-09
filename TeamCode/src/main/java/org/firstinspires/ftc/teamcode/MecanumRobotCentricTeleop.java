@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import ftclib.FtcDcMotor;
 import ftclib.FtcServo;
@@ -18,8 +20,10 @@ import swlib.SWIMUGyro;
 import swlib.SwDriveBase;
 import trclib.TrcGyro;
 import trclib.TrcRobot;
+import trclib.TrcSensor;
 import trclib.TrcServo;
 import trclib.TrcTaskMgr;
+import trclib.TrcUtil;
 
 /**
  * Created by spmeg on 4/15/2017.
@@ -27,7 +31,7 @@ import trclib.TrcTaskMgr;
 @TeleOp(name = "MecanumRobotCentricTeleop", group = "teleop")
 public class MecanumRobotCentricTeleop extends OpMode{
 
-    private boolean OP_MODE_IS_ACTIVE = true;
+    private static boolean OP_MODE_IS_ACTIVE = true;
 
     private FtcDcMotor leftFrontMotor;
     private FtcDcMotor leftRearMotor;
@@ -45,12 +49,16 @@ public class MecanumRobotCentricTeleop extends OpMode{
     private Servo leftPickupServo, rightPickupServo;
     private Servo relicServo;
     private DigitalChannel touchSensor ;
-    private static double gyroKp = 0.;
-    private static double gyroScale = 0.;
     private boolean turtleMode = false;
     private double magnitude = 0;
     //private boolean adjustGyroScale = true;
     private double relicServPos = 0.7;
+
+    private static double gyroKp = 0;
+    private static double gyroScale = 1.;
+    private static List<TrcSensor.SensorData<Double>> maRotationRate = new LinkedList<>();
+    private static int maxListSize = 10;
+    private static double rotationRate = 0;
 
     @Override
     public void stop() {
@@ -103,7 +111,28 @@ public class MecanumRobotCentricTeleop extends OpMode{
         gamepad = new SWGamePad("driver gamepad", gamepad1, 0.05F);
         gamepad.enableDebug(true);
 
-        driveBase.enableGyroAssist(gyroScale, gyroKp);
+        //driveBase.enableGyroAssist(gyroScale, gyroKp);
+
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                while (OP_MODE_IS_ACTIVE){
+                    if(maRotationRate.size() > maxListSize){
+                        maRotationRate.remove(0);
+                        maRotationRate.add(gyro.getZRotationRate());
+                    }
+
+                    double sum = 0;
+                    for(TrcSensor.SensorData<Double> rateValue: maRotationRate){
+                        sum = sum + rateValue.value;
+                    }
+
+                    rotationRate = sum/maxListSize;
+                }
+            }
+
+        });
 
         new Thread(new Runnable() {
             @Override
@@ -119,6 +148,10 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
                     if(gamepad.getLeftStickX() == 0 && gamepad.getLeftStickY() == 0)
                         magnitude = 0;
+
+                    double addRotation = gyroScale*rotationRate;
+
+                    rotation += TrcUtil.clipRange(gyroKp*(rotation - addRotation));
 
                     //driveBase.mecanumDrive_XPolarFieldCentric(magnitude, direction, rotation);
                     driveBase.mecanumDrive_XPolar(magnitude, direction, rotation);
@@ -206,9 +239,29 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
     @Override
     public void loop() {
+        if(gamepad1.left_bumper)
+            maxListSize++;
+        else if(gamepad1.left_trigger > 0.3)
+            maxListSize--;
+
+        if(gamepad1.right_bumper)
+            gyroKp = gyroKp + 0.05;
+        else if(gamepad1.right_trigger > 0.3)
+            gyroKp = gyroKp - 0.05;
+
+        if(gamepad1.dpad_up)
+            gyroScale = gyroScale + 0.05;
+        else if(gamepad1.dpad_down)
+            gyroScale = gyroScale - 0.05;
+
         telemetry.addData("magnitude", magnitude);
         telemetry.addData("Arm Speed Limiter", armMotorSpeedLimiter);
         telemetry.addData("turtle mode", turtleMode);
+        telemetry.addData("z rotation rate", gyro.getZRotationRate().value);
+        telemetry.addData("ma z rotation rate", rotationRate);
+        telemetry.addData("maxListSize", maxListSize);
+        telemetry.addData("gyroKp", gyroKp);
+        telemetry.addData("gyroScale", gyroScale);
         telemetry.update();
     }
 }
