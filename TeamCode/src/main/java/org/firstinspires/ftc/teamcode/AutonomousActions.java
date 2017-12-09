@@ -1022,7 +1022,7 @@ public class AutonomousActions {
 
             // Determine new target position, and pass to motor controller
             newLeftTarget = motorL.getCurrentPosition() + (int)(encoderCounts);
-            newRightTarget = motorR.getTargetPosition() + (int)(encoderCounts);
+            newRightTarget = motorR.getCurrentPosition() + (int)(encoderCounts);
             motorL.setTargetPosition(newLeftTarget);
             motorR.setTargetPosition(newRightTarget);
 
