@@ -63,7 +63,7 @@ public class AutoTest1 extends FtcOpMode {
         auto.initOpmode(this);
         auto.initMecanum();
         //auto.initVuforia();
-        auto.initAlliance(AllianceColor.BLUE);
+        auto.initAlliance(AllianceColor.RED);
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
@@ -80,7 +80,9 @@ public class AutoTest1 extends FtcOpMode {
         //auto.jewelColor();
         //auto.distanceToWall1();
         //sleep(5000);
-        auto.driveToCryptobox();
+        //auto.driveToCryptobox();
+        auto.firstTapeFound = true;
+        auto.positionUsingTape();
 
 //        auto.moveFWBW();
         while (opModeIsActive()) {
