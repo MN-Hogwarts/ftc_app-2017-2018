@@ -29,12 +29,13 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import ftclib.FtcDcMotor;
+import ftclib.FtcOpMode;
 import swlib.SWIMUGyro;
 import swlib.SwDriveBase;
 
@@ -53,12 +54,15 @@ public class MecanumDriveBase
     FtcDcMotor rightBackMotor   = null;
 
     SWIMUGyro gyro              = null;
+    BNO055IMU imu               = null;
 
     SwDriveBase mecanumDrive   = null;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
+
+    FtcOpMode linearFtcOpMode = null;
 
     /* Constructor */
     public MecanumDriveBase(){
@@ -67,7 +71,14 @@ public class MecanumDriveBase
 
     /* Initialize standard Hardware interfaces */
     public void init(HardwareMap ahwMap) {
+        init(ahwMap, null);
+    }
+
+    /* Initialize standard Hardware interfaces */
+    public void init(HardwareMap ahwMap, FtcOpMode opMode) {
     // Save reference to Hardware map
+        linearFtcOpMode = opMode;
+
         hwMap = ahwMap;
 
         // Define and Initialize Motors
@@ -77,6 +88,7 @@ public class MecanumDriveBase
         rightBackMotor = new FtcDcMotor("rightRear");
 
         gyro = new SWIMUGyro(hwMap, "imu", null);
+        imu = hwMap.get(BNO055IMU.class, "imu");
         gyro.calibrate();
 
         /*
@@ -105,5 +117,237 @@ public class MecanumDriveBase
         rightFrontMotor.setBrakeModeEnabled(brake);
         rightBackMotor.setBrakeModeEnabled(brake);
     }
- }
+
+    public void turn(int turnAngle, double power) throws InterruptedException {
+        if (linearFtcOpMode == null) {
+            return;
+        }
+
+        // leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // int leftPos = leftMotor.getCurrentPosition();
+        // int rightPos = rightMotor.getCurrentPosition();
+
+        double startAngle = getAngleX();
+        double angleZ = getAngleX();
+
+        double angDiff = (turnAngle - angleZ) % 360;
+        if (360 - Math.abs(angDiff) < Math.abs(angDiff))
+            angDiff = -(360 * Math.signum(angDiff) - angDiff);
+
+        linearFtcOpMode.telemetry.log().add("Angle Difference: " + angDiff);
+        linearFtcOpMode.telemetry.update();
+
+        if (angDiff < 0) { //turns right
+            //leftMotor.setPower(APPROACH_SPEED * .6 );
+            //rightMotor.setPower(-APPROACH_SPEED * .6);
+
+            while (linearFtcOpMode.opModeIsActive() && angDiff < 0) {
+
+                angleZ = getAngleX();
+                angDiff = (turnAngle - angleZ) % 360;
+                if (360 - Math.abs(angDiff) < Math.abs(angDiff))
+                    angDiff = -(360 * Math.signum(angDiff) - angDiff);
+
+                linearFtcOpMode.telemetry.addData("Angle", angleZ);
+                linearFtcOpMode.telemetry.addData("Difference", angDiff);
+                linearFtcOpMode.telemetry.update();
+
+                turnRightWithoutAngle(power);
+                /*
+                leftFrontMotor.setPower(turnPower(angDiff));
+                rightFrontMotor.setPower(-turnPower(angDiff));
+                leftBackMotor.setPower(turnPower(angDiff));
+                rightBackMotor.setPower(-turnPower(angDiff));
+                */
+                linearFtcOpMode.telemetry.addData("Power", leftFrontMotor.getPower());
+
+                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, -90, false);
+                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, angDiff);
+
+                /* if (leftMotor.getCurrentPosition() - 100 > leftPos
+                        && rightMotor.getCurrentPosition() + 100 < rightPos
+                        && IMUheading() == startAngle) {
+                    resetIMuandPos(leftPos, rightPos);
+                } */
+
+                linearFtcOpMode.idle(); // Always call opMode.idle() at the bottom of your while(opModeIsActive()) loop
+            }
+        } else if (angDiff > 0) { //turns left
+            //leftMotor.setPower(-APPROACH_SPEED);
+            //rightMotor.setPower(APPROACH_SPEED);
+
+            while (linearFtcOpMode.opModeIsActive() && angDiff > 0) {
+
+                angleZ = getAngleX();
+                angDiff = (turnAngle - angleZ) % 360;
+                if (360 - Math.abs(angDiff) < Math.abs(angDiff))
+                    angDiff = -(360 * Math.signum(angDiff) - angDiff);
+
+                linearFtcOpMode.telemetry.addData("Angle", angleZ);
+                linearFtcOpMode.telemetry.addData("Difference", angDiff);
+                linearFtcOpMode.telemetry.update();
+
+                turnLeftWithoutAngle(power);
+                /*
+                leftFrontMotor.setPower(turnPower(angDiff));
+                rightFrontMotor.setPower(-turnPower(angDiff));
+                leftBackMotor.setPower(turnPower(angDiff));
+                rightBackMotor.setPower(-turnPower(angDiff));
+                telemetry.addData("Power", leftFrontMotor.getPower());
+                */
+
+                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, 90, false);
+                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, angDiff);
+
+                /* if (leftMotor.getCurrentPosition() + 100 < leftPos
+                        && rightMotor.getCurrentPosition() - 100 > rightPos
+                        && IMUheading() == startAngle) {
+                    resetIMuandPos(leftPos, rightPos);
+                } */
+
+                linearFtcOpMode.idle(); // Always call opMode.idle() at the bottom of your while(opModeIsActive()) loop
+            }
+        }
+
+        mecanumDrive.stop();
+        /*
+        leftFrontMotor.setPower(0);
+        rightFrontMotor.setPower(0);
+        leftBackMotor.setPower(0);
+        rightBackMotor.setPower(0);
+        */
+    }
+
+    public void turn(int turnAngle) throws InterruptedException {
+        if (linearFtcOpMode == null) {
+            return;
+        }
+
+        // leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // int leftPos = leftMotor.getCurrentPosition();
+        // int rightPos = rightMotor.getCurrentPosition();
+
+        double startAngle = getAngleX();
+        double angleZ = getAngleX();
+
+        double angDiff = (turnAngle - angleZ) % 360;
+        if (360 - Math.abs(angDiff) < Math.abs(angDiff))
+            angDiff = -(360 * Math.signum(angDiff) - angDiff);
+
+        linearFtcOpMode.telemetry.log().add("Angle Difference: " + angDiff);
+        linearFtcOpMode.telemetry.update();
+
+        if (angDiff < 0) { //turns right
+            //leftMotor.setPower(APPROACH_SPEED * .6 );
+            //rightMotor.setPower(-APPROACH_SPEED * .6);
+
+            while (linearFtcOpMode.opModeIsActive() && angDiff < 0) {
+
+                angleZ = getAngleX();
+                angDiff = (turnAngle - angleZ) % 360;
+                if (360 - Math.abs(angDiff) < Math.abs(angDiff))
+                    angDiff = -(360 * Math.signum(angDiff) - angDiff);
+
+                linearFtcOpMode.telemetry.addData("Angle", angleZ);
+                linearFtcOpMode.telemetry.addData("Difference", angDiff);
+                linearFtcOpMode.telemetry.update();
+
+                turnRightWithoutAngle(turnPower(angDiff));
+                /*
+                leftFrontMotor.setPower(turnPower(angDiff));
+                rightFrontMotor.setPower(-turnPower(angDiff));
+                leftBackMotor.setPower(turnPower(angDiff));
+                rightBackMotor.setPower(-turnPower(angDiff));
+                */
+                linearFtcOpMode.telemetry.addData("Power", leftFrontMotor.getPower());
+
+                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, -90, false);
+                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, angDiff);
+
+                /* if (leftMotor.getCurrentPosition() - 100 > leftPos
+                        && rightMotor.getCurrentPosition() + 100 < rightPos
+                        && IMUheading() == startAngle) {
+                    resetIMuandPos(leftPos, rightPos);
+                } */
+
+                linearFtcOpMode.idle(); // Always call opMode.idle() at the bottom of your while(opModeIsActive()) loop
+            }
+        } else if (angDiff > 0) { //turns left
+            //leftMotor.setPower(-APPROACH_SPEED);
+            //rightMotor.setPower(APPROACH_SPEED);
+
+            while (linearFtcOpMode.opModeIsActive() && angDiff > 0) {
+
+                angleZ = getAngleX();
+                angDiff = (turnAngle - angleZ) % 360;
+                if (360 - Math.abs(angDiff) < Math.abs(angDiff))
+                    angDiff = -(360 * Math.signum(angDiff) - angDiff);
+
+                linearFtcOpMode.telemetry.addData("Angle", angleZ);
+                linearFtcOpMode.telemetry.addData("Difference", angDiff);
+                linearFtcOpMode.telemetry.update();
+
+                turnLeftWithoutAngle(turnPower(angDiff));
+                /*
+                leftFrontMotor.setPower(turnPower(angDiff));
+                rightFrontMotor.setPower(-turnPower(angDiff));
+                leftBackMotor.setPower(turnPower(angDiff));
+                rightBackMotor.setPower(-turnPower(angDiff));
+                telemetry.addData("Power", leftFrontMotor.getPower());
+                */
+
+                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, 90, false);
+                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, angDiff);
+
+                /* if (leftMotor.getCurrentPosition() + 100 < leftPos
+                        && rightMotor.getCurrentPosition() - 100 > rightPos
+                        && IMUheading() == startAngle) {
+                    resetIMuandPos(leftPos, rightPos);
+                } */
+
+                linearFtcOpMode.idle(); // Always call opMode.idle() at the bottom of your while(opModeIsActive()) loop
+            }
+        }
+
+        mecanumDrive.stop();
+        /*
+        leftFrontMotor.setPower(0);
+        rightFrontMotor.setPower(0);
+        leftBackMotor.setPower(0);
+        rightBackMotor.setPower(0);
+        */
+    }
+
+    public void turnLeftWithoutAngle(double power) {
+        leftFrontMotor.setPower(-power);
+        rightFrontMotor.setPower(power);
+        leftBackMotor.setPower(-power);
+        rightBackMotor.setPower(power);
+    }
+
+    public void turnRightWithoutAngle(double power) {
+        leftFrontMotor.setPower(power);
+        rightFrontMotor.setPower(-power);
+        leftBackMotor.setPower(power);
+        rightBackMotor.setPower(-power);
+    }
+
+    private double turnPower(double difference) {
+        if (Math.abs(difference) < 20) {
+            //return 0.15;
+            return 0.55;
+        } else if (Math.abs(difference) < 45) {
+            //return 0.3;
+            return 0.65;
+        } else if (Math.abs(difference) < 90) {
+            return 0.7;
+        } else return 0.8;
+    }
+
+    double getAngleX() {
+        return imu.getAngularOrientation().firstAngle;
+    }
+}
 
