@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.Range;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -79,19 +80,67 @@ public class MecanumRobotCentricTeleop extends OpMode{
     double  hingePosition = 0.2;
 
     private ExecutorService executorService;
+    private Future driveBaseFuture, armFuture, servoFuture;
 
     @Override
     public void stop() {
         super.stop();
         OP_MODE_IS_ACTIVE = false;
 
-        executorService.shutdownNow();
+        /*
+        try {
+            if(driveBaseFuture != null){
+                if(driveBaseFuture.get() != null){
+                    sleep(250);
+
+                    if(driveBaseFuture.get() != null){
+                        driveBaseFuture.cancel(true);
+                    }
+                }
+            }
+
+            if(armFuture != null){
+                if(armFuture.get() != null){
+                    sleep(250);
+
+                    if(armFuture.get() != null){
+                        armFuture.cancel(true);
+                    }
+                }
+            }
+
+            if(servoFuture != null){
+                if(servoFuture.get() != null){
+                    sleep(250);
+
+                    if(servoFuture.get() != null){
+                        servoFuture.cancel(true);
+                    }
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        */
+
+        //executorService.shutdownNow();
     }
 
+    private void sleep(int millis){
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     @Override
     public void init() {
+        OP_MODE_IS_ACTIVE = true;
+        executorService = Executors.newCachedThreadPool();
         //dashboard = HalDashboard.createInstance(this.telemetry);
         jewelServo = new FtcServo(this.hardwareMap, "jewelArm");
         jewelServo.setPosition(0.9);
@@ -159,7 +208,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
         });
 
-        Runnable driveBaseThread = new Runnable() {
+        executorService.submit(new Runnable() {
             @Override
             public void run() {
                 while (OP_MODE_IS_ACTIVE){
@@ -187,11 +236,13 @@ public class MecanumRobotCentricTeleop extends OpMode{
                     } else if(gamepad1.b){
                         turtleMode = false;
                     }
+
+                    //telemetry.addData("Thread driveBase", "running");
                 }
             }
-        };
+        });
 
-        Runnable armThread = new Runnable() {
+        executorService.submit(new Runnable() {
             @Override
             public void run() {
                 while (OP_MODE_IS_ACTIVE){
@@ -214,9 +265,9 @@ public class MecanumRobotCentricTeleop extends OpMode{
                     relicServo.setPosition(relicServPos);
                 }
             }
-        };
+        });
 
-        Runnable servoThread = new Runnable() {
+        executorService.submit(new Runnable() {
             @Override
             public void run() {
                 double servoPos = (float) 0.0;
@@ -286,18 +337,18 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
                 }
             }
-        };
+        });
 
-        executorService = Executors.newFixedThreadPool(4);
         /*
         driveBaseFuture = executorService.submit(driveBaseThread);
         armFuture = executorService.submit(armThread);
         servoFuture = executorService.submit(servoThread);
-        */
+
 
         executorService.execute(driveBaseThread);
         executorService.execute(armThread);
         executorService.execute(servoThread);
+        */
     }
 
     @Override
