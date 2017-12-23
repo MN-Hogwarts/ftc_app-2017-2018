@@ -64,8 +64,8 @@ public class AutoAllianceDetection extends FtcOpMode {
         auto.initMecanum();
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
+        auto.initAlliance();
 
-        //auto.initVuforia();
         while (!isStarted()) {
             telemetry.addLine("Hi");
             telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
@@ -73,47 +73,14 @@ public class AutoAllianceDetection extends FtcOpMode {
             telemetry.addData("Angle X", auto.getAngleX());
             telemetry.addData("Angle Y", auto.getAngleY());
             telemetry.addData("Angle Z", auto.getAngleZ());
-            //telemetry.addData("Left distance", auto.leftRange.getDistance(DistanceUnit.CM));
-            //telemetry.addData("Right distance", auto.rightRange.getDistance(DistanceUnit.CM));
             telemetry.update();
         }
 
-//        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 0, 0);
-//        sleep(500);
-//        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 90, 0);
-//        sleep(500);
-//        auto.mecanumDrive.stop();
         auto.jewelColor();
         auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(1.0, 90, 0);
         sleep(1500);
         auto.mecanumDriveBase.mecanumDrive.stop();
-        /*
-        auto.driveToCryptobox();
-        auto.ejectGlyph();
-        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
-        sleep(350);
-        auto.mecanumDriveBase.mecanumDrive.stop();
 
-        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(1.0, 0, 0);
-        sleep(600);
-        auto.mecanumDriveBase.mecanumDrive.stop();
-
-        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
-        sleep(400);
-        auto.mecanumDriveBase.mecanumDrive.stop();
-
-        //auto.turn(0);
-        //auto.ejectGlyph();
-        //sleep(5000);
-        while (opModeIsActive()) {
-            //telemetry.addData("Moving Away:", auto.moveAwayFromColor());
-            auto.place1stGlyph();
-            telemetry.update();
-        }
-
-        //auto.initVuforia();
-        //auto.pictographID(); //run Vuforia method, includes initVuforia()
-        */
         }
 
 }

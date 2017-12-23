@@ -87,6 +87,7 @@ public class AutonomousActions {
         initVuforia();
         initJewelHardware(angleMeasureHw);
         initGlyphHardware();
+        initAlliance();
         initAlliance(allianceColor);
     }
 
@@ -100,12 +101,13 @@ public class AutonomousActions {
         telemetry.addLine("Alliance Color");
         telemetry.update();
         if(tapeSensorR.red() > RED_THRESHOLD && tapeSensorL.red() > RED_THRESHOLD) {
-            initAlliance(AllianceColor.RED);
+            this.allianceColor = allianceColor.RED;
             telemetry.addLine("RED");
             telemetry.update();
+
         }
         else if (tapeSensorR.blue() > BLUE_THRESHOLD && tapeSensorL.blue() > BLUE_THRESHOLD){
-            initAlliance(AllianceColor.BLUE);
+            this.allianceColor = allianceColor.BLUE;
             telemetry.addLine("BLUE");
             telemetry.update();
         }
@@ -114,7 +116,6 @@ public class AutonomousActions {
     void initAlliance(AllianceColor allianceColor) {
         this.allianceColor = allianceColor;
     }
-
     void initMecanum() {
 
         mecanumDriveBase.init(hardwareMap, opMode);
