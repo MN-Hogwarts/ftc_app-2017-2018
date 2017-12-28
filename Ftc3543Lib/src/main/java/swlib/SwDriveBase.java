@@ -1129,6 +1129,7 @@ public class SwDriveBase /*implements TrcTaskMgr.Task*/
         wheelSpeeds[MotorType.RIGHT_FRONT.value] = (cosD*magnitude - rotation);
         wheelSpeeds[MotorType.LEFT_REAR.value] = (cosD*magnitude + rotation);
         wheelSpeeds[MotorType.RIGHT_REAR.value] = (sinD*magnitude - rotation);
+
         normalize(wheelSpeeds);
 
         for (int i = 0; i < wheelSpeeds.length; i++)

@@ -16,22 +16,38 @@ public class MecMotorDiagnosticsLinear extends LinearOpMode {
         DcMotor rightRearMotor = this.hardwareMap.dcMotor.get("rightRear");
         DcMotor rightFrontMotor = this.hardwareMap.dcMotor.get("rightFront");
 
+        telemetry.addData("leftRear", "");
+        telemetry.update();
+
         leftRearMotor.setPower(0.5);
         sleep(1500);
         leftRearMotor.setPower(0);
+
+        telemetry.clear();
+        telemetry.addData("leftRear", "");
+        telemetry.update();
 
         leftFrontMotor.setPower(0.5);
         sleep(1500);
         leftFrontMotor.setPower(0);
 
+        telemetry.clear();
+        telemetry.addData("leftRear", "");
+        telemetry.update();
+
         rightRearMotor.setPower(0.5);
         sleep(1500);
         rightRearMotor.setPower(0);
+
+        telemetry.clear();
+        telemetry.addData("leftRear", "");
+        telemetry.update();
 
         rightFrontMotor.setPower(0.5);
         sleep(1500);
         rightFrontMotor.setPower(0);
 
+        telemetry.clear();
     }
 
     private void sleep(int millis){
