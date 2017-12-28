@@ -299,10 +299,12 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
         if (gamepad1.dpad_right){
             //relicServo.setPosition(0.3);
-            relicServPos = 0.3;
+            relicServPos = 0.1;
         } else if (gamepad1.dpad_left){
             //relicServo.setPosition(0.7);
-            relicServPos = 0.7;
+            relicServPos = 0.75;
+        } else if (gamepad1.dpad_down){
+            relicServPos = 0.5;
         }
 
         relicServo.setPosition(relicServPos);
@@ -340,15 +342,15 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
         armMotor.setPower(gamepad2.left_stick_y*armMotorSpeedLimiter);
 
-        if (gamepad1.dpad_right){
-            //relicServo.setPosition(0.3);
-            relicServPos = 0.3;
-        } else if (gamepad1.dpad_left){
-            //relicServo.setPosition(0.7);
-            relicServPos = 0.7;
-        }
-
-        relicServo.setPosition(relicServPos);
+//        if (gamepad1.dpad_right){
+//            //relicServo.setPosition(0.3);
+//            relicServPos = 0;
+//        } else if (gamepad1.dpad_left){
+//            //relicServo.setPosition(0.7);
+//            relicServPos = 0.7;
+//        }
+//
+//        relicServo.setPosition(relicServPos);
 
         if (gamepad2.b) {
             leftPickupServo.setPosition(-1.0);
@@ -418,6 +420,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
         wristServo.setPosition(position);
 
         telemetry.addData("hingeServo", hingePosition);
+        telemetry.addData("relic servo", relicServPos);
         telemetry.addData("magnitude", magnitude);
         telemetry.addData("Arm Speed Limiter", armMotorSpeedLimiter);
         telemetry.addData("turtle mode", turtleMode);
