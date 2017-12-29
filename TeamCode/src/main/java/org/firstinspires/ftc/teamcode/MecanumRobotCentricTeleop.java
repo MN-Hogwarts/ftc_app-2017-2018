@@ -343,6 +343,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
         telemetry.addData("SLOW MODE", turtleMode);
         telemetry.addData("Servo Position", "%5.2f", position);
         telemetry.addData("hingeServo", hingePosition);
+        telemetry.addData("relic servo", relicServPos);
         telemetry.addData("magnitude", magnitude);
         telemetry.addData("Arm Speed Limiter", armMotorSpeedLimiter);
         telemetry.addData("turtle mode", turtleMode);

@@ -284,6 +284,7 @@ public class AutonomousActions {
         pickupHw.wristServo.setPosition(0);
         opMode.sleep(1000);
         pickupHw.wristServo.setPosition(0.5);
+        encoderDrive(0.3, 400, 1);
 
     }
 
@@ -557,7 +558,7 @@ public class AutonomousActions {
 
         opMode.sleep(500);
         positionUsingTape();
-        encoderDrive(0.3, 400, 1);
+//        encoderDrive(0.3, 400, 1);
         if (allianceColor == AllianceColor.BLUE) {
             mecanumDriveBase.turn(90);
         } else if (allianceColor == AllianceColor.RED) {
