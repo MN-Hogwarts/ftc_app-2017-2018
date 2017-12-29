@@ -46,7 +46,7 @@ public class AutonomousActions {
     FtcOpMode opMode;
     HardwareMap hardwareMap;
     Telemetry telemetry;
-    AllianceColor allianceColor;
+    AllianceColor allianceColor = null;
     AngleMeasureHw angleMeasureHw;
 
     PickupHardware pickupHw = new PickupHardware();
@@ -84,6 +84,12 @@ public class AutonomousActions {
     ModernRoboticsI2cRangeSensor leftRange = null;
     ModernRoboticsI2cRangeSensor rightRange = null;
 
+    ColorSensor innerColor  = null; // Positions of color sensors depends on alliance
+    ColorSensor outerColor  = null; // Uses positioning when glyph pickup is facing back cryptobox
+    int backCryptoboxAngle;         // Angle of robot when turned toward back cryptobox after starting on back balancing stone
+    int innerDirection;             // Robot strafes at this angle to go toward center from backCryptoboxAngle
+    int outerDirection;             // Robot strafes at this angle to go away from center from backCryptoboxAngle
+
     void init(FtcOpMode opMode, AllianceColor allianceColor, AngleMeasureHw angleMeasureHw) {
         initOpmode(opMode);
         initMecanum();
@@ -117,11 +123,17 @@ public class AutonomousActions {
             telemetry.update();
         }
 
+        initColorSensorSides();
+
         Log.d(TAG, "initAlliance: initialized");
     }
 
     void initAlliance(AllianceColor allianceColor) {
         this.allianceColor = allianceColor;
+
+        if (tapeSensorR != null && tapeSensorL != null) {
+            initColorSensorSides();
+        }
     }
 
     void initMecanum() {
@@ -237,8 +249,31 @@ public class AutonomousActions {
         tapeSensorR = hardwareMap.get(ColorSensor.class, "bottomColorR");
         tapeSensorR.enableLed(true);
 
+        if (allianceColor != null) {
+            initColorSensorSides();
+        }
+
         Log.d(TAG, "initGlyphHardware: tape sensors initialized");
 
+    }
+
+    private void initColorSensorSides() {
+        if (innerColor == null || outerColor == null) {
+            if (allianceColor == AllianceColor.BLUE) {
+                innerColor = tapeSensorR;
+                outerColor = tapeSensorL;
+                backCryptoboxAngle = 90;
+                innerDirection = 270;
+                outerDirection = 90;
+            }
+            else if (allianceColor == AllianceColor.RED) {
+                innerColor = tapeSensorL;
+                outerColor = tapeSensorR;
+                backCryptoboxAngle = 270;
+                innerDirection = 90;
+                outerDirection = 270;
+            }
+        }
     }
 
     // DON"T USE THIS YET
@@ -911,6 +946,10 @@ public class AutonomousActions {
         }
     }
 
+    void positionUsingTape2() throws InterruptedException {
+
+    } // Starts after robot strafed off back balancing stone
+
     void tapeFinder() {
         /*
         mecanumDriveBase.leftFrontMotor.setBrakeModeEnabled(true);
@@ -945,6 +984,28 @@ public class AutonomousActions {
             opMode.sleep(700);
         }
         mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(0, 0, 0);
+    }
+
+    boolean allianceColorTapeFound(ColorSensor colorSensor) {
+        int threshold = Integer.MAX_VALUE; // returns false if alliance color is not initialized
+        if (allianceColor == AllianceColor.BLUE) {
+            threshold = BLUE_THRESHOLD;
+        } else if (allianceColor == AllianceColor.RED) {
+            threshold = RED_THRESHOLD;
+        }
+        return tapeAllianceColorValue(colorSensor) > threshold;
+    }
+
+    private double tapeAllianceColorValue(ColorSensor colorSensor) {
+        if (allianceColor == AllianceColor.BLUE) {
+            return colorSensor.blue();
+        } else if (allianceColor == AllianceColor.RED) {
+            return colorSensor.red();
+        } else {
+            telemetry.log().add("Alliance color not initialized");
+            Log.d(TAG, "tapeAllianceColorValue: Alliance color not initialized");
+            return -1;
+        }
     }
 
     void moveFWBW() {
