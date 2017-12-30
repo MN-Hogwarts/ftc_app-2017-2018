@@ -48,6 +48,7 @@ public class AutoAllianceDetection extends FtcOpMode {
     // Define class members
     Servo   servo;
     double  position = .55;//(MAX_POS - MIN_POS) / 2; // Start at halfway position
+    boolean rampUp = true;
 
 
     @Override
@@ -57,11 +58,12 @@ public class AutoAllianceDetection extends FtcOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException{
-
         Servo relicServo = hardwareMap.get(Servo.class, "relicServo");
         relicServo.setPosition(0.7);
+
         auto.initOpmode(this);
         auto.initMecanum();
+
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         auto.initAlliance();
@@ -73,14 +75,28 @@ public class AutoAllianceDetection extends FtcOpMode {
             telemetry.addData("Angle X", auto.getAngleX());
             telemetry.addData("Angle Y", auto.getAngleY());
             telemetry.addData("Angle Z", auto.getAngleZ());
+
+            telemetry.addData("Right Bottom BLUE", auto.tapeSensorR.blue());
+            telemetry.addData("Left Bottom BLUE", auto.tapeSensorL.blue());
+            telemetry.addData("Right Bottom RED", auto.tapeSensorR.red());
+            telemetry.addData("Left Bottom RED", auto.tapeSensorL.red());
+
+            if(auto.allianceColor == auto.allianceColor.RED){
+                telemetry.addLine("Alliance: RED");
+            }
+            else if(auto.allianceColor == auto.allianceColor.BLUE){
+                telemetry.addLine("Alliance: BLUE");
+            }
+            else{
+                telemetry.addLine("ERROR");
+            }
+
             telemetry.update();
-        }
+    }
 
         auto.jewelColor();
-        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(1.0, 90, 0);
+        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(1.0, -90, 0);
         sleep(1500);
         auto.mecanumDriveBase.mecanumDrive.stop();
-
-        }
-
+    }
 }

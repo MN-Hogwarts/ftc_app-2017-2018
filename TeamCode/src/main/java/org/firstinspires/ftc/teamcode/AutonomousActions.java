@@ -35,8 +35,8 @@ enum AllianceColor {RED, BLUE}
 enum AngleMeasureHw {GYRO, IMU}
 
 public class AutonomousActions {
-    int   RED_THRESHOLD  = (100);
-    int   BLUE_THRESHOLD = (60);
+    int   RED_THRESHOLD  = 100;
+    int   BLUE_THRESHOLD = 45;
     double WALL_DISTANCE = 20;
     private static double gyroKp = 0.3;
     private static double gyroScale = 0.5;
@@ -98,18 +98,14 @@ public class AutonomousActions {
     }
 
     void initAlliance() {
-        telemetry.addLine("Alliance Color");
         telemetry.update();
         if(tapeSensorR.red() > RED_THRESHOLD && tapeSensorL.red() > RED_THRESHOLD) {
-            this.allianceColor = allianceColor.RED;
-            telemetry.addLine("RED");
-            telemetry.update();
-
+            AllianceColor allianceColor1 = allianceColor.RED;
+            allianceColor = allianceColor1;
         }
         else if (tapeSensorR.blue() > BLUE_THRESHOLD && tapeSensorL.blue() > BLUE_THRESHOLD){
-            this.allianceColor = allianceColor.BLUE;
-            telemetry.addLine("BLUE");
-            telemetry.update();
+            AllianceColor allianceColor1 = allianceColor.BLUE;
+            allianceColor = allianceColor1;
         }
     }
 
