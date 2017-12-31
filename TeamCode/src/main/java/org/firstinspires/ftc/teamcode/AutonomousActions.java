@@ -121,18 +121,14 @@ public class AutonomousActions implements VisitableActions{
     }
 
     void initAlliance() {
-        telemetry.addLine("Alliance Color");
         telemetry.update();
         if(tapeSensorR.red() > RED_THRESHOLD && tapeSensorL.red() > RED_THRESHOLD) {
-            this.allianceColor = allianceColor.RED;
-            telemetry.addLine("RED");
-            telemetry.update();
-
+            AllianceColor allianceColor1 = allianceColor.RED;
+            allianceColor = allianceColor1;
         }
         else if (tapeSensorR.blue() > BLUE_THRESHOLD && tapeSensorL.blue() > BLUE_THRESHOLD){
-            this.allianceColor = allianceColor.BLUE;
-            telemetry.addLine("BLUE");
-            telemetry.update();
+            AllianceColor allianceColor1 = allianceColor.BLUE;
+            allianceColor = allianceColor1;
         }
 
         initColorSensorSides();
@@ -369,7 +365,7 @@ public class AutonomousActions implements VisitableActions{
         opMode.sleep(1000);
         pickupHw.wristServo.setPosition(0.5);
         mecanumDriveBase.turn(backCryptoboxAngle);
-        encoderDrive(0.3, 600, 1);
+        encoderDrive(0.3, 400, 1);
 
     }
 
