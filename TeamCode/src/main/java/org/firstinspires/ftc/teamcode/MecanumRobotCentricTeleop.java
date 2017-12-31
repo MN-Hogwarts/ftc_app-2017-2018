@@ -38,7 +38,7 @@ import trclib.TrcUtil;
 @TeleOp(name = "MecanumRobotCentricTeleop", group = "teleop")
 public class MecanumRobotCentricTeleop extends OpMode{
 
-    private static boolean OP_MODE_IS_ACTIVE = true;
+    private volatile static boolean OP_MODE_IS_ACTIVE = false;
 
     private FtcDcMotor leftFrontMotor;
     private FtcDcMotor leftRearMotor;
@@ -82,6 +82,8 @@ public class MecanumRobotCentricTeleop extends OpMode{
     private ExecutorService executorService;
     private boolean initFinished = false;
 
+    Runnable driveRunnable, armRunnable, servoRunnable;
+
     @Override
     public void stop() {
         super.stop();
@@ -99,7 +101,6 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
     @Override
     public void init() {
-        OP_MODE_IS_ACTIVE = true;
         executorService = Executors.newCachedThreadPool();
         //dashboard = HalDashboard.createInstance(this.telemetry);
         jewelServo = new FtcServo(this.hardwareMap, "jewelArm");
@@ -111,7 +112,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
         rightPickupServo = this.hardwareMap.get(Servo.class, "rightPickup");
 
         //change for new pickup mechanism
-        rightPickupServo.setDirection(Servo.Direction.REVERSE);
+//        rightPickupServo.setDirection(Servo.Direction.REVERSE);
 
         wristServo = this.hardwareMap.get(Servo.class, "wristServo");
         touchSensor = hardwareMap.get(DigitalChannel.class, "touchSensor");
@@ -172,7 +173,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
         });
 
-        executorService.submit(new Runnable() {
+        driveRunnable = new Runnable() {
             @Override
             public void run() {
                 while (OP_MODE_IS_ACTIVE){
@@ -204,9 +205,9 @@ public class MecanumRobotCentricTeleop extends OpMode{
                     //telemetry.addData("Thread driveBase", "running");
                 }
             }
-        });
+        };
 
-        executorService.submit(new Runnable() {
+        armRunnable = new Runnable() {
             @Override
             public void run() {
                 while (OP_MODE_IS_ACTIVE){
@@ -229,14 +230,14 @@ public class MecanumRobotCentricTeleop extends OpMode{
                     relicServo.setPosition(relicServPos);
                 }
             }
-        });
+        };
 
-        executorService.submit(new Runnable() {
+        servoRunnable = new Runnable() {
             @Override
             public void run() {
                 double servoPos = (float) 0.0;
                 while (OP_MODE_IS_ACTIVE){
-                    /*
+                    ///*
                     if (gamepad2.b) {
                         leftPickupServo.setPosition(-1.0);
                         rightPickupServo.setPosition(1.0);
@@ -261,33 +262,33 @@ public class MecanumRobotCentricTeleop extends OpMode{
                         leftPickupServo.setPosition(0.53);
                         rightPickupServo.setPosition(0.5);
                     }
-                    */
+                    //*/
 
-                    //new pickup mechanism test
-                    if (gamepad2.b) {
-                        leftPickupServo.setPosition(0.1);
-                        rightPickupServo.setPosition(0.9);
-                    } //If touch sensor is pressed, stop wheels. If 'A' is pressed, run wheels. If neither is pressed, stop wheels
-                    else if (!touchSensor.getState()) {
-                        leftPickupServo.setPosition(0.5);
-                        rightPickupServo.setPosition(0.5);
-                    } //Turn inward
-                    else if (gamepad2.a) {
-                        leftPickupServo.setPosition(0.9);
-                        rightPickupServo.setPosition(0.1);
-                    } //Stop wheels
-                    else if (gamepad2.left_bumper) {
-                        leftPickupServo.setPosition(0.9);
-                        rightPickupServo.setPosition(0.5);
-                    }
-                    else if (gamepad2.right_bumper) {
-                        rightPickupServo.setPosition(0.1);
-                        leftPickupServo.setPosition(0.5);
-                    }
-                    else {
-                        leftPickupServo.setPosition(0.5);
-                        rightPickupServo.setPosition(0.5);
-                    }
+//                    //new pickup mechanism test
+//                    if (gamepad2.b) {
+//                        leftPickupServo.setPosition(0.1);
+//                        rightPickupServo.setPosition(0.9);
+//                    } //If touch sensor is pressed, stop wheels. If 'A' is pressed, run wheels. If neither is pressed, stop wheels
+//                    else if (!touchSensor.getState()) {
+//                        leftPickupServo.setPosition(0.5);
+//                        rightPickupServo.setPosition(0.5);
+//                    } //Turn inward
+//                    else if (gamepad2.a) {
+//                        leftPickupServo.setPosition(0.9);
+//                        rightPickupServo.setPosition(0.1);
+//                    } //Stop wheels
+//                    else if (gamepad2.left_bumper) {
+//                        leftPickupServo.setPosition(0.9);
+//                        rightPickupServo.setPosition(0.5);
+//                    }
+//                    else if (gamepad2.right_bumper) {
+//                        rightPickupServo.setPosition(0.1);
+//                        leftPickupServo.setPosition(0.5);
+//                    }
+//                    else {
+//                        leftPickupServo.setPosition(0.5);
+//                        rightPickupServo.setPosition(0.5);
+//                    }
 
                     //hinge servo
                     if(gamepad1.right_trigger > 0)
@@ -329,7 +330,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
                 }
             }
-        });
+        };
 
     }
 
@@ -339,6 +340,12 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
     @Override
     public void loop() {
+        if(!OP_MODE_IS_ACTIVE){
+            OP_MODE_IS_ACTIVE = true;
+            executorService.submit(driveRunnable);
+            executorService.submit(armRunnable);
+            executorService.submit(servoRunnable);
+        }
 
         telemetry.addData("SLOW MODE", turtleMode);
         telemetry.addData("Servo Position", "%5.2f", position);
@@ -346,7 +353,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
         telemetry.addData("relic servo", relicServPos);
         telemetry.addData("magnitude", magnitude);
         telemetry.addData("Arm Speed Limiter", armMotorSpeedLimiter);
-        telemetry.addData("turtle mode", turtleMode);
+        telemetry.addData("OP_MODE_IS_ACTIVE boolean", OP_MODE_IS_ACTIVE);
         telemetry.addData("z rotation rate", gyro.getZRotationRate().value);
         telemetry.addData("ma z rotation rate", rotationRate);
         telemetry.addData("maxListSize", maxListSize);
