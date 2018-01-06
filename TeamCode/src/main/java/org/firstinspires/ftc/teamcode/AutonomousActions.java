@@ -1146,6 +1146,28 @@ public class AutonomousActions implements VisitableActions{
         mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(0, 0, 0);
     }
 
+    public void rangeAdjustment(){
+        int optimalRangeCm = 10;
+        double producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
+
+
+        if (producedRangeCm<optimalRangeCm){
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 0, 0);
+            while(producedRangeCm<optimalRangeCm){
+                producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
+                telemetry.addData ("Distance Left to Move", optimalRangeCm-producedRangeCm);
+                telemetry.update();
+            }
+        } else {
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 180, 0);
+            while(producedRangeCm>optimalRangeCm){
+                producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
+                telemetry.addData ("Distance Left to Move", optimalRangeCm-producedRangeCm);
+                telemetry.update();
+        }
+        mecanumDriveBase.mecanumDrive.stop(); }
+    }
+
     private void tapeSearch() {
         // Set variables to previous state of each sensor
         boolean prevInside = insideColorSensed;

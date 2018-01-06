@@ -92,7 +92,7 @@ public class AutoTest6 extends FtcOpMode {
         auto.moveFWBW();
 
         while (opModeIsActive()) {
-            //telemetry.addData("Moving Away:", auto.moveAwayFromColor());
+            telemetry.addData("Moving Away:", auto.moveAwayFromColor());
 //            auto.place1stGlyph();
 //            telemetry.update();
         }
