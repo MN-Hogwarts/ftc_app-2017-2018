@@ -32,6 +32,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 import ftclib.FtcOpMode;
 
 import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
@@ -63,47 +65,32 @@ public class AutoTest7 extends FtcOpMode {
         auto.initMecanum();
 
         auto.initVuforia();
-        auto.initGlyphHardware();
-        auto.initAlliance(AllianceColor.RED);
+        auto.initAlliance(AllianceColor.BLUE);
         auto.initJewelHardware(IMU);
+        auto.initGlyphHardware();
         while (!isStarted()) {
             telemetry.addLine("Hi");
             telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
             telemetry.addData("Color Sensor red", auto.colorSensor.red());
+            telemetry.addData("Right Bottom Blue", auto.tapeSensorR.blue());
+            telemetry.addData("Right Bottom Red", auto.tapeSensorR.red());
+            telemetry.addData("Left Bottom Blue", auto.tapeSensorL.blue());
+            telemetry.addData("Left Bottom Red", auto.tapeSensorL.red());
             telemetry.addData("Angle X", auto.getAngleX());
             telemetry.addData("Angle Y", auto.getAngleY());
             telemetry.addData("Angle Z", auto.getAngleZ());
-            //telemetry.addData("Left distance", auto.leftRange.getDistance(DistanceUnit.CM));
-            //telemetry.addData("Right distance", auto.rightRange.getDistance(DistanceUnit.CM));
+            telemetry.addData("Left distance", auto.leftRange.getDistance(DistanceUnit.CM));
+            telemetry.addData("Right distance", auto.rightRange.getDistance(DistanceUnit.CM));
             telemetry.update();
         }
 
-//        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 0, 0);
-//        sleep(500);
-//        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 90, 0);
-//        sleep(500);
-//        auto.mecanumDrive.stop();
-//        auto.pictographID();
+        auto.pictographID();
 //        auto.jewelColor();
         auto.driveToCryptobox2();
-//        auto.place1stGlyph();
-//        auto.ejectGlyph();
-//        auto.moveFWBW();
-//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
-//        sleep(350);
-//        auto.mecanumDriveBase.mecanumDrive.stop();
-//
-//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(1.0, 0, 0);
-//        sleep(600);
-//        auto.mecanumDriveBase.mecanumDrive.stop();
-//
-//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
-//        sleep(400);
-//        auto.mecanumDriveBase.mecanumDrive.stop();
+        auto.place1stGlyph();
+        auto.ejectGlyph();
+        auto.moveFWBW();
 
-        //auto.turn(0);
-        //auto.ejectGlyph();
-        //sleep(5000);
         while (opModeIsActive()) {
             //telemetry.addData("Moving Away:", auto.moveAwayFromColor());
 //            auto.place1stGlyph();
