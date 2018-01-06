@@ -89,7 +89,8 @@ public class AutoTest2 extends FtcOpMode {
 //        auto.mecanumDriveBase.leftBackMotor.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        auto.mecanumDriveBase.rightBackMotor.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        auto.positionUsingTape();
-        auto.encoderColorDrive(0.6, 2500, 500);
+//        auto.encoderColorDrive(0.6, 2500, 500);
+        auto.moveFWBW();
 
         //sleep(5000);
         while (opModeIsActive()) {

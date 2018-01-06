@@ -23,7 +23,8 @@ public class NewPickUpMechanismTest extends OpMode {
     public void init() {
         leftPickupServo = this.hardwareMap.get(Servo.class, "leftPickup");
         rightPickupServo = this.hardwareMap.get(Servo.class, "rightPickup");
-        rightPickupServo.setDirection(Servo.Direction.REVERSE);
+        rightPickupServo.setDirection(Servo.Direction.FORWARD);
+        //leftPickupServo.setDirection(Servo.Direction.REVERSE);
     }
 
     @Override
@@ -49,6 +50,8 @@ public class NewPickUpMechanismTest extends OpMode {
             // Display the current value
             telemetry.addData("Servo Position", "%5.2f", position);
             telemetry.addData(">", "Press Stop to end test." );
+
+            position = 0.8;
 
             // Set the servo to the new position and pause;
             leftPickupServo.setPosition(position);

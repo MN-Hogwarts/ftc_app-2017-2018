@@ -31,13 +31,19 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.VisitorPattern.EmptyVisitable;
+import org.firstinspires.ftc.teamcode.VisitorPattern.VisitableActions;
+import org.firstinspires.ftc.teamcode.VisitorPattern.Visitor;
 
 import ftclib.FtcDcMotor;
 import ftclib.FtcOpMode;
 import swlib.SWIMUGyro;
 import swlib.SwDriveBase;
+import trclib.TrcRobot;
 
 /**
  * This is NOT an opmode.
@@ -45,8 +51,7 @@ import swlib.SwDriveBase;
  * This class can be used to define all the specific hardware for a single robot.
  * In this case that robot is a Pushbot.
  */
-public class MecanumDriveBase
-{
+public class MecanumDriveBase implements Visitor {
     /* Public OpMode members. */
     FtcDcMotor leftFrontMotor   = null;
     FtcDcMotor rightFrontMotor  = null;
@@ -109,6 +114,13 @@ public class MecanumDriveBase
         mecanumDrive = new SwDriveBase(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor,
                 gyro);
         // Define and initialize ALL installed servos.
+    }
+
+    void setAllMotorsRunMode(DcMotor.RunMode runMode) {
+        leftFrontMotor.motor.setMode(runMode);
+        leftBackMotor.motor.setMode(runMode);
+        rightFrontMotor.motor.setMode(runMode);
+        rightBackMotor.motor.setMode(runMode);
     }
 
     void setBrakeModeEnabled(boolean brake) {
@@ -220,6 +232,10 @@ public class MecanumDriveBase
     }
 
     public void turn(int turnAngle) throws InterruptedException {
+        turn(turnAngle, new EmptyVisitable(), "");
+    }
+
+    public void turn(int turnAngle, VisitableActions visAct, String methodName) throws InterruptedException {
         if (linearFtcOpMode == null) {
             return;
         }
@@ -252,6 +268,7 @@ public class MecanumDriveBase
 
                 linearFtcOpMode.telemetry.addData("Angle", angleZ);
                 linearFtcOpMode.telemetry.addData("Difference", angDiff);
+                visit(visAct, methodName);
                 linearFtcOpMode.telemetry.update();
 
                 turnRightWithoutAngle(turnPower(angDiff));
@@ -287,6 +304,7 @@ public class MecanumDriveBase
 
                 linearFtcOpMode.telemetry.addData("Angle", angleZ);
                 linearFtcOpMode.telemetry.addData("Difference", angDiff);
+                visit(visAct, methodName);
                 linearFtcOpMode.telemetry.update();
 
                 turnLeftWithoutAngle(turnPower(angDiff));
@@ -348,6 +366,11 @@ public class MecanumDriveBase
 
     double getAngleX() {
         return imu.getAngularOrientation().firstAngle;
+    }
+
+    @Override
+    public void visit(VisitableActions visAct, String method) {
+        visAct.accept(method);
     }
 }
 
