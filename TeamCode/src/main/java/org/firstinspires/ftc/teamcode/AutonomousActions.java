@@ -243,7 +243,7 @@ public class AutonomousActions implements VisitableActions{
         Log.d(TAG, "initGlyphHardware: range sensors initialized");
 
         pickupHw.init(hardwareMap);
-        pickupHw.hingeServo.setPosition(0.2);
+        pickupHw.rightHinge.setPosition(0.2);
 
         Log.d(TAG, "initGlyphHardware: pickup hardware initialized");
 
@@ -328,6 +328,8 @@ public class AutonomousActions implements VisitableActions{
 
     void place1stGlyph() throws InterruptedException {
 
+        int optimalRangeCm = 25;
+
         if (vuMark == RelicRecoveryVuMark.UNKNOWN) {
             telemetry.addLine("VuMark Unknown");
         } if (vuMark == RelicRecoveryVuMark.LEFT) {
@@ -353,7 +355,8 @@ public class AutonomousActions implements VisitableActions{
         opMode.sleep(1000);
         pickupHw.wristServo.setPosition(0.5);
         mecanumDriveBase.turn(backCryptoboxAngle);
-        encoderDrive(0.3, 400, 1);
+//        encoderDrive(0.3, 400, 1);
+        rangeAdjustment(optimalRangeCm);
 
     }
 
@@ -606,11 +609,13 @@ public class AutonomousActions implements VisitableActions{
         }
         */
 
+        ElapsedTime time = new ElapsedTime();
         mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(.8, 0, 0);
         Log.d(TAG, "driveToCryptobox2: started moving forward off balancing stone");
-        opMode.sleep(650);
+        opMode.sleep(500);
 
-        while (opMode.opModeIsActive() && (Math.abs(getAngleY()) > 2 || Math.abs(getAngleZ()) > 2)) {
+        while (opMode.opModeIsActive() && (Math.abs(getAngleY()) > 2 || Math.abs(getAngleZ()) > 2)
+                && time.seconds() < 1) {
             telemetry.addData("Angle Y", getAngleY());
             telemetry.addData("Angle Z", getAngleZ());
             telemetry.update();
@@ -1170,20 +1175,19 @@ public class AutonomousActions implements VisitableActions{
         mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(0, 0, 0);
     }
 
-    public void rangeAdjustment(){
-        int optimalRangeCm = 10;
+    public void rangeAdjustment(int optimalRangeCm){
         double producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
 
 
         if (producedRangeCm<optimalRangeCm){
-            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 0, 0);
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 180, 0);
             while(producedRangeCm<optimalRangeCm){
                 producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
                 telemetry.addData ("Distance Left to Move", optimalRangeCm-producedRangeCm);
                 telemetry.update();
             }
         } else {
-            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 180, 0);
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 0, 0);
             while(producedRangeCm>optimalRangeCm){
                 producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
                 telemetry.addData ("Distance Left to Move", optimalRangeCm-producedRangeCm);
