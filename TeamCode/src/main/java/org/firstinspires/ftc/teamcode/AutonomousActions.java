@@ -370,41 +370,42 @@ public class AutonomousActions implements VisitableActions{
         ElapsedTime time = new ElapsedTime();
 
         opMode.sleep(1000);
-                telemetry.log().add("Move Away From Color: " + moveAwayFromColor());
+//        boolean MoveAwayTest = moveAwayFromColor();
+        telemetry.log().add("Move Away From Color: " + MoveAwayTest);
 
-        while (opMode.opModeIsActive()) {
-            telemetry.addData("Color Sensor blue", colorSensor.blue());
-            telemetry.addData("Color Sensor red", colorSensor.red());
-            telemetry.log().add("Move away: " + moveAwayFromColor());
-            telemetry.update();
+//        while (opMode.opModeIsActive()) {
+//            telemetry.addData("Color Sensor blue", colorSensor.blue());
+//            telemetry.addData("Color Sensor red", colorSensor.red());
+//            telemetry.addData("Move away: ", MoveAwayTest);
+//            telemetry.update();
+//        }
+
+        if (moveAwayFromColor()) {
+            Log.d(TAG, "jewelColor: sensed jewel is alliance color");
+            telemetry.addLine("Moving right");
+            mecanumDriveBase.turn(-10, 0.4);
+
+            /*
+            turnLeftWithoutAngle(0.5);
+            while (opMode.opModeIsActive() && time.seconds() < timeLimit);
+            mecanumDrive.stop();
+            */
         }
-//
-//        if (moveAwayFromColor()) {
-//            Log.d(TAG, "jewelColor: sensed jewel is alliance color");
-//            telemetry.addLine("Moving right");
-//            mecanumDriveBase.turn(-10, 0.4);
-//
-//            /*
-//            turnLeftWithoutAngle(0.5);
-//            while (opMode.opModeIsActive() && time.seconds() < timeLimit);
-//            mecanumDrive.stop();
-//            */
-//        }
-//        else {
-//            Log.d(TAG, "jewelColor: sensed jewel is not alliance color");
-//            telemetry.addLine("Moving left");
-//            mecanumDriveBase.turn(10, 0.4);
-//
-//            /*
-//            turnRightWithoutAngle(0.5);
-//            while (opMode.opModeIsActive() && time.seconds() < timeLimit);
-//            mecanumDrive.stop();
-//            */
-//        }
-//        telemetry.update();
-//        jewelArm.setPosition(1);
-//        mecanumDriveBase.turn(0, 0.3);
-//        opMode.sleep(500);
+        else {
+            Log.d(TAG, "jewelColor: sensed jewel is not alliance color");
+            telemetry.addLine("Moving left");
+            mecanumDriveBase.turn(10, 0.4);
+
+            /*
+            turnRightWithoutAngle(0.5);
+            while (opMode.opModeIsActive() && time.seconds() < timeLimit);
+            mecanumDrive.stop();
+            */
+        }
+        telemetry.update();
+        jewelArm.setPosition(1);
+        mecanumDriveBase.turn(0, 0.3);
+        opMode.sleep(500);
         //colorSensor.enableLed(false);
     }
 
