@@ -367,45 +367,47 @@ public class AutonomousActions implements VisitableActions{
         ElapsedTime time = new ElapsedTime();
 
         opMode.sleep(1000);
-        /*
+                telemetry.log().add("Move Away From Color: " + moveAwayFromColor());
+
         while (opMode.opModeIsActive()) {
             telemetry.addData("Color Sensor blue", colorSensor.blue());
             telemetry.addData("Color Sensor red", colorSensor.red());
             telemetry.log().add("Move away: " + moveAwayFromColor());
             telemetry.update();
         }
-        */
-
-        if (moveAwayFromColor()) {
-            Log.d(TAG, "jewelColor: sensed jewel is alliance color");
-            telemetry.addLine("Moving right");
-            mecanumDriveBase.turn(-10, 0.4);
-
-            /*
-            turnLeftWithoutAngle(0.5);
-            while (opMode.opModeIsActive() && time.seconds() < timeLimit);
-            mecanumDrive.stop();
-            */
-        }
-        else {
-            Log.d(TAG, "jewelColor: sensed jewel is not alliance color");
-            telemetry.addLine("Moving left");
-            mecanumDriveBase.turn(10, 0.4);
-
-            /*
-            turnRightWithoutAngle(0.5);
-            while (opMode.opModeIsActive() && time.seconds() < timeLimit);
-            mecanumDrive.stop();
-            */
-        }
-        telemetry.update();
-        jewelArm.setPosition(1);
-        mecanumDriveBase.turn(0, 0.3);
-        opMode.sleep(500);
+//
+//        if (moveAwayFromColor()) {
+//            Log.d(TAG, "jewelColor: sensed jewel is alliance color");
+//            telemetry.addLine("Moving right");
+//            mecanumDriveBase.turn(-10, 0.4);
+//
+//            /*
+//            turnLeftWithoutAngle(0.5);
+//            while (opMode.opModeIsActive() && time.seconds() < timeLimit);
+//            mecanumDrive.stop();
+//            */
+//        }
+//        else {
+//            Log.d(TAG, "jewelColor: sensed jewel is not alliance color");
+//            telemetry.addLine("Moving left");
+//            mecanumDriveBase.turn(10, 0.4);
+//
+//            /*
+//            turnRightWithoutAngle(0.5);
+//            while (opMode.opModeIsActive() && time.seconds() < timeLimit);
+//            mecanumDrive.stop();
+//            */
+//        }
+//        telemetry.update();
+//        jewelArm.setPosition(1);
+//        mecanumDriveBase.turn(0, 0.3);
+//        opMode.sleep(500);
         //colorSensor.enableLed(false);
     }
 
     boolean moveAwayFromColor() {
+        telemetry.log().add("Color Sensor Red: " + colorSensor.red());
+        telemetry.log().add("Color Sensor Blue: " + colorSensor.blue());
         return allianceColor == AllianceColor.BLUE && colorSensor.blue() > colorSensor.red()
                 || allianceColor == AllianceColor.RED && colorSensor.red() > colorSensor.blue();
     }
