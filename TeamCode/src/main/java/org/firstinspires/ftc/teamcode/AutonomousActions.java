@@ -36,6 +36,8 @@ import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 public class AutonomousActions implements VisitableActions{
     int   RED_THRESHOLD  = (110);
     int   BLUE_THRESHOLD = (90);
+    int   TAPE_RED_THRESHOLD = 100;
+    int   TAPE_BLUE_THRESHOLD = 80;
     double WALL_DISTANCE = 20;
     private static double gyroKp = 0.3;
     private static double gyroScale = 0.5;
@@ -115,11 +117,11 @@ public class AutonomousActions implements VisitableActions{
 
     void initAlliance() {
         telemetry.update();
-        if(tapeSensorR.red() > RED_THRESHOLD && tapeSensorL.red() > RED_THRESHOLD) {
+        if(tapeSensorR.red() > TAPE_RED_THRESHOLD && tapeSensorL.red() > TAPE_RED_THRESHOLD) {
             AllianceColor allianceColor1 = allianceColor.RED;
             allianceColor = allianceColor1;
         }
-        else if (tapeSensorR.blue() > BLUE_THRESHOLD && tapeSensorL.blue() > BLUE_THRESHOLD){
+        else if (tapeSensorR.blue() > TAPE_BLUE_THRESHOLD && tapeSensorL.blue() > TAPE_BLUE_THRESHOLD){
             AllianceColor allianceColor1 = allianceColor.BLUE;
             allianceColor = allianceColor1;
         }
@@ -372,39 +374,39 @@ public class AutonomousActions implements VisitableActions{
         opMode.sleep(1000);
                 telemetry.log().add("Move Away From Color: " + moveAwayFromColor());
 
-        while (opMode.opModeIsActive()) {
-            telemetry.addData("Color Sensor blue", colorSensor.blue());
-            telemetry.addData("Color Sensor red", colorSensor.red());
-            telemetry.log().add("Move away: " + moveAwayFromColor());
-            telemetry.update();
+//        while (opMode.opModeIsActive()) {
+//            telemetry.addData("Color Sensor blue", colorSensor.blue());
+//            telemetry.addData("Color Sensor red", colorSensor.red());
+//            telemetry.log().add("Move away: " + moveAwayFromColor());
+//            telemetry.update();
+//        }
+
+        if (moveAwayFromColor()) {
+            Log.d(TAG, "jewelColor: sensed jewel is alliance color");
+            telemetry.addLine("Moving right");
+            mecanumDriveBase.turn(-10, 0.4);
+
+            /*
+            turnLeftWithoutAngle(0.5);
+            while (opMode.opModeIsActive() && time.seconds() < timeLimit);
+            mecanumDrive.stop();
+            */
         }
-//
-//        if (moveAwayFromColor()) {
-//            Log.d(TAG, "jewelColor: sensed jewel is alliance color");
-//            telemetry.addLine("Moving right");
-//            mecanumDriveBase.turn(-10, 0.4);
-//
-//            /*
-//            turnLeftWithoutAngle(0.5);
-//            while (opMode.opModeIsActive() && time.seconds() < timeLimit);
-//            mecanumDrive.stop();
-//            */
-//        }
-//        else {
-//            Log.d(TAG, "jewelColor: sensed jewel is not alliance color");
-//            telemetry.addLine("Moving left");
-//            mecanumDriveBase.turn(10, 0.4);
-//
-//            /*
-//            turnRightWithoutAngle(0.5);
-//            while (opMode.opModeIsActive() && time.seconds() < timeLimit);
-//            mecanumDrive.stop();
-//            */
-//        }
-//        telemetry.update();
-//        jewelArm.setPosition(1);
-//        mecanumDriveBase.turn(0, 0.3);
-//        opMode.sleep(500);
+        else {
+            Log.d(TAG, "jewelColor: sensed jewel is not alliance color");
+            telemetry.addLine("Moving left");
+            mecanumDriveBase.turn(10, 0.4);
+
+            /*
+            turnRightWithoutAngle(0.5);
+            while (opMode.opModeIsActive() && time.seconds() < timeLimit);
+            mecanumDrive.stop();
+            */
+        }
+        telemetry.update();
+        jewelArm.setPosition(1);
+        mecanumDriveBase.turn(0, 0.3);
+        opMode.sleep(500);
         //colorSensor.enableLed(false);
     }
 
