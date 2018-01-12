@@ -371,7 +371,7 @@ public class AutonomousActions implements VisitableActions{
 
         opMode.sleep(1000);
 //        boolean MoveAwayTest = moveAwayFromColor();
-        telemetry.log().add("Move Away From Color: " + MoveAwayTest);
+        telemetry.log().add("Move Away From Color: " + moveAwayFromColor());
 
 //        while (opMode.opModeIsActive()) {
 //            telemetry.addData("Color Sensor blue", colorSensor.blue());
