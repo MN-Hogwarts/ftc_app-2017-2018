@@ -5,31 +5,20 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import ftclib.FtcDcMotor;
 import ftclib.FtcServo;
-import hallib.HalDashboard;
 import swlib.SWGamePad;
 import swlib.SWIMUGyro;
 import swlib.SwDriveBase;
-import trclib.TrcGyro;
-import trclib.TrcRobot;
 import trclib.TrcSensor;
 import trclib.TrcServo;
-import trclib.TrcTaskMgr;
 import trclib.TrcUtil;
 
 /**
@@ -52,7 +41,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
     //private HalDashboard dashboard = null;
     private boolean setYInverted = true;
     private TrcServo jewelServo = null;
-    private Servo wristServo, hingeServo;
+    private Servo wristServo, rightHinge, leftHinge;
     private Servo leftPickupServo, rightPickupServo;
     private Servo relicServo;
     private DigitalChannel touchSensor ;
@@ -72,12 +61,16 @@ public class MecanumRobotCentricTeleop extends OpMode{
     static final double MAX_POS     =  0.9;     // Maximum rotational position
     static final double MIN_POS     =  0.2;     // Minimum rotational position
 
-    private boolean hingeUp = true;
-    private boolean pressedTrigger = false;
-    private boolean prevPressedTrigger = false;
+    private boolean hingeUpR = true;
+    private boolean hingeUpL = true;
+    private boolean pressedTriggerR = false;
+    private boolean prevPressedTriggerR = false;
+    private boolean pressedTriggerL = false;
+    private boolean prevPressedTriggerL = false;
 
     double  position = 0.5;
-    double  hingePosition = 0.2;
+    double rightHingePos = 0.9;
+    double leftHingePos = 0.1;
 
     private ExecutorService executorService;
     private boolean initFinished = false;
@@ -106,7 +99,8 @@ public class MecanumRobotCentricTeleop extends OpMode{
         jewelServo = new FtcServo(this.hardwareMap, "jewelArm");
         jewelServo.setPosition(0.9);
 
-        hingeServo = this.hardwareMap.get(Servo.class, "hingeServo");
+        rightHinge = this.hardwareMap.get(Servo.class, "rightHinge");
+        leftHinge = this.hardwareMap.get(Servo.class, "leftHinge");
 
         leftPickupServo = this.hardwareMap.get(Servo.class, "leftPickup");
         rightPickupServo = this.hardwareMap.get(Servo.class, "rightPickup");
@@ -292,22 +286,40 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
                     //hinge servo
                     if(gamepad1.right_trigger > 0)
-                        pressedTrigger = true;
-                    else pressedTrigger = false;
+                        pressedTriggerR = true;
+                    else pressedTriggerR = false;
 
-                    if (pressedTrigger) {
-                        if(hingeUp && prevPressedTrigger != pressedTrigger){
-                            hingePosition = 0.7;
-                            hingeUp = false;
-                            //prevPressedTrigger = pressedTrigger;
-                        } else if (prevPressedTrigger != pressedTrigger){
-                            hingePosition = 0.2;
-                            hingeUp = true;
-                            //prevPressedTrigger = pressedTrigger;
+                    if (pressedTriggerR) {
+                        if(hingeUpR && prevPressedTriggerR != pressedTriggerR){
+                            rightHingePos = 0.5;
+                            hingeUpR = false;
+                            //prevPressedTriggerR = pressedTriggerR;
+                        } else if (prevPressedTriggerR != pressedTriggerR){
+                            rightHingePos = 0.95;
+                            hingeUpR = true;
+                            //prevPressedTriggerR = pressedTriggerR;
                         }
                     }
 
-                    hingeServo.setPosition(hingePosition);
+                    rightHinge.setPosition(rightHingePos);
+
+                    if(gamepad1.left_trigger > 0)
+                        pressedTriggerL = true;
+                    else pressedTriggerL = false;
+
+                    if (pressedTriggerL) {
+                        if(hingeUpL && prevPressedTriggerL != pressedTriggerL){
+                            leftHingePos = 0.7;
+                            hingeUpL = false;
+                            //prevPressedTriggerR = pressedTriggerR;
+                        } else if (prevPressedTriggerL != pressedTriggerL){
+                            leftHingePos = 0.1;
+                            hingeUpL = true;
+                            //prevPressedTriggerR = pressedTriggerR;
+                        }
+                    }
+
+                    leftHinge.setPosition(leftHingePos);
 
                     if (gamepad2.y) {
                         // Keep stepping up until we hit the max value.
@@ -349,7 +361,8 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
         telemetry.addData("SLOW MODE", turtleMode);
         telemetry.addData("Servo Position", "%5.2f", position);
-        telemetry.addData("hingeServo", hingePosition);
+        telemetry.addData("rightHinge", rightHingePos);
+        telemetry.addData("leftHinge", leftHingePos);
         telemetry.addData("relic servo", relicServPos);
         telemetry.addData("magnitude", magnitude);
         telemetry.addData("Arm Speed Limiter", armMotorSpeedLimiter);
@@ -361,6 +374,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
         telemetry.addData("gyroScale", gyroScale);
         telemetry.update();
 
-        prevPressedTrigger = pressedTrigger;
+        prevPressedTriggerR = pressedTriggerR;
+        prevPressedTriggerL = pressedTriggerL;
     }
 }

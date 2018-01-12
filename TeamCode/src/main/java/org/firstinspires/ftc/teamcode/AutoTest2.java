@@ -30,13 +30,13 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.AutoOptions.AllianceColor;
 
 import ftclib.FtcOpMode;
 
-import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
+import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
@@ -83,7 +83,7 @@ public class AutoTest2 extends FtcOpMode {
             telemetry.update();
         }
 
-        //auto.jewelColor();
+        auto.jewelColor();
         //auto.glyphPickup();
 //        auto.encoderDrive(0.6, 700, 2);
 //        auto.mecanumDriveBase.leftBackMotor.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

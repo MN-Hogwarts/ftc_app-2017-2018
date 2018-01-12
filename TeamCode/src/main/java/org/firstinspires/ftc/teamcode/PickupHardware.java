@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import android.util.Log;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -34,7 +33,8 @@ public class PickupHardware
     Servo wristServo;
     Servo left_Servo ;
     Servo right_Servo ;
-    Servo hingeServo;
+    Servo rightHinge;
+    Servo leftHinge;
     DigitalChannel touchSensor ;
     FtcDcMotor armMotor;
 
@@ -68,7 +68,8 @@ public class PickupHardware
         Log.d("Arm Motor", "Initialized");
         touchSensor = hwMap.get(DigitalChannel.class, "touchSensor") ;
         Log.d("Touch Sensor", "Initialized");
-        hingeServo = hwMap.get(Servo.class, "hingeServo") ;
+        rightHinge = hwMap.get(Servo.class, "rightHinge") ;
+        leftHinge = hwMap.get(Servo.class, "leftHinge") ;
     }
 }
 

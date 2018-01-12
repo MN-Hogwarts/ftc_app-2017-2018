@@ -42,7 +42,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class ServoTest extends LinearOpMode {
 
     static final double INCREMENT   = 0.01;     // amount to slew leftServo each CYCLE_MS cycle
-    static final int    CYCLE_MS    =   2000;     // period of each cycle
+    static final int    CYCLE_MS    =   50;     // period of each cycle
     static final double MAX_POS     =  1.0;     // Maximum rotational position
     static final double MIN_POS     =  0.0;     // Minimum rotational position
 
@@ -57,7 +57,7 @@ public class ServoTest extends LinearOpMode {
 
         // Connect to leftServo (Assume PushBot Left Hand)
         // Change the text in quotes to match any leftServo name on your robot.
-        servo = hardwareMap.get(Servo.class, "left_hand");
+        servo = hardwareMap.get(Servo.class, "rightHinge");
 
         // Wait for the start button
         telemetry.addData(">", "Press Start to scan Servo." );
@@ -69,8 +69,8 @@ public class ServoTest extends LinearOpMode {
 
         while(opModeIsActive()){
 
-            // slew the leftServo, according to the rampUp (direction) variable.
-/*            if (rampUp) {
+            // slew the servo, according to the rampUp (direction) variable.
+            if (rampUp) {
                 // Keep stepping up until we hit the max value.
                 position += INCREMENT ;
                 if (position >= MAX_POS ) {
@@ -86,21 +86,15 @@ public class ServoTest extends LinearOpMode {
                     rampUp = !rampUp;  // Switch ramp direction
                 }
             }
-*/
+
             // Display the current value
             telemetry.addData("Servo Position", "%5.2f", position);
             telemetry.addData(">", "Press Stop to end test." );
             telemetry.update();
 
-            // Set the leftServo to the new position and pause;
-
+            // Set the servo to the new position and pause;
             servo.setPosition(position);
             sleep(CYCLE_MS);
-            position += .45;
-            servo.setPosition(position);
-            sleep(CYCLE_MS);
-
-            position -= .45;
             idle();
         }
 

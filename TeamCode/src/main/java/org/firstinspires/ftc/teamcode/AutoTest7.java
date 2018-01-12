@@ -33,10 +33,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.AutoOptions.AllianceColor;
 
 import ftclib.FtcOpMode;
 
-import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
+import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
