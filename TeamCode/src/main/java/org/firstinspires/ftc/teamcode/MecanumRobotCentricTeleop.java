@@ -34,14 +34,15 @@ public class MecanumRobotCentricTeleop extends OpMode{
     private FtcDcMotor rightFrontMotor;
     private FtcDcMotor rightRearMotor;
     private FtcDcMotor armMotor;
-    private double armMotorSpeedLimiter = 0.3;
+    private double armMotorSpeedLimiter = 0.6;
     private SwDriveBase driveBase = null;
     private SWIMUGyro gyro = null;
     private SWGamePad gamepad;
     //private HalDashboard dashboard = null;
     private boolean setYInverted = true;
     private TrcServo jewelServo = null;
-    private Servo wristServo, rightHinge, leftHinge;
+    private Servo wristServo1, wristServo2;
+    private Servo rightHinge, leftHinge;
     private Servo leftPickupServo, rightPickupServo;
     private Servo relicServo;
     private DigitalChannel touchSensor ;
@@ -59,7 +60,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
     static final double INCREMENT   = 0.3;     // amount to slew servo each CYCLE_MS cycle
     static final int    CYCLE_MS    =   50;     // period of each cycle
     static final double MAX_POS     =  0.9;     // Maximum rotational position
-    static final double MIN_POS     =  0.2;     // Minimum rotational position
+    static final double MIN_POS     =  0.1;     // Minimum rotational position
 
     private boolean hingeUpR = true;
     private boolean hingeUpL = true;
@@ -108,7 +109,9 @@ public class MecanumRobotCentricTeleop extends OpMode{
         //change for new pickup mechanism
 //        rightPickupServo.setDirection(Servo.Direction.REVERSE);
 
-        wristServo = this.hardwareMap.get(Servo.class, "wristServo");
+        wristServo1 = this.hardwareMap.get(Servo.class, "wristServo1");
+        wristServo1.setDirection(Servo.Direction.REVERSE);
+        wristServo2 = this.hardwareMap.get(Servo.class, "wristServo2");
         touchSensor = hardwareMap.get(DigitalChannel.class, "touchSensor");
         relicServo = hardwareMap.get(Servo.class, "relicServo");
         //pickupHw.init(hardwareMap);
@@ -291,7 +294,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
                     if (pressedTriggerR) {
                         if(hingeUpR && prevPressedTriggerR != pressedTriggerR){
-                            rightHingePos = 0.5;
+                            rightHingePos = 0.4;
                             hingeUpR = false;
                             //prevPressedTriggerR = pressedTriggerR;
                         } else if (prevPressedTriggerR != pressedTriggerR){
@@ -338,7 +341,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
                         position = 0.50;
                     }
 
-                    wristServo.setPosition(position);
+                    setWristPosition(position);
 
                 }
             }
@@ -348,6 +351,11 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
     private void initHardware(){
 
+    }
+
+    private void setWristPosition(double position) {
+        wristServo1.setPosition(position);
+        wristServo2.setPosition(position);
     }
 
     @Override

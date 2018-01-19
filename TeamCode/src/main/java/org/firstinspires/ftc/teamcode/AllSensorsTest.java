@@ -30,8 +30,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.AutoOptions.AllianceColor;
 
 import ftclib.FtcOpMode;
@@ -41,17 +41,13 @@ import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
  */
-@Autonomous(name = "Auto Red 2", group = "Concept")
+@Autonomous(name = "All Sensors Test", group = "Sensors")
 //@Disabled
-public class AutoRed2 extends FtcOpMode {
+public class AllSensorsTest extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
 
     // Define class members
-    Servo   servo;
-    double  position = .55;//(MAX_POS - MIN_POS) / 2; // Start at halfway position
-    boolean rampUp = true;
-
 
     @Override
     public void initRobot() {
@@ -61,68 +57,24 @@ public class AutoRed2 extends FtcOpMode {
     @Override
     public void runOpMode() throws InterruptedException{
 
-        Servo relicServo = hardwareMap.get(Servo.class, "relicServo");
-        relicServo.setPosition(0.7);
         auto.initOpmode(this);
         auto.initMecanum();
-
         //auto.initVuforia();
         auto.initAlliance(AllianceColor.RED);
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
-            telemetry.addLine("Hi");
-            telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
-            telemetry.addData("Color Sensor red", auto.colorSensor.red());
-            telemetry.addData("Angle X", auto.getAngleX());
-            telemetry.addData("Angle Y", auto.getAngleY());
-            telemetry.addData("Angle Z", auto.getAngleZ());
-            //telemetry.addData("Left distance", auto.leftRange.getDistance(DistanceUnit.CM));
-            //telemetry.addData("Right distance", auto.rightRange.getDistance(DistanceUnit.CM));
+            auto.allSensorData();
             telemetry.update();
         }
 
-//        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 0, 0);
-//        sleep(500);
-//        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 90, 0);
-//        sleep(500);
-//        auto.mecanumDrive.stop();
-//        auto.jewelColor();
-//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(1.0, 90, 0);
-//        sleep(1500);
-//        auto.mecanumDriveBase.mecanumDrive.stop();
         while (opModeIsActive()) {
-            telemetry.addData("Left CM", auto.getFilteredRange(auto.leftRange));
-            telemetry.addData("Right CM", auto.getFilteredRange(auto.rightRange));
-            telemetry.update();
-        }
-        /*
-        auto.driveToCryptobox();
-        auto.ejectGlyph();
-        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
-        sleep(350);
-        auto.mecanumDriveBase.mecanumDrive.stop();
-
-        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(1.0, 0, 0);
-        sleep(600);
-        auto.mecanumDriveBase.mecanumDrive.stop();
-
-        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
-        sleep(400);
-        auto.mecanumDriveBase.mecanumDrive.stop();
-
-        //auto.turn(0);
-        //auto.ejectGlyph();
-        //sleep(5000);
-        while (opModeIsActive()) {
-            //telemetry.addData("Moving Away:", auto.moveAwayFromColor());
-            auto.place1stGlyph();
+            auto.allSensorData();
             telemetry.update();
         }
 
         //auto.initVuforia();
         //auto.pictographID(); //run Vuforia method, includes initVuforia()
-        */
-        }
 
+    }
 }

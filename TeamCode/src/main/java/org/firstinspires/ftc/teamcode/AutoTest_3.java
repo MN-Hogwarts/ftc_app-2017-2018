@@ -43,7 +43,7 @@ import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
  * Rotates Servo between min and max position or rotates continuously
  */
 @Autonomous(name = "Auto 3", group = "Concept")
-@Disabled
+//@Disabled
 public class AutoTest_3 extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
@@ -78,7 +78,7 @@ public class AutoTest_3 extends FtcOpMode {
 //        auto.jewelColor();
         //sleep(5000);
 
-        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(-0.4, 42, 0);
+        auto.driveToSideCryptobox();
 
         while (opModeIsActive()) {
             telemetry.addData("Tape Sensor: Red", auto.tapeSensorL.red());

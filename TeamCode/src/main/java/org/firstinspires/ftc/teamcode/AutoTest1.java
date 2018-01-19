@@ -85,8 +85,8 @@ public class AutoTest1 extends FtcOpMode {
         //auto.driveToCryptobox();
 //        auto.firstTapeFound = true;
 //        auto.positionUsingTape();
-        auto.cryptoboxAngleCorrection();
-
+//        auto.cryptoboxAngleCorrection();
+        auto.rangeAdjustment(25);
 //        auto.moveFWBW();
         while (opModeIsActive()) {
             telemetry.addData("Left encoder position:", auto.mecanumDriveBase.leftBackMotor.motor.getCurrentPosition());

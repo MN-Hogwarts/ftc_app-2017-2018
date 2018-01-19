@@ -243,7 +243,8 @@ public class AutonomousActions implements VisitableActions{
         Log.d(TAG, "initGlyphHardware: range sensors initialized");
 
         pickupHw.init(hardwareMap);
-        pickupHw.rightHinge.setPosition(0.2);
+        pickupHw.rightHinge.setPosition(0.95);
+        pickupHw.leftHinge.setPosition(0.1);
 
         Log.d(TAG, "initGlyphHardware: pickup hardware initialized");
 
@@ -281,6 +282,21 @@ public class AutonomousActions implements VisitableActions{
                 outerDirection = 270;
             }
         }
+    }
+
+    public void allSensorData() {
+        telemetry.addData("Color Sensor blue", colorSensor.blue());
+        telemetry.addData("Color Sensor red", colorSensor.red());
+        telemetry.addData("Right Bottom Blue", tapeSensorR.blue());
+        telemetry.addData("Right Bottom Red", tapeSensorR.red());
+        telemetry.addData("Left Bottom Blue", tapeSensorL.blue());
+        telemetry.addData("Left Bottom Red", tapeSensorL.red());
+        telemetry.addData("Angle X", getAngleX());
+        telemetry.addData("Angle Y", getAngleY());
+        telemetry.addData("Angle Z", getAngleZ());
+        telemetry.addData("Left distance", leftRange.getDistance(DistanceUnit.CM));
+        telemetry.addData("Right distance", rightRange.getDistance(DistanceUnit.CM));
+        telemetry.update();
     }
 
     // DON"T USE THIS YET
@@ -351,12 +367,12 @@ public class AutonomousActions implements VisitableActions{
         }
         telemetry.update();
 
-        pickupHw.wristServo.setPosition(0);
+        pickupHw.wristServo1.setPosition(0);
         opMode.sleep(1000);
-        pickupHw.wristServo.setPosition(0.5);
+        pickupHw.wristServo1.setPosition(0.5);
         mecanumDriveBase.turn(backCryptoboxAngle);
 //        encoderDrive(0.3, 400, 1);
-        rangeAdjustment(optimalRangeCm);
+        rangeAdjustmentForward(optimalRangeCm);
 
     }
 
@@ -623,18 +639,21 @@ public class AutonomousActions implements VisitableActions{
         Log.d(TAG, "driveToCryptobox2: drove off balancing stone");
         mecanumDriveBase.mecanumDrive.stop();
         Log.d(TAG, "driveToCryptobox2: stopped after driving off balancing stone");
-        encoderDrive(0.5, 200, 2);
+        if (allianceColor == AllianceColor.BLUE) {
+            encoderDrive(0.5, 200, 2);
+        }
+        else if (allianceColor == AllianceColor.RED) {
+            encoderDrive(0.5, 100, 2);
+        }
 
         mecanumDriveBase.turn(backCryptoboxAngle);
         Log.d(TAG, "driveToCryptobox2: turned toward cryptobox");
 
         mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.6, 0, 0);
         Log.d(TAG, "driveToCryptobox2: started driving toward wall");
-        while (opMode.opModeIsActive() && leftRange.getDistance(DistanceUnit.CM) > wallCm) {
-            telemetry.addData("Left Distance", leftRange.getDistance(DistanceUnit.CM));
-            telemetry.update();
-        }
-        mecanumDriveBase.mecanumDrive.stop();
+
+        encoderDrive(0.5, 1800, 3);
+        rangeAdjustmentForward(wallCm);
         Log.d(TAG, "driveToCryptobox2: stopped driving toward wall");
 
         mecanumDriveBase.turn(backCryptoboxAngle);
@@ -717,10 +736,13 @@ public class AutonomousActions implements VisitableActions{
 
     void driveToSideCryptobox() throws InterruptedException {
 
-        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(.8, innerDirection, 0);
+        ElapsedTime time = new ElapsedTime();
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(.8, outerDirection, 0);
         Log.d(TAG, "driveToSideCryptobox: started driving sideways off cryptobox");
 
-        while (opMode.opModeIsActive() && (Math.abs(getAngleY()) > 2 || Math.abs(getAngleZ()) > 2)) {
+        while (opMode.opModeIsActive() && (Math.abs(getAngleY()) > 2 || Math.abs(getAngleZ()) > 2)
+//                && time.seconds() < 1
+              ) {
             telemetry.addData("Angle Y", getAngleY());
             telemetry.addData("Angle Z", getAngleZ());
             telemetry.update();
@@ -728,12 +750,14 @@ public class AutonomousActions implements VisitableActions{
         Log.d(TAG, "driveToSideCryptobox: drove off balancing stone");
         mecanumDriveBase.mecanumDrive.stop();
         Log.d(TAG, "driveToSideCryptobox: stopped after driving off balancing stone");
+        timeDrive(0.5, innerDirection, 0.5);
         mecanumDriveBase.turn(180);
+        timeDrive(0.5, outerDirection, 0.7);
 
     }
 
     void cryptoboxAngleCorrection() throws InterruptedException {
-        int strafeStartAngleOffset = 15;
+        int strafeStartAngleOffset = 10;
         int strafeStartAngle = (int) (backCryptoboxAngle + Math.signum(-backCryptoboxAngle) * strafeStartAngleOffset);
 
         if (Math.abs(backCryptoboxAngle - getAngleX()) > strafeStartAngleOffset) {
@@ -1092,8 +1116,10 @@ public class AutonomousActions implements VisitableActions{
     void positionUsingTape3() throws InterruptedException {
         ElapsedTime time = new ElapsedTime();
         int angleTolerance = 10;
-        double resetTime = 2;
+        double resetTime = 1;
         boolean outerSensorSkipped = false;
+        double minRange = 12;
+        double cryptoboxFarCheck = 35;
 
         double forwardInsideTapeDirection = Math.signum(-backCryptoboxAngle) * 42;
         double backwardInsideTapeDirection = forwardInsideTapeDirection + 180;
@@ -1110,23 +1136,28 @@ public class AutonomousActions implements VisitableActions{
                 mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.7, innerDirection, 0);
                 outerSensorSkipped = true;
             }
-            if (time.seconds() > resetTime) {
-                readjustTapePositioning();
-                Log.d(TAG, "positionUsingTape3: readjusting angle");
+            if (getSmallerRange() < minRange && time.seconds() > resetTime) {
+                timeDrive(0.4, 180, 0.2);
                 time.reset();
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.7, outerDirection, 0);
             }
+//            if (time.seconds() > resetTime) {
+//                readjustTapePositioning();
+//                Log.d(TAG, "positionUsingTape3: readjusting angle");
+//                time.reset();
+//            }
         }
         mecanumDriveBase.mecanumDrive.stop();
         Log.d(TAG, "positionUsingTape3: stopped moving toward triangle");
         opMode.sleep(400);
-        mecanumDriveBase.turn(backCryptoboxAngle);
-        if (tapeMap.get(outSensOutTape)) {
-            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, forwardInsideTapeDirection, 0);
-            Log.d(TAG, "positionUsingTape3: started driving diagonally forward");
-        }
-        else {
+        mecanumDriveBase.turn(backCryptoboxAngle, this, "tapeSearch");
+        if (!tapeMap.get(outSensOutTape) && getSmallerRange() < cryptoboxFarCheck) {
             mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, backwardInsideTapeDirection, 0);
             Log.d(TAG, "positionUsingTape3: started driving diagonally backward");
+        }
+        else {
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, forwardInsideTapeDirection, 0);
+            Log.d(TAG, "positionUsingTape3: started driving diagonally forward");
         }
         while (opMode.opModeIsActive() && !allianceColorTapeFound(outerColor)) {
             tapeSearch();
@@ -1176,24 +1207,54 @@ public class AutonomousActions implements VisitableActions{
     }
 
     public void rangeAdjustment(int optimalRangeCm){
-        double producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
+//        double producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
+//        double producedRangeCm = 0.5 * (getFilteredRange(leftRange) + getFilteredRange(rightRange));
+        double producedRangeCm = getSmallerRange();
 
-
-        if (producedRangeCm<optimalRangeCm){
+        if (producedRangeCm < optimalRangeCm){
             mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 180, 0);
-            while(producedRangeCm<optimalRangeCm){
-                producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
-                telemetry.addData ("Distance Left to Move", optimalRangeCm-producedRangeCm);
+            while(opMode.opModeIsActive() && producedRangeCm < optimalRangeCm){
+//                producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
+//                producedRangeCm = 0.5 * (getFilteredRange(leftRange) + getFilteredRange(rightRange));
+                producedRangeCm = getSmallerRange();
+                telemetry.addData ("Distance Left to Move", optimalRangeCm - producedRangeCm);
                 telemetry.update();
             }
         } else {
             mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 0, 0);
-            while(producedRangeCm>optimalRangeCm){
-                producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
-                telemetry.addData ("Distance Left to Move", optimalRangeCm-producedRangeCm);
+            while(opMode.opModeIsActive() && producedRangeCm > optimalRangeCm){
+//                producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
+//                producedRangeCm = 0.5 * (getFilteredRange(leftRange) + getFilteredRange(rightRange));
+                producedRangeCm = getSmallerRange();
+                telemetry.addData ("Distance Left to Move", optimalRangeCm - producedRangeCm);
                 telemetry.update();
+            }
+            mecanumDriveBase.mecanumDrive.stop(); }
+    }
+
+    public void rangeAdjustmentForward(int optimalRangeCm){
+//        double producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
+//        double producedRangeCm = 0.5 * (getFilteredRange(leftRange) + getFilteredRange(rightRange));
+        double producedRangeCm = getSmallerRange();
+
+
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 0, 0);
+        while(opMode.opModeIsActive() && producedRangeCm > optimalRangeCm){
+//                producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
+//                producedRangeCm = 0.5 * (getFilteredRange(leftRange) + getFilteredRange(rightRange));
+            producedRangeCm = getSmallerRange();
+            telemetry.addData ("Distance Left to Move", optimalRangeCm - producedRangeCm);
+            telemetry.update();
         }
-        mecanumDriveBase.mecanumDrive.stop(); }
+        mecanumDriveBase.mecanumDrive.stop();
+    }
+
+    double getSmallerRange() {
+        if (leftRange.getDistance(DistanceUnit.CM) < rightRange.getDistance(DistanceUnit.CM)) {
+            return leftRange.getDistance(DistanceUnit.CM);
+        } else {
+            return rightRange.getDistance(DistanceUnit.CM);
+        }
     }
 
     private void tapeSearch() {
@@ -1415,6 +1476,16 @@ public class AutonomousActions implements VisitableActions{
         || allianceColor == AllianceColor.RED && tapeSensorR.red() > RED_THRESHOLD);
     }
 
+    void timeDrive(double speed, double direction, double seconds) {
+
+        ElapsedTime time = new ElapsedTime();
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(speed, direction, 0);
+        while (opMode.opModeIsActive() && time.seconds() < seconds) {
+            telemetry.addData("Time", time.seconds());
+        }
+        mecanumDriveBase.mecanumDrive.stop();
+    }
+
     public void encoderDrive(double speed,
                              double encoderCounts,
                              double timeoutS) {
@@ -1500,6 +1571,15 @@ public class AutonomousActions implements VisitableActions{
         }
         else {
             return 0;
+        }
+    }
+
+    double getFilteredRange(ModernRoboticsI2cRangeSensor range) {
+        if (range.getDistance(DistanceUnit.CM) > Math.pow(10, 10)
+                || range.getDistance(DistanceUnit.CM) < 1.75) {
+            return getFilteredRange(range);
+        } else {
+            return range.getDistance(DistanceUnit.CM);
         }
     }
 
