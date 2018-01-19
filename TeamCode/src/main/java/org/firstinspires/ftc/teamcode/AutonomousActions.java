@@ -36,6 +36,8 @@ import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 public class AutonomousActions implements VisitableActions{
     int   RED_THRESHOLD  = (110);
     int   BLUE_THRESHOLD = (90);
+    int   TAPE_RED_THRESHOLD = 100;
+    int   TAPE_BLUE_THRESHOLD = 80;
     double WALL_DISTANCE = 20;
     private static double gyroKp = 0.3;
     private static double gyroScale = 0.5;
@@ -115,11 +117,11 @@ public class AutonomousActions implements VisitableActions{
 
     void initAlliance() {
         telemetry.update();
-        if(tapeSensorR.red() > RED_THRESHOLD && tapeSensorL.red() > RED_THRESHOLD) {
+        if(tapeSensorR.red() > TAPE_RED_THRESHOLD && tapeSensorL.red() > TAPE_RED_THRESHOLD) {
             AllianceColor allianceColor1 = allianceColor.RED;
             allianceColor = allianceColor1;
         }
-        else if (tapeSensorR.blue() > BLUE_THRESHOLD && tapeSensorL.blue() > BLUE_THRESHOLD){
+        else if (tapeSensorR.blue() > TAPE_BLUE_THRESHOLD && tapeSensorL.blue() > TAPE_BLUE_THRESHOLD){
             AllianceColor allianceColor1 = allianceColor.BLUE;
             allianceColor = allianceColor1;
         }
@@ -386,14 +388,14 @@ public class AutonomousActions implements VisitableActions{
         ElapsedTime time = new ElapsedTime();
 
         opMode.sleep(1000);
-        /*
-        while (opMode.opModeIsActive()) {
-            telemetry.addData("Color Sensor blue", colorSensor.blue());
-            telemetry.addData("Color Sensor red", colorSensor.red());
-            telemetry.log().add("Move away: " + moveAwayFromColor());
-            telemetry.update();
-        }
-        */
+                telemetry.log().add("Move Away From Color: " + moveAwayFromColor());
+
+//        while (opMode.opModeIsActive()) {
+//            telemetry.addData("Color Sensor blue", colorSensor.blue());
+//            telemetry.addData("Color Sensor red", colorSensor.red());
+//            telemetry.log().add("Move away: " + moveAwayFromColor());
+//            telemetry.update();
+//        }
 
         if (moveAwayFromColor()) {
             Log.d(TAG, "jewelColor: sensed jewel is alliance color");
@@ -425,6 +427,8 @@ public class AutonomousActions implements VisitableActions{
     }
 
     boolean moveAwayFromColor() {
+        telemetry.log().add("Color Sensor Red: " + colorSensor.red());
+        telemetry.log().add("Color Sensor Blue: " + colorSensor.blue());
         return allianceColor == AllianceColor.BLUE && colorSensor.blue() > colorSensor.red()
                 || allianceColor == AllianceColor.RED && colorSensor.red() > colorSensor.blue();
     }

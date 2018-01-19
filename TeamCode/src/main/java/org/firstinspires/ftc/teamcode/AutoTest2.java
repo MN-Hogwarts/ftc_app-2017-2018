@@ -83,7 +83,7 @@ public class AutoTest2 extends FtcOpMode {
             telemetry.update();
         }
 
-        //auto.jewelColor();
+        auto.jewelColor();
         //auto.glyphPickup();
 //        auto.encoderDrive(0.6, 700, 2);
 //        auto.mecanumDriveBase.leftBackMotor.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
