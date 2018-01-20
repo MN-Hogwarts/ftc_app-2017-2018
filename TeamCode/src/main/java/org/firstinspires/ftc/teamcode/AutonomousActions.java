@@ -78,7 +78,7 @@ public class AutonomousActions implements VisitableActions{
 
     ModernRoboticsI2cGyro gyro  = null;
     BNO055IMU imu           = null;
-    double angleZ;
+//    double angleZ;
 
     ModernRoboticsI2cRangeSensor leftRange  = null;
     ModernRoboticsI2cRangeSensor rightRange = null;
