@@ -38,7 +38,6 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Rotates Servo between min and max position or rotatescontinuaou
  */
 @Autonomous(name = "Concept: Scan Servo", group = "Concept")
-@Disabled
 public class ServoTest extends LinearOpMode {
 
     static final double INCREMENT   = 0.01;     // amount to slew leftServo each CYCLE_MS cycle

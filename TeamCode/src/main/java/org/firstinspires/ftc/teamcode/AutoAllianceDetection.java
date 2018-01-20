@@ -70,8 +70,8 @@ public class AutoAllianceDetection extends FtcOpMode {
 
         while (!isStarted()) {
             telemetry.addLine("Hi");
-            telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
-            telemetry.addData("Color Sensor red", auto.colorSensor.red());
+            telemetry.addData("Color Sensor blue", auto.jewelColorL.blue());
+            telemetry.addData("Color Sensor red", auto.jewelColorL.red());
             telemetry.addData("Angle X", auto.getAngleX());
             telemetry.addData("Angle Y", auto.getAngleY());
             telemetry.addData("Angle Z", auto.getAngleZ());
