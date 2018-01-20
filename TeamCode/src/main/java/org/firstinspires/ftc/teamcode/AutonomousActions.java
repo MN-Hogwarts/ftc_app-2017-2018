@@ -71,7 +71,8 @@ public class AutonomousActions implements VisitableActions{
     VuforiaTrackable relicTemplate;
     RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.UNKNOWN;
 
-    ColorSensor colorSensor = null;
+    ColorSensor jewelColorL = null;
+    ColorSensor jewelColorR = null;
     ColorSensor tapeSensorL = null;
     ColorSensor tapeSensorR = null;
     Servo jewelArm          = null;
@@ -229,8 +230,9 @@ public class AutonomousActions implements VisitableActions{
             Log.d(TAG, "initJewelHardware: IMU initialized");
         }
 
-        colorSensor = hardwareMap.get(ColorSensor.class, "color");
-        Log.d(TAG, "initJewelHardware: color sensor initialized");
+        jewelColorL = hardwareMap.get(ColorSensor.class, "jewelColorL");
+        jewelColorR = hardwareMap.get(ColorSensor.class, "jewelColorR");
+        Log.d(TAG, "initJewelHardware: color sensors initialized");
         jewelArm = hardwareMap.get(Servo.class, "jewelArm");
         jewelArm.setPosition(1);
         Log.d(TAG, "initJewelHardware: jewel arm servo initialized");
@@ -287,8 +289,10 @@ public class AutonomousActions implements VisitableActions{
     }
 
     public void allSensorData() {
-        telemetry.addData("Color Sensor blue", colorSensor.blue());
-        telemetry.addData("Color Sensor red", colorSensor.red());
+        telemetry.addData("Left Color blue", jewelColorL.blue());
+        telemetry.addData("Left Color red", jewelColorL.red());
+        telemetry.addData("Right Color blue", jewelColorR.blue());
+        telemetry.addData("Right Color red", jewelColorR.red());
         telemetry.addData("Right Bottom Blue", tapeSensorR.blue());
         telemetry.addData("Right Bottom Red", tapeSensorR.red());
         telemetry.addData("Left Bottom Blue", tapeSensorL.blue());
@@ -382,7 +386,8 @@ public class AutonomousActions implements VisitableActions{
 
         double timeLimit = 1.0;
         jewelArm.setPosition(0.4);
-        colorSensor.enableLed(true);
+        jewelColorL.enableLed(true);
+        jewelColorR.enableLed(true);
         telemetry.addLine("Alliance Color: " + allianceColor.name());
         Log.d(TAG, "jewelColor: Alliance Color:" + allianceColor.name());
         ElapsedTime time = new ElapsedTime();
@@ -391,8 +396,8 @@ public class AutonomousActions implements VisitableActions{
                 telemetry.log().add("Move Away From Color: " + moveAwayFromColor());
 
 //        while (opMode.opModeIsActive()) {
-//            telemetry.addData("Color Sensor blue", colorSensor.blue());
-//            telemetry.addData("Color Sensor red", colorSensor.red());
+//            telemetry.addData("Color Sensor blue", jewelColorL.blue());
+//            telemetry.addData("Color Sensor red", jewelColorL.red());
 //            telemetry.log().add("Move away: " + moveAwayFromColor());
 //            telemetry.update();
 //        }
@@ -423,14 +428,14 @@ public class AutonomousActions implements VisitableActions{
         jewelArm.setPosition(1);
         mecanumDriveBase.turn(0, 0.3);
         opMode.sleep(500);
-        //colorSensor.enableLed(false);
+        //jewelColorL.enableLed(false);
     }
 
     boolean moveAwayFromColor() {
-        telemetry.log().add("Color Sensor Red: " + colorSensor.red());
-        telemetry.log().add("Color Sensor Blue: " + colorSensor.blue());
-        return allianceColor == AllianceColor.BLUE && colorSensor.blue() > colorSensor.red()
-                || allianceColor == AllianceColor.RED && colorSensor.red() > colorSensor.blue();
+        telemetry.log().add("Color Sensor Red: " + jewelColorL.red());
+        telemetry.log().add("Color Sensor Blue: " + jewelColorL.blue());
+        return allianceColor == AllianceColor.BLUE && jewelColorL.blue() > jewelColorL.red()
+                || allianceColor == AllianceColor.RED && jewelColorL.red() > jewelColorL.blue();
     }
 
     void driveToCryptobox() throws InterruptedException {
@@ -657,7 +662,7 @@ public class AutonomousActions implements VisitableActions{
         Log.d(TAG, "driveToCryptobox2: started driving toward wall");
 
         encoderDrive(0.5, 1800, 3);
-        rangeAdjustmentForward(wallCm);
+        rangeAdjustmentForward(wallCm, "tapeSearch");
         Log.d(TAG, "driveToCryptobox2: stopped driving toward wall");
 
         mecanumDriveBase.turn(backCryptoboxAngle);
@@ -686,7 +691,8 @@ public class AutonomousActions implements VisitableActions{
 
         cryptoboxAngleCorrection();
 
-        positionUsingTape3();
+//        positionUsingTape3();
+        positionUsingBackTape();
         Log.d(TAG, "driveToCryptobox2: stopped in front of center column");
 //        encoderDrive(0.3, 400, 1);
         if (allianceColor == AllianceColor.BLUE) {
@@ -1174,6 +1180,57 @@ public class AutonomousActions implements VisitableActions{
         Log.d(TAG, "positionUsingTape3: turned toward cryptobox again");
     }
 
+    void positionUsingBackTape() throws InterruptedException {
+
+        double forwardInsideTapeDirection = Math.signum(-backCryptoboxAngle) * 42;
+        double backwardInsideTapeDirection = forwardInsideTapeDirection + 180;
+
+        rangeBounceBackTape();
+
+        mecanumDriveBase.turn(backCryptoboxAngle, this, "tapeSearch");
+        if (!tapeMap.get(outSensOutTape)) {
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, backwardInsideTapeDirection, 0);
+            Log.d(TAG, "positionUsingBackTape: started driving diagonally backward");
+        }
+        else {
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, forwardInsideTapeDirection, 0);
+            Log.d(TAG, "positionUsingBackTape: started driving diagonally forward");
+        }
+        while (opMode.opModeIsActive() && !allianceColorTapeFound(outerColor)) {
+            tapeSearch();
+            telemetry.update(); //Tells the intensity of the blue color we are looking for
+        }
+        Log.d(TAG, "positionUsingBackTape: outer sensor found tape again");
+        mecanumDriveBase.mecanumDrive.stop();
+        Log.d(TAG, "positionUsingBackTape: stopped moving diagonally");
+        mecanumDriveBase.turn(backCryptoboxAngle);
+        Log.d(TAG, "positionUsingBackTape: turned toward cryptobox again");
+
+    }
+
+    void rangeBounceBackTape() throws InterruptedException {
+
+        int nearCm = 18;
+        int farCm = 28;
+        int strafeBounceAngle = 15;
+
+        double bounceBackDirection = outerDirection + Math.signum(backCryptoboxAngle) * strafeBounceAngle;
+        double bounceForwardDirection = outerDirection - Math.signum(backCryptoboxAngle) * strafeBounceAngle;
+
+        while (opMode.opModeIsActive() && !tapeMap.get(inSensInTape)) {
+            tapeSearch();
+            telemetry.update();
+            if (getSmallerRange() >= farCm) {
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.6, bounceForwardDirection, 0);
+                Log.d(TAG, "rangeBounceBackTape: Strafing while moving forward slightly");
+            } else if (getSmallerRange() <= nearCm) {
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.6, bounceBackDirection, 0);
+                Log.d(TAG, "rangeBounceBackTape: Strafing while moving back slightly");
+            }
+        }
+
+    }
+
     void tapeFinder() {
         /*
         mecanumDriveBase.leftFrontMotor.setBrakeModeEnabled(true);
@@ -1236,7 +1293,11 @@ public class AutonomousActions implements VisitableActions{
             mecanumDriveBase.mecanumDrive.stop(); }
     }
 
-    public void rangeAdjustmentForward(int optimalRangeCm){
+    public void rangeAdjustmentForward(int optimalRangeCm) {
+        rangeAdjustmentForward(optimalRangeCm, "");
+    }
+
+    public void rangeAdjustmentForward(int optimalRangeCm, String visitMethod){
 //        double producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
 //        double producedRangeCm = 0.5 * (getFilteredRange(leftRange) + getFilteredRange(rightRange));
         double producedRangeCm = getSmallerRange();
@@ -1247,6 +1308,7 @@ public class AutonomousActions implements VisitableActions{
 //                producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
 //                producedRangeCm = 0.5 * (getFilteredRange(leftRange) + getFilteredRange(rightRange));
             producedRangeCm = getSmallerRange();
+            accept(visitMethod);
             telemetry.addData ("Distance Left to Move", optimalRangeCm - producedRangeCm);
             telemetry.update();
         }
@@ -1337,7 +1399,7 @@ public class AutonomousActions implements VisitableActions{
         Log.d(TAG, "moveFWBW: moving forward");
         encoderDrive(0.5, 450, 1);
         Log.d(TAG, "moveFWBW: moving backward again");
-        encoderDrive(0.5, -200, 1);
+        encoderDrive(0.5, -500, 1);
 
 //        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 180, 0);
 //        Log.d(TAG, "moveFWBW: moving backward");

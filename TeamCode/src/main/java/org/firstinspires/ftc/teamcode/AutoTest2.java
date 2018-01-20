@@ -69,8 +69,8 @@ public class AutoTest2 extends FtcOpMode {
         auto.initGlyphHardware();
         while (!isStarted()) {
             telemetry.addLine("Hi");
-            telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
-            telemetry.addData("Color Sensor red", auto.colorSensor.red());
+            telemetry.addData("Color Sensor blue", auto.jewelColorL.blue());
+            telemetry.addData("Color Sensor red", auto.jewelColorL.red());
             telemetry.addData("Bottom Left blue", auto.tapeSensorL.blue());
             telemetry.addData("Bottom Left red", auto.tapeSensorL.red());
             telemetry.addData("Bottom Right blue", auto.tapeSensorR.blue());
