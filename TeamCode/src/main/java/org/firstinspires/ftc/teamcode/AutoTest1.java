@@ -64,8 +64,8 @@ public class AutoTest1 extends FtcOpMode {
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
-            telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
-            telemetry.addData("Color Sensor red", auto.colorSensor.red());
+            telemetry.addData("Color Sensor blue", auto.jewelColorL.blue());
+            telemetry.addData("Color Sensor red", auto.jewelColorL.red());
             telemetry.addData("Right Bottom Blue", auto.tapeSensorR.blue());
             telemetry.addData("Right Bottom Red", auto.tapeSensorR.red());
             telemetry.addData("Left Bottom Blue", auto.tapeSensorL.blue());
@@ -85,8 +85,8 @@ public class AutoTest1 extends FtcOpMode {
         //auto.driveToCryptobox();
 //        auto.firstTapeFound = true;
 //        auto.positionUsingTape();
-        auto.cryptoboxAngleCorrection();
-
+//        auto.cryptoboxAngleCorrection();
+        auto.rangeAdjustment(25);
 //        auto.moveFWBW();
         while (opModeIsActive()) {
             telemetry.addData("Left encoder position:", auto.mecanumDriveBase.leftBackMotor.motor.getCurrentPosition());

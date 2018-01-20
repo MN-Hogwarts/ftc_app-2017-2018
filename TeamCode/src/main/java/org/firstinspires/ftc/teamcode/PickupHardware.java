@@ -30,7 +30,8 @@ public class PickupHardware
     /* Public OpMode members. */
     Servo leftServo ;
     Servo rightServo ;
-    Servo wristServo;
+    Servo wristServo1;
+    Servo wristServo2;
     Servo left_Servo ;
     Servo right_Servo ;
     Servo rightHinge;
@@ -62,7 +63,8 @@ public class PickupHardware
         Log.d("Left Pickup", "Initialized");
         rightServo = hwMap.get(Servo.class, "rightPickup") ;
         Log.d("Right Pickup", "Initialized");
-        wristServo = hwMap.get(Servo.class, "wristServo") ;
+        wristServo1 = hwMap.get(Servo.class, "wristServo1") ;
+        wristServo2 = hwMap.get(Servo.class, "wristServo2") ;
         Log.d("Wrist Servo", "Initialized");
         armMotor = new FtcDcMotor("armMotor");
         Log.d("Arm Motor", "Initialized");

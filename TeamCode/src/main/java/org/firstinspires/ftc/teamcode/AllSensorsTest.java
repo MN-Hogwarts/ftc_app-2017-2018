@@ -30,9 +30,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.AutoOptions.AllianceColor;
 
 import ftclib.FtcOpMode;
@@ -40,19 +39,15 @@ import ftclib.FtcOpMode;
 import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 
 /**
- * Rotates Servo between min and max position or rotates continuously
+ * Rotates Servo between min and max position or rotatescontinuaou
  */
-@Autonomous(name = "Auto 3", group = "Concept")
+@Autonomous(name = "All Sensors Test", group = "Sensors")
 //@Disabled
-public class AutoTest_3 extends FtcOpMode {
+public class AllSensorsTest extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
 
     // Define class members
-    Servo   servo;
-    double  position = .55;//(MAX_POS - MIN_POS) / 2; // Start at halfway position
-    boolean rampUp = true;
-
 
     @Override
     public void initRobot() {
@@ -69,20 +64,13 @@ public class AutoTest_3 extends FtcOpMode {
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
-            telemetry.addData("Color Sensor: Blue", auto.tapeSensorL.blue());
-            telemetry.addData("Color Sensor: Red", auto.tapeSensorL.red());
+            auto.allSensorData();
             telemetry.update();
-
         }
-//        auto.tapeFinder();
-//        auto.jewelColor();
-        //sleep(5000);
-
-        auto.driveToSideCryptobox();
 
         while (opModeIsActive()) {
-            telemetry.addData("Tape Sensor: Red", auto.tapeSensorL.red());
-            telemetry.update(); //Tells the intensity of the color we are looking for
+            auto.allSensorData();
+            telemetry.update();
         }
 
         //auto.initVuforia();

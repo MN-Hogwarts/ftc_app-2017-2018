@@ -106,7 +106,7 @@ public class MecanumFieldCentricTeleop extends OpMode implements SWGamePad.Butto
 
         leftPickupServo = this.hardwareMap.get(Servo.class, "leftPickup");
         rightPickupServo = this.hardwareMap.get(Servo.class, "rightPickup");
-        wristServo = this.hardwareMap.get(Servo.class, "wristServo");
+        wristServo = this.hardwareMap.get(Servo.class, "wristServo1");
         touchSensor = hardwareMap.get(DigitalChannel.class, "touchSensor");
 
         gyro = new SWIMUGyro(hardwareMap, "imu", null);
@@ -213,14 +213,14 @@ public class MecanumFieldCentricTeleop extends OpMode implements SWGamePad.Butto
         }
 
         if(gamepad2.a){
-            //wristServo.setPosition(0.5);
+            //wristServo1.setPosition(0.5);
             //wristServoValue = wristServoValue - 0.05;
         } else if (gamepad2.y){
             wristServo.setPosition(1);
             //wristServoValue = wristServoValue + 0.05;
         } else if (gamepad2.x) {
             //wristServoValue = Range.clip(wristServoValue, -1.0, 1.0);
-            //wristServo.setPosition(wristServoValue);
+            //wristServo1.setPosition(wristServoValue);
             wristServo.setPosition(0);
         } else {
             wristServo.setPosition(0.5);
