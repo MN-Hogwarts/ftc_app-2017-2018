@@ -432,10 +432,12 @@ public class AutonomousActions implements VisitableActions{
     }
 
     boolean moveAwayFromColor() {
-        telemetry.log().add("Color Sensor Red: " + jewelColorL.red());
-        telemetry.log().add("Color Sensor Blue: " + jewelColorL.blue());
-        return allianceColor == AllianceColor.BLUE && jewelColorL.blue() > jewelColorL.red()
-                || allianceColor == AllianceColor.RED && jewelColorL.red() > jewelColorL.blue();
+        telemetry.log().add("Color Sensor(L) Red: " + jewelColorL.red());
+        telemetry.log().add("Color Sensor(L) Blue: " + jewelColorL.blue());
+        telemetry.log().add("Color Sensor(R) Red: " + jewelColorR.red());
+        telemetry.log().add("Color Sensor(R) Blue: " + jewelColorR.blue());
+        return allianceColor == AllianceColor.BLUE && jewelColorL.blue() > jewelColorR.blue()
+                || allianceColor == AllianceColor.RED && jewelColorL.red() > jewelColorR.red();
     }
 
     void driveToCryptobox() throws InterruptedException {
