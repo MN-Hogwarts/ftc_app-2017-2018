@@ -5,38 +5,27 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import ftclib.FtcDcMotor;
 import ftclib.FtcServo;
-import hallib.HalDashboard;
 import swlib.SWGamePad;
 import swlib.SWIMUGyro;
 import swlib.SwDriveBase;
-import trclib.TrcGyro;
-import trclib.TrcRobot;
 import trclib.TrcSensor;
 import trclib.TrcServo;
-import trclib.TrcTaskMgr;
 import trclib.TrcUtil;
 
 /**
  * Created by spmeg on 4/15/2017.
  */
-@TeleOp(name = "MecanumRobotCentricTeleop", group = "teleop")
-public class MecanumRobotCentricTeleop extends OpMode{
+@TeleOp(name = "NewMecanumRobotCentricTeleop", group = "teleop")
+public class NewMecanumRobotCentricTeleop extends OpMode{
 
     private static boolean OP_MODE_IS_ACTIVE = true;
 
@@ -109,6 +98,10 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
         leftPickupServo = this.hardwareMap.get(Servo.class, "leftPickup");
         rightPickupServo = this.hardwareMap.get(Servo.class, "rightPickup");
+
+        //change for new pickup mechanism
+        rightPickupServo.setDirection(Servo.Direction.REVERSE);
+
         wristServo = this.hardwareMap.get(Servo.class, "wristServo");
         touchSensor = hardwareMap.get(DigitalChannel.class, "touchSensor");
         relicServo = hardwareMap.get(Servo.class, "relicServo");
@@ -232,6 +225,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
             public void run() {
                 double servoPos = (float) 0.0;
                 while (OP_MODE_IS_ACTIVE){
+                    /*
                     if (gamepad2.b) {
                         leftPickupServo.setPosition(-1.0);
                         rightPickupServo.setPosition(1.0);
@@ -254,6 +248,33 @@ public class MecanumRobotCentricTeleop extends OpMode{
                     }
                     else {
                         leftPickupServo.setPosition(0.53);
+                        rightPickupServo.setPosition(0.5);
+                    }
+                    */
+
+                    //new pickup mechanism test
+                    if (gamepad2.b) {
+                        leftPickupServo.setPosition(0.1);
+                        rightPickupServo.setPosition(0.9);
+                    } //If touch sensor is pressed, stop wheels. If 'A' is pressed, run wheels. If neither is pressed, stop wheels
+                    else if (!touchSensor.getState()) {
+                        leftPickupServo.setPosition(0.5);
+                        rightPickupServo.setPosition(0.5);
+                    } //Turn inward
+                    else if (gamepad2.a) {
+                        leftPickupServo.setPosition(0.9);
+                        rightPickupServo.setPosition(0.1);
+                    } //Stop wheels
+                    else if (gamepad2.left_bumper) {
+                        leftPickupServo.setPosition(0.9);
+                        rightPickupServo.setPosition(0.5);
+                    }
+                    else if (gamepad2.right_bumper) {
+                        rightPickupServo.setPosition(0.1);
+                        leftPickupServo.setPosition(0.5);
+                    }
+                    else {
+                        leftPickupServo.setPosition(0.5);
                         rightPickupServo.setPosition(0.5);
                     }
 
