@@ -27,46 +27,54 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.AutoOptions.AllianceColor;
+
+import ftclib.FtcOpMode;
+
+import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 
 /**
- * {@link SensorMRRangeSensor} illustrates how to use the Modern Robotics
- * Range Sensor.
- *
- * The op mode assumes that the range sensor is configured with a name of "sensor_range".
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
- *
- * @see <a href="http://modernroboticsinc.com/range-sensor">MR Range Sensor</a>
+ * Rotates Servo between min and max position or rotatescontinuaou
  */
-@Autonomous(name = "Sensor: MR range sensor", group = "Sensor")
-//@Disabled   // comment out or remove this line to enable this opmode
-public class SensorMRRangeSensor extends LinearOpMode {
+@Autonomous(name = "All Sensors Test", group = "Sensors")
+//@Disabled
+public class AllSensorsTest extends FtcOpMode {
 
-    ModernRoboticsI2cRangeSensor rangeSensor;
+    AutonomousActions auto = new AutonomousActions();
 
-    @Override public void runOpMode() {
+    // Define class members
 
-        // get a reference to our compass
-        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "sensor_range");
+    @Override
+    public void initRobot() {
 
-        // wait for the start button to be pressed
-        waitForStart();
+    }
 
-        while (opModeIsActive()) {
-            telemetry.addData("raw ultrasonic", rangeSensor.rawUltrasonic());
-            telemetry.addData("raw optical", rangeSensor.rawOptical());
-            telemetry.addData("cm optical", "%.2f cm", rangeSensor.cmOptical());
-            telemetry.addData("cm", "%.2f cm", rangeSensor.getDistance(DistanceUnit.CM));
+    @Override
+    public void runOpMode() throws InterruptedException{
+
+        auto.initOpmode(this);
+        auto.initMecanum();
+        //auto.initVuforia();
+        auto.initAlliance(AllianceColor.RED);
+        auto.initJewelHardware(IMU);
+        auto.initGlyphHardware();
+        while (!isStarted()) {
+            auto.allSensorData();
             telemetry.update();
         }
+
+        while (opModeIsActive()) {
+            auto.allSensorData();
+            telemetry.update();
+        }
+
+        //auto.initVuforia();
+        //auto.pictographID(); //run Vuforia method, includes initVuforia()
+
     }
 }

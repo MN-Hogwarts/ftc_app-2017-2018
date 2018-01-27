@@ -30,16 +30,13 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.AutoOptions.AllianceColor;
 
 import ftclib.FtcOpMode;
 
-import static org.firstinspires.ftc.teamcode.AngleMeasureHw.GYRO;
-import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
+import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
@@ -67,7 +64,12 @@ public class AutoTest1 extends FtcOpMode {
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
-            telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
+            telemetry.addData("Color Sensor blue", auto.jewelColorL.blue());
+            telemetry.addData("Color Sensor red", auto.jewelColorL.red());
+            telemetry.addData("Right Bottom Blue", auto.tapeSensorR.blue());
+            telemetry.addData("Right Bottom Red", auto.tapeSensorR.red());
+            telemetry.addData("Left Bottom Blue", auto.tapeSensorL.blue());
+            telemetry.addData("Left Bottom Red", auto.tapeSensorL.red());
             telemetry.addData("Angle X", auto.getAngleX());
             telemetry.addData("Angle Y", auto.getAngleY());
             telemetry.addData("Angle Z", auto.getAngleZ());
@@ -81,9 +83,10 @@ public class AutoTest1 extends FtcOpMode {
         //auto.distanceToWall1();
         //sleep(5000);
         //auto.driveToCryptobox();
-        auto.firstTapeFound = true;
-        auto.positionUsingTape();
-
+//        auto.firstTapeFound = true;
+//        auto.positionUsingTape();
+//        auto.cryptoboxAngleCorrection();
+        auto.rangeAdjustment(25);
 //        auto.moveFWBW();
         while (opModeIsActive()) {
             telemetry.addData("Left encoder position:", auto.mecanumDriveBase.leftBackMotor.motor.getCurrentPosition());

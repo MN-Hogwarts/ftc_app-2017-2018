@@ -34,14 +34,15 @@ public class NewMecanumRobotCentricTeleop extends OpMode{
     private FtcDcMotor rightFrontMotor;
     private FtcDcMotor rightRearMotor;
     private FtcDcMotor armMotor;
-    private double armMotorSpeedLimiter = 0.3;
+    private double armMotorSpeedLimiter = 0.53;
     private SwDriveBase driveBase = null;
-    private SWIMUGyro gyro = null;
+    //private SWIMUGyro gyro = null;
+    private Servo rightHinge, leftHinge;
     private SWGamePad gamepad;
     //private HalDashboard dashboard = null;
     private boolean setYInverted = true;
     private TrcServo jewelServo = null;
-    private Servo wristServo, hingeServo;
+    private Servo wristServo;
     private Servo leftPickupServo, rightPickupServo;
     private Servo relicServo;
     private DigitalChannel touchSensor ;
@@ -66,10 +67,18 @@ public class NewMecanumRobotCentricTeleop extends OpMode{
     private boolean prevPressedTrigger = false;
 
     double  position = 0.5;
-    double  hingePosition = 0.2;
 
     private ExecutorService executorService;
-    private boolean initFinished = false;
+
+    double rightHingePos = 0.9;
+    double leftHingePos = 0.1;
+
+    private boolean hingeUpR = true;
+    private boolean hingeUpL = true;
+    private boolean pressedTriggerR = false;
+    private boolean prevPressedTriggerR = false;
+    private boolean pressedTriggerL = false;
+    private boolean prevPressedTriggerL = false;
 
     @Override
     public void stop() {
@@ -94,7 +103,8 @@ public class NewMecanumRobotCentricTeleop extends OpMode{
         jewelServo = new FtcServo(this.hardwareMap, "jewelArm");
         jewelServo.setPosition(0.9);
 
-        hingeServo = this.hardwareMap.get(Servo.class, "hingeServo");
+        rightHinge = this.hardwareMap.get(Servo.class, "rightHinge");
+        leftHinge = this.hardwareMap.get(Servo.class, "leftHinge");
 
         leftPickupServo = this.hardwareMap.get(Servo.class, "leftPickup");
         rightPickupServo = this.hardwareMap.get(Servo.class, "rightPickup");
@@ -107,8 +117,8 @@ public class NewMecanumRobotCentricTeleop extends OpMode{
         relicServo = hardwareMap.get(Servo.class, "relicServo");
         //pickupHw.init(hardwareMap);
 
-        gyro = new SWIMUGyro(hardwareMap, "imu", null);
-        gyro.calibrate();
+        //gyro = new SWIMUGyro(hardwareMap, "imu", null);
+        //gyro.calibrate();
 
         leftFrontMotor = new FtcDcMotor(this.hardwareMap, "leftFront", null, null);
         leftRearMotor = new FtcDcMotor(this.hardwareMap, "leftRear", null, null);
@@ -128,18 +138,20 @@ public class NewMecanumRobotCentricTeleop extends OpMode{
         rightRearMotor.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         driveBase = new SwDriveBase(
-                leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor, gyro);
+                leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor);
         /*driveBase = new TrcDriveBase(
                 leftFrontMotor, leftRearMotor, rightFrontMo tor, rightRearMotor);*/
 
-        gyro.setEnabled(true);
+        driveBase.setBrakeMode(true);
+
+        //gyro.setEnabled(true);
 
         gamepad = new SWGamePad("driver gamepad", gamepad1, 0.05F);
         gamepad.enableDebug(true);
 
         //driveBase.enableGyroAssist(gyroScale, gyroKp);
 
-
+        /*
         new Thread(new Runnable() {
 
             @Override
@@ -160,6 +172,7 @@ public class NewMecanumRobotCentricTeleop extends OpMode{
             }
 
         });
+        */
 
         executorService.submit(new Runnable() {
             @Override
@@ -176,9 +189,9 @@ public class NewMecanumRobotCentricTeleop extends OpMode{
                     if(gamepad.getLeftStickX() == 0 && gamepad.getLeftStickY() == 0)
                         magnitude = 0;
 
-                    double addRotation = gyroScale*rotationRate;
+                    //double addRotation = gyroScale*rotationRate;
 
-                    rotation += TrcUtil.clipRange(gyroKp*(rotation - addRotation));
+                    //rotation += TrcUtil.clipRange(gyroKp*(rotation - addRotation));
 
                     //driveBase.mecanumDrive_XPolarFieldCentric(magnitude, direction, rotation);
                     driveBase.mecanumDrive_XPolar(magnitude, direction, rotation);
@@ -200,12 +213,15 @@ public class NewMecanumRobotCentricTeleop extends OpMode{
             public void run() {
                 while (OP_MODE_IS_ACTIVE){
                     if(gamepad2.dpad_up){
-                        armMotorSpeedLimiter = armMotorSpeedLimiter + 0.0000001;
+                        armMotorSpeedLimiter = armMotorSpeedLimiter + 0.00001;
                     } else if(gamepad2.dpad_down){
-                        armMotorSpeedLimiter = armMotorSpeedLimiter - 0.0000001;
+                        armMotorSpeedLimiter = armMotorSpeedLimiter - 0.00001;
                     }
 
-                    armMotor.setPower(gamepad2.left_stick_y*armMotorSpeedLimiter);
+                    if (gamepad2.left_stick_y == 0) {
+                        armMotor.setPower(gamepad2.right_stick_y);
+                    } else
+                        armMotor.setPower(gamepad2.left_stick_y*armMotorSpeedLimiter);
 
                     if (gamepad1.dpad_right){
                         //relicServo.setPosition(0.3);
@@ -225,32 +241,6 @@ public class NewMecanumRobotCentricTeleop extends OpMode{
             public void run() {
                 double servoPos = (float) 0.0;
                 while (OP_MODE_IS_ACTIVE){
-                    /*
-                    if (gamepad2.b) {
-                        leftPickupServo.setPosition(-1.0);
-                        rightPickupServo.setPosition(1.0);
-                    } //If touch sensor is pressed, stop wheels. If 'A' is pressed, run wheels. If neither is pressed, stop wheels
-                    else if (!touchSensor.getState()) {
-                        leftPickupServo.setPosition(0.53);
-                        rightPickupServo.setPosition(0.5);
-                    } //Turn inward
-                    else if (gamepad2.a) {
-                        leftPickupServo.setPosition(1.0);
-                        rightPickupServo.setPosition(-1.0);
-                    } //Stop wheels
-                    else if (gamepad2.left_bumper) {
-                        leftPickupServo.setPosition(1.0);
-                        rightPickupServo.setPosition(0.5);
-                    }
-                    else if (gamepad2.right_bumper) {
-                        rightPickupServo.setPosition(-1.0);
-                        leftPickupServo.setPosition(0.53);
-                    }
-                    else {
-                        leftPickupServo.setPosition(0.53);
-                        rightPickupServo.setPosition(0.5);
-                    }
-                    */
 
                     //new pickup mechanism test
                     if (gamepad2.b) {
@@ -278,24 +268,37 @@ public class NewMecanumRobotCentricTeleop extends OpMode{
                         rightPickupServo.setPosition(0.5);
                     }
 
-                    //hinge servo
-                    if(gamepad1.right_trigger > 0)
-                        pressedTrigger = true;
-                    else pressedTrigger = false;
-
-                    if (pressedTrigger) {
-                        if(hingeUp && prevPressedTrigger != pressedTrigger){
-                            hingePosition = 0.7;
-                            hingeUp = false;
-                            //prevPressedTrigger = pressedTrigger;
-                        } else if (prevPressedTrigger != pressedTrigger){
-                            hingePosition = 0.2;
-                            hingeUp = true;
-                            //prevPressedTrigger = pressedTrigger;
+                    if (pressedTriggerR) {
+                        if(hingeUpR && prevPressedTriggerR != pressedTriggerR){
+                            rightHingePos = 0.4;
+                            hingeUpR = false;
+                            //prevPressedTriggerR = pressedTriggerR;
+                        } else if (prevPressedTriggerR != pressedTriggerR){
+                            rightHingePos = 0.95;
+                            hingeUpR = true;
+                            //prevPressedTriggerR = pressedTriggerR;
                         }
                     }
 
-                    hingeServo.setPosition(hingePosition);
+                    rightHinge.setPosition(rightHingePos);
+
+                    if(gamepad1.left_trigger > 0)
+                        pressedTriggerL = true;
+                    else pressedTriggerL = false;
+
+                    if (pressedTriggerL) {
+                        if(hingeUpL && prevPressedTriggerL != pressedTriggerL){
+                            leftHingePos = 0.7;
+                            hingeUpL = false;
+                            //prevPressedTriggerR = pressedTriggerR;
+                        } else if (prevPressedTriggerL != pressedTriggerL){
+                            leftHingePos = 0.1;
+                            hingeUpL = true;
+                            //prevPressedTriggerR = pressedTriggerR;
+                        }
+                    }
+
+                    leftHinge.setPosition(leftHingePos);
 
                     if (gamepad2.y) {
                         // Keep stepping up until we hit the max value.
@@ -322,21 +325,16 @@ public class NewMecanumRobotCentricTeleop extends OpMode{
 
     }
 
-    private void initHardware(){
-
-    }
-
     @Override
     public void loop() {
 
         telemetry.addData("SLOW MODE", turtleMode);
         telemetry.addData("Servo Position", "%5.2f", position);
-        telemetry.addData("hingeServo", hingePosition);
         telemetry.addData("relic servo", relicServPos);
         telemetry.addData("magnitude", magnitude);
         telemetry.addData("Arm Speed Limiter", armMotorSpeedLimiter);
         telemetry.addData("turtle mode", turtleMode);
-        telemetry.addData("z rotation rate", gyro.getZRotationRate().value);
+        //telemetry.addData("z rotation rate", gyro.getZRotationRate().value);
         telemetry.addData("ma z rotation rate", rotationRate);
         telemetry.addData("maxListSize", maxListSize);
         telemetry.addData("gyroKp", gyroKp);

@@ -32,9 +32,11 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.AutoOptions.AllianceColor;
+
 import ftclib.FtcOpMode;
 
-import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
+import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
@@ -70,8 +72,8 @@ public class AutoBlue2 extends FtcOpMode {
         auto.initGlyphHardware();
         while (!isStarted()) {
             telemetry.addLine("Hi");
-            telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
-            telemetry.addData("Color Sensor red", auto.colorSensor.red());
+            telemetry.addData("Color Sensor blue", auto.jewelColorL.blue());
+            telemetry.addData("Color Sensor red", auto.jewelColorL.red());
             telemetry.addData("Angle X", auto.getAngleX());
             telemetry.addData("Angle Y", auto.getAngleY());
             telemetry.addData("Angle Z", auto.getAngleZ());

@@ -32,12 +32,11 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.AutoOptions.AllianceColor;
 
 import ftclib.FtcOpMode;
 
-import static org.firstinspires.ftc.teamcode.AngleMeasureHw.GYRO;
-import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
+import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
@@ -70,14 +69,7 @@ public class AutoTest4 extends FtcOpMode {
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
-            telemetry.addLine("Hi");
-            telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
-            telemetry.addData("Color Sensor red", auto.colorSensor.red());
-            telemetry.addData("Angle X", auto.getAngleX());
-            telemetry.addData("Angle Y", auto.getAngleY());
-            telemetry.addData("Angle Z", auto.getAngleZ());
-            //telemetry.addData("Left distance", auto.leftRange.getDistance(DistanceUnit.CM));
-            //telemetry.addData("Right distance", auto.rightRange.getDistance(DistanceUnit.CM));
+            auto.allSensorData();
             telemetry.update();
         }
 

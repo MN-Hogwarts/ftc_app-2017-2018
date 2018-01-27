@@ -29,12 +29,16 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
+
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+import hallib.HalDbgLog;
 
 /**
  * {@link TwoRangeSensors} illustrates how to use the Modern Robotics
@@ -57,8 +61,8 @@ public class TwoRangeSensors extends LinearOpMode {
     @Override public void runOpMode() {
 
         // get a reference to our compass
-        rangeSensor1 = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range1");
-        rangeSensor2 = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range2");
+        rangeSensor1 = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "leftRange");
+        rangeSensor2 = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "rightRange");
 
         // wait for the start button to be pressed
         waitForStart();

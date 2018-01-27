@@ -30,13 +30,13 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.AutoOptions.AllianceColor;
 
 import ftclib.FtcOpMode;
 
-import static org.firstinspires.ftc.teamcode.AngleMeasureHw.IMU;
+import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
@@ -69,8 +69,8 @@ public class AutoTest2 extends FtcOpMode {
         auto.initGlyphHardware();
         while (!isStarted()) {
             telemetry.addLine("Hi");
-            telemetry.addData("Color Sensor blue", auto.colorSensor.blue());
-            telemetry.addData("Color Sensor red", auto.colorSensor.red());
+            telemetry.addData("Color Sensor blue", auto.jewelColorL.blue());
+            telemetry.addData("Color Sensor red", auto.jewelColorL.red());
             telemetry.addData("Bottom Left blue", auto.tapeSensorL.blue());
             telemetry.addData("Bottom Left red", auto.tapeSensorL.red());
             telemetry.addData("Bottom Right blue", auto.tapeSensorR.blue());
@@ -83,13 +83,14 @@ public class AutoTest2 extends FtcOpMode {
             telemetry.update();
         }
 
-        //auto.jewelColor();
+        auto.jewelColor();
         //auto.glyphPickup();
 //        auto.encoderDrive(0.6, 700, 2);
 //        auto.mecanumDriveBase.leftBackMotor.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        auto.mecanumDriveBase.rightBackMotor.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        auto.positionUsingTape();
-        auto.encoderColorDrive(0.6, 2500, 500);
+//        auto.encoderColorDrive(0.6, 2500, 500);
+        auto.moveFWBW();
 
         //sleep(5000);
         while (opModeIsActive()) {
