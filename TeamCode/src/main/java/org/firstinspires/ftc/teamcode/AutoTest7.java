@@ -65,7 +65,7 @@ public class AutoTest7 extends FtcOpMode {
         auto.initOpmode(this);
         auto.initMecanum();
 
-        auto.initVuforia();
+//        auto.initVuforia();
         auto.initAlliance(AllianceColor.BLUE);
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
@@ -85,12 +85,15 @@ public class AutoTest7 extends FtcOpMode {
             telemetry.update();
         }
 
-        auto.pictographID();
+        auto.hingesBack();
+//        auto.pictographID();
 //        auto.jewelColor();
-        auto.driveToCryptobox2();
-        auto.place1stGlyph();
-        auto.ejectGlyph();
-        auto.moveFWBW();
+//        auto.driveToCryptobox3();
+        auto.tapeMap.put(auto.outSensOutTape, true);
+        auto.diagonalAlignment();
+//        auto.place1stGlyph();
+//        auto.ejectGlyph();
+//        auto.moveFWBW();
 
         while (opModeIsActive()) {
             //telemetry.addData("Moving Away:", auto.moveAwayFromColor());

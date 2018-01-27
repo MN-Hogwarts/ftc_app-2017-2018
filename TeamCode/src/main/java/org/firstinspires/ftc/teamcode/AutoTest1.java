@@ -86,12 +86,14 @@ public class AutoTest1 extends FtcOpMode {
 //        auto.firstTapeFound = true;
 //        auto.positionUsingTape();
 //        auto.cryptoboxAngleCorrection();
-        auto.rangeAdjustment(25);
+//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 0, -1); // -1 is left
+        auto.tapeMap.put(auto.inSensInTape, true);
+        auto.diagonalAlignment();
 //        auto.moveFWBW();
         while (opModeIsActive()) {
             telemetry.addData("Left encoder position:", auto.mecanumDriveBase.leftBackMotor.motor.getCurrentPosition());
             telemetry.addData("Right encoder position:", auto.mecanumDriveBase.rightBackMotor.motor.getCurrentPosition());
-            telemetry.update();
+//            telemetry.update();
         }
 
         //auto.initVuforia();

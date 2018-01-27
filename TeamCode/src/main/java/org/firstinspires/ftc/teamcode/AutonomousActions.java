@@ -94,6 +94,7 @@ public class AutonomousActions implements VisitableActions{
     String outSensOutTape = "outerSensorOuterTape";
     String outSensInTape = "outerSensorInnerTape";
     String inSensInTape = "innerSensorInnerTape";
+    String inSensInTapeAgain = "innerSensorInnerTapeAgain";
 
     boolean insideColorSensed   = false;
     boolean outsideColorSensed  = false;
@@ -247,8 +248,10 @@ public class AutonomousActions implements VisitableActions{
         Log.d(TAG, "initGlyphHardware: range sensors initialized");
 
         pickupHw.init(hardwareMap);
-        pickupHw.rightHinge.setPosition(0.95);
-        pickupHw.leftHinge.setPosition(0.1);
+        pickupHw.rightHinge.setPosition(0.7);
+        pickupHw.leftHinge.setPosition(0.3);
+//        pickupHw.rightHinge.setPosition(0.95);
+//        pickupHw.leftHinge.setPosition(0.1);
 
         Log.d(TAG, "initGlyphHardware: pickup hardware initialized");
 
@@ -266,6 +269,7 @@ public class AutonomousActions implements VisitableActions{
         tapeMap.put(outSensOutTape, false);
         tapeMap.put(inSensInTape, false);
         tapeMap.put(outSensInTape, false);
+        tapeMap.put(inSensInTapeAgain, false);
 
     }
 
@@ -320,6 +324,17 @@ public class AutonomousActions implements VisitableActions{
         rightServo.setPosition(0);
     }
 
+    void hingesBack() {
+        pickupHw.rightHinge.setPosition(0.95);
+        pickupHw.leftHinge.setPosition(0.1);
+
+    }
+
+    void hingesForward() {
+        pickupHw.rightHinge.setPosition(0.95);
+        pickupHw.leftHinge.setPosition(0.1);
+    }
+
     public void pictographID() {
 
         //initVuforia();
@@ -346,40 +361,6 @@ public class AutonomousActions implements VisitableActions{
         } else {
             Log.d(TAG, "pictographID: pictograph found: " + vuMark.name());
         }
-    }
-
-    void place1stGlyph() throws InterruptedException {
-
-        int optimalRangeCm = 25;
-
-        if (vuMark == RelicRecoveryVuMark.UNKNOWN) {
-            telemetry.addLine("VuMark Unknown");
-        } if (vuMark == RelicRecoveryVuMark.LEFT) {
-            telemetry.addLine("Glyph Left");
-            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 90, 0);
-            Log.d(TAG, "place1stGlyph: started moving left");
-            opMode.sleep(1400);
-            mecanumDriveBase.mecanumDrive.stop();
-            Log.d(TAG, "place1stGlyph: stopped moving left");
-        } if (vuMark == RelicRecoveryVuMark.CENTER) {
-            telemetry.addLine("Glyph Center");
-        } if (vuMark == RelicRecoveryVuMark.RIGHT) {
-            telemetry.addLine("Glyph Right");
-            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 270, 0);
-            Log.d(TAG, "place1stGlyph: started moving right");
-            opMode.sleep(1400);
-            mecanumDriveBase.mecanumDrive.stop();
-            Log.d(TAG, "place1stGlyph: stopped moving right");
-        }
-        telemetry.update();
-
-        pickupHw.wristServo1.setPosition(0);
-        opMode.sleep(1000);
-        pickupHw.wristServo1.setPosition(0.5);
-        mecanumDriveBase.turn(backCryptoboxAngle);
-//        encoderDrive(0.3, 400, 1);
-        rangeAdjustmentForward(optimalRangeCm);
-
     }
 
     void jewelColor() throws InterruptedException {
@@ -666,6 +647,7 @@ public class AutonomousActions implements VisitableActions{
         Log.d(TAG, "driveToCryptobox2: stopped driving toward wall");
 
         mecanumDriveBase.turn(backCryptoboxAngle);
+        Log.d(TAG, "driveToCryptobox2: turned toward back cryptobox");
 
         //tapeFinder();
 //        encoderColorDrive(0.6, 2500, 3);
@@ -673,26 +655,29 @@ public class AutonomousActions implements VisitableActions{
 //        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.6, 0, 0);
 //        opMode.sleep(1000);
 //        mecanumDriveBase.mecanumDrive.stop();
+        /*
         ElapsedTime runtime = new ElapsedTime();
-        if (allianceColor == AllianceColor.BLUE) {
-            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.7, 270, 0);
-        } else if (allianceColor == AllianceColor.RED) {
-            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.7, 90, 0);
-        }
-        Log.d(TAG, "driveToCryptobox2: started driving away from tape");
-
-        while (opMode.opModeIsActive() && (runtime.seconds() < .5)) {
-            //mecanumMotors.mecanumDrive.mecanumDrive_XPolar(0.5, 0, 0);
-        }
-        mecanumDriveBase.mecanumDrive.stop();
-        Log.d(TAG, "driveToCryptobox2: stopped driving away from tape");
-
-        opMode.sleep(500);
+        */
+//        if (allianceColor == AllianceColor.BLUE) {
+//            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.7, 270, 0);
+//        } else if (allianceColor == AllianceColor.RED) {
+//            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.7, 90, 0);
+//        }
+//        Log.d(TAG, "driveToCryptobox2: started driving away from tape");
+//
+//        while (opMode.opModeIsActive() && (runtime.seconds() < .5)) {
+//            //mecanumMotors.mecanumDrive.mecanumDrive_XPolar(0.5, 0, 0);
+//        }
+//        mecanumDriveBase.mecanumDrive.stop();
+//        Log.d(TAG, "driveToCryptobox2: stopped driving away from tape");
+//
+//        opMode.sleep(500);
 
         cryptoboxAngleCorrection();
 
 //        positionUsingTape3();
         positionUsingBackTape();
+        ///*
         Log.d(TAG, "driveToCryptobox2: stopped in front of center column");
 //        encoderDrive(0.3, 400, 1);
         if (allianceColor == AllianceColor.BLUE) {
@@ -701,6 +686,7 @@ public class AutonomousActions implements VisitableActions{
             mecanumDriveBase.turn(270);
         }
         Log.d(TAG, "driveToCryptobox2: turned to realign with cryptobox");
+        //*/
 
 //        encoderDrive(0.4, 300, 1);
 //        Log.d(TAG, "driveToCryptobox2: drove forward to cryptobox");
@@ -744,6 +730,53 @@ public class AutonomousActions implements VisitableActions{
         */
     }
 
+    void driveToCryptobox3() throws InterruptedException {
+
+        int wallCm = 40;
+
+        ElapsedTime time = new ElapsedTime();
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(.8, 0, 0);
+        Log.d(TAG, "driveToCryptobox3: started moving forward off balancing stone");
+        opMode.sleep(500);
+
+        while (opMode.opModeIsActive() && (Math.abs(getAngleY()) > 2 || Math.abs(getAngleZ()) > 2)
+                && time.seconds() < 1) {
+            telemetry.addData("Angle Y", getAngleY());
+            telemetry.addData("Angle Z", getAngleZ());
+            telemetry.update();
+        }
+        Log.d(TAG, "driveToCryptobox3: drove off balancing stone");
+        mecanumDriveBase.mecanumDrive.stop();
+        Log.d(TAG, "driveToCryptobox2: stopped after driving off balancing stone");
+        if (allianceColor == AllianceColor.BLUE) {
+            encoderDrive(0.5, 200, 2);
+        }
+        else if (allianceColor == AllianceColor.RED) {
+            encoderDrive(0.5, 100, 2);
+        }
+
+        mecanumDriveBase.turn(backCryptoboxAngle);
+        Log.d(TAG, "driveToCryptobox3: turned toward cryptobox");
+
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.6, 0, 0);
+        Log.d(TAG, "driveToCryptobox3: started driving toward wall");
+
+        encoderDrive(0.5, 1800, 3);
+        rangeAdjustmentForward(wallCm, "tapeSearch");
+        Log.d(TAG, "driveToCryptobox3: stopped driving toward wall");
+
+        mecanumDriveBase.turn(backCryptoboxAngle);
+        Log.d(TAG, "driveToCryptobox3: turned toward back cryptobox");
+
+        cryptoboxAngleCorrection();
+        positionUsingBackTape();
+        Log.d(TAG, "driveToCryptobox3: stopped in front of center column");
+
+        mecanumDriveBase.turn(backCryptoboxAngle);
+        Log.d(TAG, "driveToCryptobox3: turned to realign with cryptobox");
+
+    }
+
     void driveToSideCryptobox() throws InterruptedException {
 
         ElapsedTime time = new ElapsedTime();
@@ -767,13 +800,16 @@ public class AutonomousActions implements VisitableActions{
     }
 
     void cryptoboxAngleCorrection() throws InterruptedException {
+        Log.d(TAG, "cryptoboxAngleCorrection: starting");
         int strafeStartAngleOffset = 10;
         int strafeStartAngle = (int) (backCryptoboxAngle + Math.signum(-backCryptoboxAngle) * strafeStartAngleOffset);
 
         if (Math.abs(backCryptoboxAngle - getAngleX()) > strafeStartAngleOffset) {
+            Log.d(TAG, "cryptoboxAngleCorrection: correcting angle");
             mecanumDriveBase.turn(strafeStartAngle);
-            Log.d(TAG, "driveToCryptobox2: turn correction before positioning with tape");
+            Log.d(TAG, "cryptoboxAngleCorrection: turn correction before positioning with tape");
         }
+        Log.d(TAG, "cryptoboxAngleCorrection: finished");
     }
 
     void rangeTurn() {
@@ -1182,29 +1218,66 @@ public class AutonomousActions implements VisitableActions{
 
     void positionUsingBackTape() throws InterruptedException {
 
-        double forwardInsideTapeDirection = Math.signum(-backCryptoboxAngle) * 42;
-        double backwardInsideTapeDirection = forwardInsideTapeDirection + 180;
-
+//        double minRange = 25;
+//        double maxRange = 30;
+//
+//        double forwardInsideTapeDirection = Math.signum(-backCryptoboxAngle) * 42;
+//        double backwardInsideTapeDirection = forwardInsideTapeDirection + 180;
+//
+//        double forwardOutsideTapeDirection = Math.signum(backCryptoboxAngle) * 42;
+//        double backwardOutsideTapeDirection = forwardOutsideTapeDirection + 180;
         rangeBounceBackTape();
+        opMode.sleep(200);
+        diagonalAlignment();
+//        double distance = getIteratedSmallerRange(3);
+//        Log.d(TAG, "positionUsingBackTape: distance is " + distance);
+//        boolean close = distance < minRange;
+//        boolean far = distance > maxRange;
+//
+//        mecanumDriveBase.turn(backCryptoboxAngle, this, "tapeSearch");
+//        if (tapeMap.get(inSensInTape)) {
+//            Log.d(TAG, "positionUsingBackTape: inner sensor found tape");
+//            if (close) {
+//                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.3, backwardInsideTapeDirection, 0);
+//                Log.d(TAG, "positionUsingBackTape: diagonal backward inward");
+//                stopAtDistanceBackward(minRange);
+//            } else if (far) {
+//                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.3, forwardInsideTapeDirection, 0);
+//                Log.d(TAG, "positionUsingBackTape: diagonal forward inward");
+//                stopAtDistanceForward(maxRange);
+//            }
+//        } else if (tapeMap.get(outSensOutTape)) {
+//            Log.d(TAG, "positionUsingBackTape: outer sensor found tape");
+//            if (close) {
+//                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.3, backwardOutsideTapeDirection, 0);
+//                Log.d(TAG, "positionUsingBackTape: diagonal backward outward");
+//                stopAtDistanceBackward(minRange);
+//            } else if (far) {
+//                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.3, forwardOutsideTapeDirection, 0);
+//                Log.d(TAG, "positionUsingBackTape: diagonal forward outward");
+//                stopAtDistanceForward(maxRange);
+//            }
+//        }
 
-        mecanumDriveBase.turn(backCryptoboxAngle, this, "tapeSearch");
-        if (!tapeMap.get(outSensOutTape)) {
-            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, backwardInsideTapeDirection, 0);
-            Log.d(TAG, "positionUsingBackTape: started driving diagonally backward");
-        }
-        else {
-            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, forwardInsideTapeDirection, 0);
-            Log.d(TAG, "positionUsingBackTape: started driving diagonally forward");
-        }
-        while (opMode.opModeIsActive() && !allianceColorTapeFound(outerColor)) {
-            tapeSearch();
-            telemetry.update(); //Tells the intensity of the blue color we are looking for
-        }
-        Log.d(TAG, "positionUsingBackTape: outer sensor found tape again");
-        mecanumDriveBase.mecanumDrive.stop();
-        Log.d(TAG, "positionUsingBackTape: stopped moving diagonally");
-        mecanumDriveBase.turn(backCryptoboxAngle);
-        Log.d(TAG, "positionUsingBackTape: turned toward cryptobox again");
+//        if (!tapeMap.get(outSensOutTape) && !tapeMap.get(inSensInTapeAgain)) {
+//            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, backwardInsideTapeDirection, 0);
+//            Log.d(TAG, "positionUsingBackTape: started driving diagonally backward");
+//        }
+//        else {
+//            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, forwardInsideTapeDirection, 0);
+//            Log.d(TAG, "positionUsingBackTape: started driving diagonally forward");
+//        }
+//        while (opMode.opModeIsActive() && !allianceColorTapeFound(outerColor)) {
+//            tapeSearch();
+//            telemetry.update();
+//        }
+//        Log.d(TAG, "positionUsingBackTape: outer sensor found tape again");
+
+//        mecanumDriveBase.mecanumDrive.stop();
+//        Log.d(TAG, "positionUsingBackTape: stopped moving diagonally");
+
+//        mecanumDriveBase.turn(backCryptoboxAngle);
+//        Log.d(TAG, "positionUsingBackTape: turned toward cryptobox again");
 
     }
 
@@ -1213,23 +1286,87 @@ public class AutonomousActions implements VisitableActions{
         int nearCm = 18;
         int farCm = 28;
         int strafeBounceAngle = 15;
+        double rotation = 0;
+        int turnCorrectAngle = 30;
 
         double bounceBackDirection = outerDirection + Math.signum(backCryptoboxAngle) * strafeBounceAngle;
         double bounceForwardDirection = outerDirection - Math.signum(backCryptoboxAngle) * strafeBounceAngle;
 
-        while (opMode.opModeIsActive() && !tapeMap.get(inSensInTape)) {
+        Log.d(TAG, "rangeBounceBackTape: starting to search for tape");
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, outerDirection, 0);
+        while (opMode.opModeIsActive() && !tapeMap.get(inSensInTape) && !tapeMap.get(outSensOutTape)) {
+//            Log.d(TAG, "rangeBounceBackTape: inslde loop");
             tapeSearch();
             telemetry.update();
+            if (getAngleX() - backCryptoboxAngle > turnCorrectAngle) { // too far left
+                Log.d(TAG, "rangeBounceBackTape: rotating right");
+                rotation = 1; // right
+            }
+            else if (getAngleX() - backCryptoboxAngle < -turnCorrectAngle) { // too far right
+                Log.d(TAG, "rangeBounceBackTape: rotating left");
+                rotation = -1; // left
+            }
+            else {
+                rotation = 0;
+            }
             if (getSmallerRange() >= farCm) {
-                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.6, bounceForwardDirection, 0);
-                Log.d(TAG, "rangeBounceBackTape: Strafing while moving forward slightly");
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, bounceForwardDirection, rotation);
+                Log.d(TAG, "rangeBounceBackTape: strafing while moving forward slightly");
             } else if (getSmallerRange() <= nearCm) {
-                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.6, bounceBackDirection, 0);
-                Log.d(TAG, "rangeBounceBackTape: Strafing while moving back slightly");
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, bounceBackDirection, rotation);
+                Log.d(TAG, "rangeBounceBackTape: strafing while moving back slightly");
+            }
+        }
+        mecanumDriveBase.mecanumDrive.stop();
+        Log.d(TAG, "rangeBounceBackTape: stopped robot");
+
+    }
+
+    void diagonalAlignment() throws InterruptedException {
+
+        double minRange = 25;
+        double maxRange = 30;
+
+        double forwardInsideTapeDirection = Math.signum(-backCryptoboxAngle) * 42;
+        double backwardInsideTapeDirection = forwardInsideTapeDirection + 180;
+
+        double forwardOutsideTapeDirection = Math.signum(backCryptoboxAngle) * 42;
+        double backwardOutsideTapeDirection = forwardOutsideTapeDirection + 180;
+
+        double distance = getIteratedSmallerRange(3);
+        Log.d(TAG, "diagonalAlignment: distance is " + distance);
+        boolean close = distance < minRange;
+        boolean far = distance > maxRange;
+
+        mecanumDriveBase.turn(backCryptoboxAngle, this, "tapeSearch");
+        if (tapeMap.get(inSensInTape)) {
+            Log.d(TAG, "diagonalAlignment: inner sensor found tape");
+            if (close) {
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.3, backwardInsideTapeDirection, 0);
+                Log.d(TAG, "diagonalAlignment: diagonal backward inward");
+                stopAtDistanceBackward(minRange);
+            } else if (far) {
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.3, forwardInsideTapeDirection, 0);
+                Log.d(TAG, "diagonalAlignment: diagonal forward inward");
+                stopAtDistanceForward(maxRange);
+            }
+        } else if (tapeMap.get(outSensOutTape)) {
+            Log.d(TAG, "diagonalAlignment: outer sensor found tape");
+            if (close) {
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.3, backwardOutsideTapeDirection, 0);
+                Log.d(TAG, "diagonalAlignment: diagonal backward outward");
+                stopAtDistanceBackward(minRange);
+            } else if (far) {
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.3, forwardOutsideTapeDirection, 0);
+                Log.d(TAG, "diagonalAlignment: diagonal forward outward");
+                stopAtDistanceForward(maxRange);
             }
         }
 
-    }
+        mecanumDriveBase.mecanumDrive.stop();
+        Log.d(TAG, "diagonalAlignment: stopped moving diagonally");
+
+    } // starts after one robot went sideways, detected tape, and stopped
 
     void tapeFinder() {
         /*
@@ -1293,17 +1430,27 @@ public class AutonomousActions implements VisitableActions{
             mecanumDriveBase.mecanumDrive.stop(); }
     }
 
-    public void rangeAdjustmentForward(int optimalRangeCm) {
+    public void rangeAdjustmentForward(double optimalRangeCm) {
         rangeAdjustmentForward(optimalRangeCm, "");
     }
 
-    public void rangeAdjustmentForward(int optimalRangeCm, String visitMethod){
+    public void rangeAdjustmentForward(double optimalRangeCm, String visitMethod){
 //        double producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
 //        double producedRangeCm = 0.5 * (getFilteredRange(leftRange) + getFilteredRange(rightRange));
         double producedRangeCm = getSmallerRange();
 
-
         mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 0, 0);
+        stopAtDistanceForward(optimalRangeCm, visitMethod);
+    }
+
+    public void stopAtDistanceForward(double optimalRangeCm){
+        stopAtDistanceForward(optimalRangeCm, "");
+    }
+
+    public void stopAtDistanceForward(double optimalRangeCm, String visitMethod){
+//        double producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
+//        double producedRangeCm = 0.5 * (getFilteredRange(leftRange) + getFilteredRange(rightRange));
+        double producedRangeCm = getSmallerRange();
         while(opMode.opModeIsActive() && producedRangeCm > optimalRangeCm){
 //                producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
 //                producedRangeCm = 0.5 * (getFilteredRange(leftRange) + getFilteredRange(rightRange));
@@ -1313,14 +1460,27 @@ public class AutonomousActions implements VisitableActions{
             telemetry.update();
         }
         mecanumDriveBase.mecanumDrive.stop();
+        Log.d(TAG, "stopAtDistanceForward: stopped after reaching distance");
     }
 
-    double getSmallerRange() {
-        if (leftRange.getDistance(DistanceUnit.CM) < rightRange.getDistance(DistanceUnit.CM)) {
-            return leftRange.getDistance(DistanceUnit.CM);
-        } else {
-            return rightRange.getDistance(DistanceUnit.CM);
+    public void stopAtDistanceBackward(double optimalRangeCm){
+        stopAtDistanceBackward(optimalRangeCm, "");
+    }
+
+    public void stopAtDistanceBackward(double optimalRangeCm, String visitMethod){
+//        double producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
+//        double producedRangeCm = 0.5 * (getFilteredRange(leftRange) + getFilteredRange(rightRange));
+        double producedRangeCm = getSmallerRange();
+        while(opMode.opModeIsActive() && producedRangeCm < optimalRangeCm){
+//                producedRangeCm = 0.5*(leftRange.getDistance(DistanceUnit.CM)+rightRange.getDistance(DistanceUnit.CM));
+//                producedRangeCm = 0.5 * (getFilteredRange(leftRange) + getFilteredRange(rightRange));
+            producedRangeCm = getSmallerRange();
+            accept(visitMethod);
+            telemetry.addData ("Distance Left to Move", optimalRangeCm - producedRangeCm);
+            telemetry.update();
         }
+        mecanumDriveBase.mecanumDrive.stop();
+        Log.d(TAG, "stopAtDistanceBackward: stopped after reaching distance");
     }
 
     private void tapeSearch() {
@@ -1340,8 +1500,13 @@ public class AutonomousActions implements VisitableActions{
             }
         }
         if (insideColorSensed && !prevInside) {
-            tapeMap.put(inSensInTape, true);
-            Log.d(TAG, "tapeSearch: " + inSensInTape + " found");
+            if (!tapeMap.get(inSensInTape)) {
+                tapeMap.put(inSensInTape, true);
+                Log.d(TAG, "tapeSearch: " + inSensInTape + " found");
+            } else {
+                tapeMap.put(inSensInTapeAgain, true);
+                Log.d(TAG, "tapeSearch: " + inSensInTapeAgain + " found");
+            }
         }
         // Add telemetry with color value of each sensor
         telemetry.addData("Inner Sensor " + allianceColor.name(), tapeAllianceColorValue(innerColor));
@@ -1349,6 +1514,7 @@ public class AutonomousActions implements VisitableActions{
         telemetry.addData(outSensInTape, tapeMap.get(outSensInTape));
         telemetry.addData(outSensOutTape, tapeMap.get(outSensOutTape));
         telemetry.addData(inSensInTape, tapeMap.get(inSensInTape));
+        telemetry.addData(inSensInTapeAgain, tapeMap.get(inSensInTapeAgain));
         // Add telemetry showing values in hashmap
     } // To be used inside while loop, keeps track of tape states and displays, update telemetry after calling to display
 
@@ -1386,6 +1552,40 @@ public class AutonomousActions implements VisitableActions{
             Log.d(TAG, "tapeAllianceColorValue: Alliance color not initialized");
             return -1;
         }
+    }
+
+    void place1stGlyph() throws InterruptedException {
+
+        int optimalRangeCm = 25;
+
+        if (vuMark == RelicRecoveryVuMark.UNKNOWN) {
+            telemetry.addLine("VuMark Unknown");
+        } if (vuMark == RelicRecoveryVuMark.LEFT) {
+            telemetry.addLine("Glyph Left");
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 90, 0);
+            Log.d(TAG, "place1stGlyph: started moving left");
+            opMode.sleep(1400);
+            mecanumDriveBase.mecanumDrive.stop();
+            Log.d(TAG, "place1stGlyph: stopped moving left");
+        } if (vuMark == RelicRecoveryVuMark.CENTER) {
+            telemetry.addLine("Glyph Center");
+        } if (vuMark == RelicRecoveryVuMark.RIGHT) {
+            telemetry.addLine("Glyph Right");
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 270, 0);
+            Log.d(TAG, "place1stGlyph: started moving right");
+            opMode.sleep(1400);
+            mecanumDriveBase.mecanumDrive.stop();
+            Log.d(TAG, "place1stGlyph: stopped moving right");
+        }
+        telemetry.update();
+
+        pickupHw.wristServo1.setPosition(0);
+        opMode.sleep(1000);
+        pickupHw.wristServo1.setPosition(0.5);
+        mecanumDriveBase.turn(backCryptoboxAngle);
+//        encoderDrive(0.3, 400, 1);
+        rangeAdjustmentForward(optimalRangeCm);
+
     }
 
     void moveFWBW() {
@@ -1647,6 +1847,25 @@ public class AutonomousActions implements VisitableActions{
         } else {
             return range.getDistance(DistanceUnit.CM);
         }
+    }
+
+    double getSmallerRange() {
+        if (leftRange.getDistance(DistanceUnit.CM) < rightRange.getDistance(DistanceUnit.CM)) {
+            return leftRange.getDistance(DistanceUnit.CM);
+        } else {
+            return rightRange.getDistance(DistanceUnit.CM);
+        }
+    }
+
+    double getIteratedSmallerRange(int iterate) {
+        double smallerRange = Integer.MAX_VALUE;
+
+        while (opMode.opModeIsActive() && iterate > 0) {
+            double check = getSmallerRange();
+            if (check < smallerRange) {smallerRange = check;}
+            iterate--;
+        }
+        return smallerRange;
     }
 
     @Override

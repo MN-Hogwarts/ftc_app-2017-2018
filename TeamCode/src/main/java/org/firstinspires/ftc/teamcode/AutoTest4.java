@@ -78,6 +78,7 @@ public class AutoTest4 extends FtcOpMode {
 //        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 90, 0);
 //        sleep(500);
 //        auto.mecanumDrive.stop();
+        auto.hingesBack();
         auto.pictographID();
         auto.jewelColor();
         auto.driveToCryptobox2();

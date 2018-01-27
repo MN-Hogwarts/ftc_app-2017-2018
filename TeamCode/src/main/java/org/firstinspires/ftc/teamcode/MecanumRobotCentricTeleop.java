@@ -71,7 +71,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
     double  position = 0.5;
     double rightHingePos = 0.9;
-    double leftHingePos = 0.1;
+    double leftHingePos = 0.0;
 
     private ExecutorService executorService;
     private boolean initFinished = false;
@@ -175,7 +175,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
             public void run() {
                 while (OP_MODE_IS_ACTIVE){
                     gamepad.setYInverted(setYInverted);
-                    double rotation = gamepad.getRightStickX()*-1;
+                    double rotation = -gamepad.getRightStickX();
                     magnitude = Range.clip(gamepad.getLeftStickMagnitude(), 0, 1);
                     if(turtleMode)
                         magnitude = magnitude/2;
@@ -316,7 +316,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
                             hingeUpL = false;
                             //prevPressedTriggerR = pressedTriggerR;
                         } else if (prevPressedTriggerL != pressedTriggerL){
-                            leftHingePos = 0.1;
+                            leftHingePos = 0.0;
                             hingeUpL = true;
                             //prevPressedTriggerR = pressedTriggerR;
                         }
