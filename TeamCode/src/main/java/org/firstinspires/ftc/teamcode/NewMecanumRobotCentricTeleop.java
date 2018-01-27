@@ -24,10 +24,10 @@ import trclib.TrcUtil;
 /**
  * Created by spmeg on 4/15/2017.
  */
-@TeleOp(name = "MecanumRobotCentricTeleop", group = "teleop")
-public class MecanumRobotCentricTeleop extends OpMode{
+@TeleOp(name = "NewMecanumRobotCentricTeleop", group = "teleop")
+public class NewMecanumRobotCentricTeleop extends OpMode{
 
-    private volatile static boolean OP_MODE_IS_ACTIVE = false;
+    private static boolean OP_MODE_IS_ACTIVE = true;
 
     private FtcDcMotor leftFrontMotor;
     private FtcDcMotor leftRearMotor;
@@ -37,12 +37,12 @@ public class MecanumRobotCentricTeleop extends OpMode{
     private double armMotorSpeedLimiter = 0.53;
     private SwDriveBase driveBase = null;
     //private SWIMUGyro gyro = null;
+    private Servo rightHinge, leftHinge;
     private SWGamePad gamepad;
     //private HalDashboard dashboard = null;
     private boolean setYInverted = true;
     private TrcServo jewelServo = null;
-    private Servo wristServo1, wristServo2;
-    private Servo rightHinge, leftHinge;
+    private Servo wristServo;
     private Servo leftPickupServo, rightPickupServo;
     private Servo relicServo;
     private DigitalChannel touchSensor ;
@@ -51,8 +51,8 @@ public class MecanumRobotCentricTeleop extends OpMode{
     //private boolean adjustGyroScale = true;
     private double relicServPos = 0.7;
 
-    //private static double gyroKp = 0;
-    //private static double gyroScale = 1.;
+    private static double gyroKp = 0;
+    private static double gyroScale = 1.;
     private static List<TrcSensor.SensorData<Double>> maRotationRate = new LinkedList<>();
     private static int maxListSize = 10;
     private static double rotationRate = 0;
@@ -60,7 +60,18 @@ public class MecanumRobotCentricTeleop extends OpMode{
     static final double INCREMENT   = 0.3;     // amount to slew servo each CYCLE_MS cycle
     static final int    CYCLE_MS    =   50;     // period of each cycle
     static final double MAX_POS     =  0.9;     // Maximum rotational position
-    static final double MIN_POS     =  0.1;     // Minimum rotational position
+    static final double MIN_POS     =  0.2;     // Minimum rotational position
+
+    private boolean hingeUp = true;
+    private boolean pressedTrigger = false;
+    private boolean prevPressedTrigger = false;
+
+    double  position = 0.5;
+
+    private ExecutorService executorService;
+
+    double rightHingePos = 0.9;
+    double leftHingePos = 0.1;
 
     private boolean hingeUpR = true;
     private boolean hingeUpL = true;
@@ -68,15 +79,6 @@ public class MecanumRobotCentricTeleop extends OpMode{
     private boolean prevPressedTriggerR = false;
     private boolean pressedTriggerL = false;
     private boolean prevPressedTriggerL = false;
-
-    double  position = 0.5;
-    double rightHingePos = 0.9;
-    double leftHingePos = 0.0;
-
-    private ExecutorService executorService;
-    private boolean initFinished = false;
-
-    Runnable driveRunnable, armRunnable, servoRunnable;
 
     @Override
     public void stop() {
@@ -95,6 +97,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
     @Override
     public void init() {
+        OP_MODE_IS_ACTIVE = true;
         executorService = Executors.newCachedThreadPool();
         //dashboard = HalDashboard.createInstance(this.telemetry);
         jewelServo = new FtcServo(this.hardwareMap, "jewelArm");
@@ -107,11 +110,9 @@ public class MecanumRobotCentricTeleop extends OpMode{
         rightPickupServo = this.hardwareMap.get(Servo.class, "rightPickup");
 
         //change for new pickup mechanism
-//        rightPickupServo.setDirection(Servo.Direction.REVERSE);
+        rightPickupServo.setDirection(Servo.Direction.REVERSE);
 
-        wristServo1 = this.hardwareMap.get(Servo.class, "wristServo1");
-        wristServo1.setDirection(Servo.Direction.REVERSE);
-        wristServo2 = this.hardwareMap.get(Servo.class, "wristServo2");
+        wristServo = this.hardwareMap.get(Servo.class, "wristServo");
         touchSensor = hardwareMap.get(DigitalChannel.class, "touchSensor");
         relicServo = hardwareMap.get(Servo.class, "relicServo");
         //pickupHw.init(hardwareMap);
@@ -138,9 +139,10 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
         driveBase = new SwDriveBase(
                 leftFrontMotor, leftRearMotor, rightFrontMotor, rightRearMotor);
-        driveBase.setBrakeMode(true);
         /*driveBase = new TrcDriveBase(
                 leftFrontMotor, leftRearMotor, rightFrontMo tor, rightRearMotor);*/
+
+        driveBase.setBrakeMode(true);
 
         //gyro.setEnabled(true);
 
@@ -148,7 +150,6 @@ public class MecanumRobotCentricTeleop extends OpMode{
         gamepad.enableDebug(true);
 
         //driveBase.enableGyroAssist(gyroScale, gyroKp);
-
 
         /*
         new Thread(new Runnable() {
@@ -173,12 +174,12 @@ public class MecanumRobotCentricTeleop extends OpMode{
         });
         */
 
-        driveRunnable = new Runnable() {
+        executorService.submit(new Runnable() {
             @Override
             public void run() {
                 while (OP_MODE_IS_ACTIVE){
                     gamepad.setYInverted(setYInverted);
-                    double rotation = -gamepad.getRightStickX();
+                    double rotation = gamepad.getRightStickX()*-1;
                     magnitude = Range.clip(gamepad.getLeftStickMagnitude(), 0, 1);
                     if(turtleMode)
                         magnitude = magnitude/2;
@@ -205,9 +206,9 @@ public class MecanumRobotCentricTeleop extends OpMode{
                     //telemetry.addData("Thread driveBase", "running");
                 }
             }
-        };
+        });
 
-        armRunnable = new Runnable() {
+        executorService.submit(new Runnable() {
             @Override
             public void run() {
                 while (OP_MODE_IS_ACTIVE){
@@ -233,70 +234,39 @@ public class MecanumRobotCentricTeleop extends OpMode{
                     relicServo.setPosition(relicServPos);
                 }
             }
-        };
+        });
 
-        servoRunnable = new Runnable() {
+        executorService.submit(new Runnable() {
             @Override
             public void run() {
                 double servoPos = (float) 0.0;
                 while (OP_MODE_IS_ACTIVE){
-                    ///*
+
+                    //new pickup mechanism test
                     if (gamepad2.b) {
-                        leftPickupServo.setPosition(-1.0);
-                        rightPickupServo.setPosition(1.0);
+                        leftPickupServo.setPosition(0.1);
+                        rightPickupServo.setPosition(0.9);
                     } //If touch sensor is pressed, stop wheels. If 'A' is pressed, run wheels. If neither is pressed, stop wheels
                     else if (!touchSensor.getState()) {
-                        leftPickupServo.setPosition(0.53);
+                        leftPickupServo.setPosition(0.5);
                         rightPickupServo.setPosition(0.5);
                     } //Turn inward
                     else if (gamepad2.a) {
-                        leftPickupServo.setPosition(1.0);
-                        rightPickupServo.setPosition(-1.0);
+                        leftPickupServo.setPosition(0.9);
+                        rightPickupServo.setPosition(0.1);
                     } //Stop wheels
                     else if (gamepad2.left_bumper) {
-                        leftPickupServo.setPosition(1.0);
+                        leftPickupServo.setPosition(0.9);
                         rightPickupServo.setPosition(0.5);
                     }
                     else if (gamepad2.right_bumper) {
-                        rightPickupServo.setPosition(-1.0);
-                        leftPickupServo.setPosition(0.53);
+                        rightPickupServo.setPosition(0.1);
+                        leftPickupServo.setPosition(0.5);
                     }
                     else {
-                        leftPickupServo.setPosition(0.53);
+                        leftPickupServo.setPosition(0.5);
                         rightPickupServo.setPosition(0.5);
                     }
-                    //*/
-
-//                    //new pickup mechanism test
-//                    if (gamepad2.b) {
-//                        leftPickupServo.setPosition(0.1);
-//                        rightPickupServo.setPosition(0.9);
-//                    } //If touch sensor is pressed, stop wheels. If 'A' is pressed, run wheels. If neither is pressed, stop wheels
-//                    else if (!touchSensor.getState()) {
-//                        leftPickupServo.setPosition(0.5);
-//                        rightPickupServo.setPosition(0.5);
-//                    } //Turn inward
-//                    else if (gamepad2.a) {
-//                        leftPickupServo.setPosition(0.9);
-//                        rightPickupServo.setPosition(0.1);
-//                    } //Stop wheels
-//                    else if (gamepad2.left_bumper) {
-//                        leftPickupServo.setPosition(0.9);
-//                        rightPickupServo.setPosition(0.5);
-//                    }
-//                    else if (gamepad2.right_bumper) {
-//                        rightPickupServo.setPosition(0.1);
-//                        leftPickupServo.setPosition(0.5);
-//                    }
-//                    else {
-//                        leftPickupServo.setPosition(0.5);
-//                        rightPickupServo.setPosition(0.5);
-//                    }
-
-                    //hinge servo
-                    if(gamepad1.right_trigger > 0)
-                        pressedTriggerR = true;
-                    else pressedTriggerR = false;
 
                     if (pressedTriggerR) {
                         if(hingeUpR && prevPressedTriggerR != pressedTriggerR){
@@ -322,7 +292,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
                             hingeUpL = false;
                             //prevPressedTriggerR = pressedTriggerR;
                         } else if (prevPressedTriggerL != pressedTriggerL){
-                            leftHingePos = 0.0;
+                            leftHingePos = 0.1;
                             hingeUpL = true;
                             //prevPressedTriggerR = pressedTriggerR;
                         }
@@ -347,45 +317,30 @@ public class MecanumRobotCentricTeleop extends OpMode{
                         position = 0.50;
                     }
 
-                    setWristPosition(position);
+                    wristServo.setPosition(position);
 
                 }
             }
-        };
+        });
 
-    }
-
-    private void initHardware(){
-
-    }
-
-    private void setWristPosition(double position) {
-        wristServo1.setPosition(position);
-        wristServo2.setPosition(position);
     }
 
     @Override
     public void loop() {
-        if(!OP_MODE_IS_ACTIVE){
-            OP_MODE_IS_ACTIVE = true;
-            executorService.submit(driveRunnable);
-            executorService.submit(armRunnable);
-            executorService.submit(servoRunnable);
-        }
 
         telemetry.addData("SLOW MODE", turtleMode);
         telemetry.addData("Servo Position", "%5.2f", position);
-        telemetry.addData("rightHinge", rightHingePos);
-        telemetry.addData("leftHinge", leftHingePos);
         telemetry.addData("relic servo", relicServPos);
         telemetry.addData("magnitude", magnitude);
         telemetry.addData("Arm Speed Limiter", armMotorSpeedLimiter);
-        telemetry.addData("OP_MODE_IS_ACTIVE boolean", OP_MODE_IS_ACTIVE);
+        telemetry.addData("turtle mode", turtleMode);
+        //telemetry.addData("z rotation rate", gyro.getZRotationRate().value);
         telemetry.addData("ma z rotation rate", rotationRate);
         telemetry.addData("maxListSize", maxListSize);
+        telemetry.addData("gyroKp", gyroKp);
+        telemetry.addData("gyroScale", gyroScale);
         telemetry.update();
 
-        prevPressedTriggerR = pressedTriggerR;
-        prevPressedTriggerL = pressedTriggerL;
+        prevPressedTrigger = pressedTrigger;
     }
 }
