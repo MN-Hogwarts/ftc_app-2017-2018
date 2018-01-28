@@ -66,7 +66,7 @@ public class AutoTest9 extends FtcOpMode {
         auto.initMecanum();
 
 //        auto.initVuforia();
-        auto.initAlliance(AllianceColor.RED);
+        auto.initAlliance(AllianceColor.BLUE);
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {

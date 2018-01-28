@@ -422,6 +422,11 @@ public class AutonomousActions implements VisitableActions{
     boolean moveAwayFromColor() {
 //        boolean leftRed = (jewelColorL.red()-jewelColorL.blue()) > (jewelColorR.red()-jewelColorR.blue();
 //        if (!leftRed)
+        Log.d(TAG, "moveAwayFromColor: Left Red " + jewelColorL.red());
+        Log.d(TAG, "moveAwayFromColor: Left Blue " + jewelColorL.blue());
+        Log.d(TAG, "moveAwayFromColor: Right Red " + jewelColorR.red());
+        Log.d(TAG, "moveAwayFromColor: Right Left " + jewelColorR.blue());
+
         int jewelRedL = (jewelColorL.red()-jewelColorL.blue());
         int jewelRedR = (jewelColorR.red()-jewelColorR.blue());
         int jewelBlueL = (jewelColorL.blue()-jewelColorL.red());
@@ -431,6 +436,7 @@ public class AutonomousActions implements VisitableActions{
         telemetry.log().add("Color Sensor(L) Blue: " + jewelColorL.blue());
         telemetry.log().add("Color Sensor(R) Red: " + jewelColorR.red());
         telemetry.log().add("Color Sensor(R) Blue: " + jewelColorR.blue());
+
 //        return allianceColor == AllianceColor.RED && (jewelColorL.red()-jewelColorL.blue()) > (jewelColorR.red()-jewelColorR.blue())
 //                || allianceColor == AllianceColor.BLUE && (jewelColorL.blue()-jewelColorL.red()) > (jewelColorR.blue()-jewelColorR.red());
         return allianceColor == AllianceColor.RED && jewelRedR < jewelRedL
