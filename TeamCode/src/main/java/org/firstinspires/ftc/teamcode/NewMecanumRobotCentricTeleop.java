@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -25,6 +26,7 @@ import trclib.TrcUtil;
  * Created by spmeg on 4/15/2017.
  */
 @TeleOp(name = "NewMecanumRobotCentricTeleop", group = "teleop")
+@Disabled
 public class NewMecanumRobotCentricTeleop extends OpMode{
 
     private static boolean OP_MODE_IS_ACTIVE = true;

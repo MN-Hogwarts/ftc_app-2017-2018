@@ -85,6 +85,7 @@ public class AutoTest4 extends FtcOpMode {
         auto.place1stGlyph();
         auto.ejectGlyph();
         auto.moveFWBW();
+        auto.hingesForward();
 //        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
 //        sleep(350);
 //        auto.mecanumDriveBase.mecanumDrive.stop();

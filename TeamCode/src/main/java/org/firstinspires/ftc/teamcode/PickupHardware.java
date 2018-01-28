@@ -64,6 +64,7 @@ public class PickupHardware
         rightServo = hwMap.get(Servo.class, "rightPickup") ;
         Log.d("Right Pickup", "Initialized");
         wristServo1 = hwMap.get(Servo.class, "wristServo1") ;
+        wristServo1.setDirection(Servo.Direction.REVERSE);
         wristServo2 = hwMap.get(Servo.class, "wristServo2") ;
         Log.d("Wrist Servo", "Initialized");
         armMotor = new FtcDcMotor("armMotor");
@@ -72,6 +73,11 @@ public class PickupHardware
         Log.d("Touch Sensor", "Initialized");
         rightHinge = hwMap.get(Servo.class, "rightHinge") ;
         leftHinge = hwMap.get(Servo.class, "leftHinge") ;
+    }
+
+    public void setWristPosition(double position) {
+        wristServo1.setPosition(position);
+        wristServo2.setPosition(position);
     }
 }
 

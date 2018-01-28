@@ -77,13 +77,13 @@ public class AutoTest8 extends FtcOpMode {
 //        auto.pictographID();
 //        auto.jewelColor();
 //        auto.driveToCryptobox3();
-        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.3, 62, 0);
-        sleep(1500);
-        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.7, 62, 0);
-        sleep(1500);
-        auto.mecanumDriveBase.mecanumDrive.stop();
-//        auto.place1stGlyph();
-//        auto.ejectGlyph();
+//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.3, 62, 0);
+//        sleep(1500);
+//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.7, 62, 0);
+//        sleep(1500);
+//        auto.mecanumDriveBase.mecanumDrive.stop();
+        auto.place1stGlyph();
+        auto.ejectGlyph();
 //        auto.moveFWBW();
 
         while (opModeIsActive()) {
