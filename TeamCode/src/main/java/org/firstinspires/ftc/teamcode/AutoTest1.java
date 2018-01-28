@@ -87,8 +87,9 @@ public class AutoTest1 extends FtcOpMode {
 //        auto.positionUsingTape();
 //        auto.cryptoboxAngleCorrection();
 //        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 0, -1); // -1 is left
+        auto.hingesBack();
         auto.tapeMap.put(auto.inSensInTape, true);
-        auto.diagonalAlignment();
+        auto.diagonalAlignmentRange();
 //        auto.moveFWBW();
         while (opModeIsActive()) {
             telemetry.addData("Left encoder position:", auto.mecanumDriveBase.leftBackMotor.motor.getCurrentPosition());

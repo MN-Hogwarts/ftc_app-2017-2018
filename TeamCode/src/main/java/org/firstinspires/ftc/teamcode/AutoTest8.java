@@ -42,9 +42,9 @@ import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
  */
-@Autonomous(name = "Auto Test 7", group = "Concept")
+@Autonomous(name = "Auto Test 8", group = "Concept")
 //@Disabled
-public class AutoTest7 extends FtcOpMode {
+public class AutoTest8 extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
 
@@ -70,27 +70,18 @@ public class AutoTest7 extends FtcOpMode {
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
-            telemetry.addLine("Hi");
-            telemetry.addData("Color Sensor blue", auto.jewelColorL.blue());
-            telemetry.addData("Color Sensor red", auto.jewelColorL.red());
-            telemetry.addData("Right Bottom Blue", auto.tapeSensorR.blue());
-            telemetry.addData("Right Bottom Red", auto.tapeSensorR.red());
-            telemetry.addData("Left Bottom Blue", auto.tapeSensorL.blue());
-            telemetry.addData("Left Bottom Red", auto.tapeSensorL.red());
-            telemetry.addData("Angle X", auto.getAngleX());
-            telemetry.addData("Angle Y", auto.getAngleY());
-            telemetry.addData("Angle Z", auto.getAngleZ());
-            telemetry.addData("Left distance", auto.leftRange.getDistance(DistanceUnit.CM));
-            telemetry.addData("Right distance", auto.rightRange.getDistance(DistanceUnit.CM));
-            telemetry.update();
+            auto.allSensorData();
         }
 
         auto.hingesBack();
 //        auto.pictographID();
 //        auto.jewelColor();
-        auto.driveToCryptobox3();
-//        auto.tapeMap.put(auto.outSensOutTape, true);
-//        auto.diagonalAlignmentRange();
+//        auto.driveToCryptobox3();
+        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.3, 62, 0);
+        sleep(1500);
+        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.7, 62, 0);
+        sleep(1500);
+        auto.mecanumDriveBase.mecanumDrive.stop();
 //        auto.place1stGlyph();
 //        auto.ejectGlyph();
 //        auto.moveFWBW();

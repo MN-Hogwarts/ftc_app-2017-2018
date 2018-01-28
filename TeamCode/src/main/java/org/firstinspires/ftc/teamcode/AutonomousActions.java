@@ -1228,9 +1228,17 @@ public class AutonomousActions implements VisitableActions{
 //
 //        double forwardOutsideTapeDirection = Math.signum(backCryptoboxAngle) * 42;
 //        double backwardOutsideTapeDirection = forwardOutsideTapeDirection + 180;
+        ElapsedTime time = new ElapsedTime();
         rangeBounceBackTape();
-        opMode.sleep(200);
-        diagonalAlignment();
+        mecanumDriveBase.turn(backCryptoboxAngle);
+        smallSidewaysAdjustment();
+        time.reset();
+        while (opMode.opModeIsActive() && time.seconds() < 0.2) {
+            tapeSearch();
+            telemetry.update();
+        }
+//        diagonalAlignmentRange();
+        diagonalAlignmentColorSensors();
 //        double distance = getIteratedSmallerRange(3);
 //        Log.d(TAG, "positionUsingBackTape: distance is " + distance);
 //        boolean close = distance < minRange;
@@ -1289,7 +1297,7 @@ public class AutonomousActions implements VisitableActions{
         int farCm = 28;
         int strafeBounceAngle = 15;
         double rotation = 0;
-        int turnCorrectAngle = 30;
+        int turnCorrectAngle = 15;
 
         double bounceBackDirection = outerDirection + Math.signum(backCryptoboxAngle) * strafeBounceAngle;
         double bounceForwardDirection = outerDirection - Math.signum(backCryptoboxAngle) * strafeBounceAngle;
@@ -1302,21 +1310,21 @@ public class AutonomousActions implements VisitableActions{
             telemetry.update();
             if (getAngleX() - backCryptoboxAngle > turnCorrectAngle) { // too far left
                 Log.d(TAG, "rangeBounceBackTape: rotating right");
-                rotation = 1; // right
+                rotation = 0.1; // right
             }
             else if (getAngleX() - backCryptoboxAngle < -turnCorrectAngle) { // too far right
                 Log.d(TAG, "rangeBounceBackTape: rotating left");
-                rotation = -1; // left
+                rotation = -0.1; // left
             }
             else {
                 rotation = 0;
             }
             if (getSmallerRange() >= farCm) {
                 mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, bounceForwardDirection, rotation);
-                Log.d(TAG, "rangeBounceBackTape: strafing while moving forward slightly");
+                Log.d(TAG, "rangeBounceBackTape: strafing while moving forward slightly, disance = " + getSmallerRange());
             } else if (getSmallerRange() <= nearCm) {
                 mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, bounceBackDirection, rotation);
-                Log.d(TAG, "rangeBounceBackTape: strafing while moving back slightly");
+                Log.d(TAG, "rangeBounceBackTape: strafing while moving back slightly, disance = " + getSmallerRange());
             }
         }
         mecanumDriveBase.mecanumDrive.stop();
@@ -1324,51 +1332,124 @@ public class AutonomousActions implements VisitableActions{
 
     }
 
-    void diagonalAlignment() throws InterruptedException {
+    private void smallSidewaysAdjustment() {
+
+        double rotation = 0.05 * Math.signum(backCryptoboxAngle);
+
+        // comes from outer direction, goes to inner direction
+        if (tapeMap.get(inSensInTape)) {
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.35, innerDirection, rotation);
+            while (opMode.opModeIsActive() && !allianceColorTapeFound(innerColor)) {
+                tapeSearch();
+                telemetry.update();
+            }
+        } else if (tapeMap.get(outSensOutTape)) {
+            mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.35, innerDirection, rotation);
+            while (opMode.opModeIsActive() && !allianceColorTapeFound(outerColor)) {
+                tapeSearch();
+                telemetry.update();
+            }
+        }
+    }
+
+    void diagonalAlignmentRange() throws InterruptedException {
 
         double minRange = 25;
-        double maxRange = 30;
+        double maxRange = 27;
 
-        double forwardInsideTapeDirection = Math.signum(-backCryptoboxAngle) * 42;
+        int addingAngle = 20;
+
+        double forwardInsideTapeDirection = Math.signum(-backCryptoboxAngle) * (42 + addingAngle);
         double backwardInsideTapeDirection = forwardInsideTapeDirection + 180;
 
-        double forwardOutsideTapeDirection = Math.signum(backCryptoboxAngle) * 42;
+        double forwardOutsideTapeDirection = Math.signum(backCryptoboxAngle) * (42 + addingAngle);
         double backwardOutsideTapeDirection = forwardOutsideTapeDirection + 180;
 
         double distance = getIteratedSmallerRange(3);
-        Log.d(TAG, "diagonalAlignment: distance is " + distance);
+        Log.d(TAG, "diagonalAlignmentRange: distance is " + distance);
         boolean close = distance < minRange;
         boolean far = distance > maxRange;
 
         mecanumDriveBase.turn(backCryptoboxAngle, this, "tapeSearch");
         if (tapeMap.get(inSensInTape)) {
-            Log.d(TAG, "diagonalAlignment: inner sensor found tape");
+            Log.d(TAG, "diagonalAlignmentRange: inner sensor found tape");
             if (close) {
                 mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.3, backwardInsideTapeDirection, 0);
-                Log.d(TAG, "diagonalAlignment: diagonal backward inward");
+                Log.d(TAG, "diagonalAlignmentRange: diagonal backward inward, direction = " + backwardInsideTapeDirection);
                 stopAtDistanceBackward(minRange);
             } else if (far) {
                 mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.3, forwardInsideTapeDirection, 0);
-                Log.d(TAG, "diagonalAlignment: diagonal forward inward");
+                Log.d(TAG, "diagonalAlignmentRange: diagonal forward inward, direction = " + forwardInsideTapeDirection);
                 stopAtDistanceForward(maxRange);
             }
         } else if (tapeMap.get(outSensOutTape)) {
-            Log.d(TAG, "diagonalAlignment: outer sensor found tape");
+            Log.d(TAG, "diagonalAlignmentRange: outer sensor found tape");
             if (close) {
                 mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.3, backwardOutsideTapeDirection, 0);
-                Log.d(TAG, "diagonalAlignment: diagonal backward outward");
+                Log.d(TAG, "diagonalAlignmentRange: diagonal backward outward, direction = " + backwardOutsideTapeDirection);
                 stopAtDistanceBackward(minRange);
             } else if (far) {
                 mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.3, forwardOutsideTapeDirection, 0);
-                Log.d(TAG, "diagonalAlignment: diagonal forward outward");
+                Log.d(TAG, "diagonalAlignmentRange: diagonal forward outward, direction = " + forwardOutsideTapeDirection);
                 stopAtDistanceForward(maxRange);
             }
         }
 
         mecanumDriveBase.mecanumDrive.stop();
-        Log.d(TAG, "diagonalAlignment: stopped moving diagonally");
+        Log.d(TAG, "diagonalAlignmentRange: stopped moving diagonally");
 
     } // starts after one robot went sideways, detected tape, and stopped
+
+    void diagonalAlignmentColorSensors() {
+
+        int addingAngle = 0;
+        double closeRange = 15;
+        double farRange = 40;
+
+        double forwardInsideTapeDirection = Math.signum(-backCryptoboxAngle) * (42 + addingAngle);
+        double backwardInsideTapeDirection = forwardInsideTapeDirection + 180;
+
+        double forwardOutsideTapeDirection = Math.signum(backCryptoboxAngle) * (42 + addingAngle);
+        double backwardOutsideTapeDirection = forwardOutsideTapeDirection + 180;
+
+        if (tapeMap.get(inSensInTape)) {
+            Log.d(TAG, "diagonalAlignmentColorSensors: inner sensor found tape");
+            if (!tapeMap.get(outSensOutTape)) {
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, backwardInsideTapeDirection, 0);
+                Log.d(TAG, "diagonalAlignmentColorSensors: diagonal backward inward, direction = " + backwardInsideTapeDirection);
+            } else {
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, forwardInsideTapeDirection, 0);
+                Log.d(TAG, "diagonalAlignmentColorSensors: diagonal forward inward, direction = " + forwardInsideTapeDirection);
+            }
+            while (opMode.opModeIsActive() && !allianceColorTapeFound(outerColor)) {
+                if (getSmallerRange() < closeRange) { // too close, move back
+                    mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, backwardInsideTapeDirection, 0);
+                } else if (getSmallerRange() > farRange && getSmallerRange() < 100) { // too far
+                    mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, forwardInsideTapeDirection, 0);
+                }
+                tapeSearch();
+                telemetry.update();
+            }
+        } else if (tapeMap.get(outSensOutTape)) {
+            Log.d(TAG, "diagonalAlignmentColorSensors: outer sensor found tape");
+            if (!tapeMap.get(inSensInTape)) {
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, backwardOutsideTapeDirection, 0);
+                Log.d(TAG, "diagonalAlignmentColorSensors: diagonal backward outward, direction = " + backwardOutsideTapeDirection);
+            } else {
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, forwardOutsideTapeDirection, 0);
+                Log.d(TAG, "diagonalAlignmentColorSensors: diagonal forward outward, direction = " + forwardOutsideTapeDirection);
+            }
+            while (opMode.opModeIsActive() && !allianceColorTapeFound(innerColor)) {
+                tapeSearch();
+                telemetry.update();
+            }
+        }
+        Log.d(TAG, "diagonalAlignmentColorSensors: outer sensor found tape again");
+
+        mecanumDriveBase.mecanumDrive.stop();
+        Log.d(TAG, "diagonalAlignmentColorSensors: stopped moving diagonally");
+
+    }
 
     void tapeFinder() {
         /*
