@@ -376,6 +376,13 @@ public class AutonomousActions implements VisitableActions{
         opMode.sleep(1000);
                 telemetry.log().add("Move Away From Color: " + moveAwayFromColor());
 
+        if (jewelColorL.red() == 0 && jewelColorR.red() == 0
+                && jewelColorL.blue() == 0 && jewelColorR.blue() == 0) {
+            jewelArm.setPosition(1);
+            telemetry.addData("The Robot Controller has detected that both Jewel Color Sensors have failed", "");
+            return;
+        }
+
 //        while (opMode.opModeIsActive()) {
 //            telemetry.addData("Color Sensor blue", jewelColorL.blue());
 //            telemetry.addData("Color Sensor red", jewelColorL.red());
@@ -413,14 +420,21 @@ public class AutonomousActions implements VisitableActions{
     }
 
     boolean moveAwayFromColor() {
-        boolean leftRed = (jewelColorL.red()-jewelColorL.blue()) > (jewelColorR.red()-jewelColorR.blue();
-        if (!leftRed)
+//        boolean leftRed = (jewelColorL.red()-jewelColorL.blue()) > (jewelColorR.red()-jewelColorR.blue();
+//        if (!leftRed)
+        int jewelRedL = (jewelColorL.red()-jewelColorL.blue());
+        int jewelRedR = (jewelColorR.red()-jewelColorR.blue());
+        int jewelBlueL = (jewelColorL.blue()-jewelColorL.red());
+        int jewelBlueR = (jewelColorR.blue()-jewelColorR.red());
+
         telemetry.log().add("Color Sensor(L) Red: " + jewelColorL.red());
         telemetry.log().add("Color Sensor(L) Blue: " + jewelColorL.blue());
         telemetry.log().add("Color Sensor(R) Red: " + jewelColorR.red());
         telemetry.log().add("Color Sensor(R) Blue: " + jewelColorR.blue());
-        return allianceColor == AllianceColor.RED && (jewelColorL.red()-jewelColorL.blue()) > (jewelColorR.red()-jewelColorR.blue())
-                || allianceColor == AllianceColor.BLUE && (jewelColorL.blue()-jewelColorL.red()) > (jewelColorR.blue()-jewelColorR.red());
+//        return allianceColor == AllianceColor.RED && (jewelColorL.red()-jewelColorL.blue()) > (jewelColorR.red()-jewelColorR.blue())
+//                || allianceColor == AllianceColor.BLUE && (jewelColorL.blue()-jewelColorL.red()) > (jewelColorR.blue()-jewelColorR.red());
+        return allianceColor == AllianceColor.RED && jewelRedR < jewelRedL
+                    || allianceColor == AllianceColor.BLUE && jewelBlueR < jewelBlueL;
     }
 
     void driveToCryptobox() throws InterruptedException {
