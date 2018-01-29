@@ -194,7 +194,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
                     //driveBase.mecanumDrive_XPolarFieldCentric(magnitude, direction, rotation);
                     driveBase.mecanumDrive_XPolar(magnitude, direction, rotation);
-                    jewelServo.setPosition(0.9);
+                    jewelServo.setPosition(1.0);
 
                     if(gamepad1.a){
                         turtleMode = true;

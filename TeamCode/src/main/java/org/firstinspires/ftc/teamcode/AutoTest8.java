@@ -66,7 +66,7 @@ public class AutoTest8 extends FtcOpMode {
         auto.initMecanum();
 
 //        auto.initVuforia();
-        auto.initAlliance(AllianceColor.BLUE);
+        auto.initAlliance(AllianceColor.RED);
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
@@ -82,9 +82,10 @@ public class AutoTest8 extends FtcOpMode {
 //        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.7, 62, 0);
 //        sleep(1500);
 //        auto.mecanumDriveBase.mecanumDrive.stop();
+        auto.positionUsingBackTape();
         auto.place1stGlyph();
         auto.ejectGlyph();
-//        auto.moveFWBW();
+        auto.moveFWBW();
 
         while (opModeIsActive()) {
             //telemetry.addData("Moving Away:", auto.moveAwayFromColor());

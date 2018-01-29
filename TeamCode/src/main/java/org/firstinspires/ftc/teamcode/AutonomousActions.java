@@ -35,7 +35,7 @@ import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 
 public class AutonomousActions implements VisitableActions{
     int   RED_THRESHOLD  = (110);
-    int   BLUE_THRESHOLD = (90);
+    int   BLUE_THRESHOLD = (75);
     int   TAPE_RED_THRESHOLD = 100;
     int   TAPE_BLUE_THRESHOLD = 80;
     double WALL_DISTANCE = 20;
@@ -1464,10 +1464,12 @@ public class AutonomousActions implements VisitableActions{
                     Log.d(TAG, "diagonalAlignmentColorSensors: angle correction");
                     mecanumDriveBase.turn(backCryptoboxAngle);
                     counter++;
-                    if (counter >= 4) {
+                    if (counter > 4) {
                         Log.d(TAG, "diagonalAlignmentColorSensors: timed out");
                         break;
                     }
+                    mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, backwardInsideTapeDirection, 0);
+                    Log.d(TAG, "diagonalAlignmentColorSensors: started moving after angle correction");
                     time.reset();
                 }
                 tapeSearch();
@@ -1494,10 +1496,12 @@ public class AutonomousActions implements VisitableActions{
                     Log.d(TAG, "diagonalAlignmentColorSensors: angle correction");
                     mecanumDriveBase.turn(backCryptoboxAngle);
                     counter++;
-                    if (counter >= 4) {
+                    if (counter > 4) {
                         Log.d(TAG, "diagonalAlignmentColorSensors: timed out");
                         break;
                     }
+                    mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, backwardOutsideTapeDirection, 0);
+                    Log.d(TAG, "diagonalAlignmentColorSensors: started moving after angle correction");
                     time.reset();
                 }
                 tapeSearch();
@@ -1738,10 +1742,10 @@ public class AutonomousActions implements VisitableActions{
     void moveFWBW() throws InterruptedException {
         ElapsedTime     runtime = new ElapsedTime();
 
-        mecanumDriveBase.turn(backCryptoboxAngle);
         Log.d(TAG, "moveFWBW: moving backward slightly");
         encoderDrive(0.5, -200, 1);
         opMode.sleep(500);
+        mecanumDriveBase.turn(backCryptoboxAngle);
         Log.d(TAG, "moveFWBW: moving backward more");
         encoderDrive(0.5, -350, 1);
         Log.d(TAG, "moveFWBW: moving forward");
