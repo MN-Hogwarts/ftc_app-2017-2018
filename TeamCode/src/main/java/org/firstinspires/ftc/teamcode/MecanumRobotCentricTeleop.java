@@ -222,10 +222,10 @@ public class MecanumRobotCentricTeleop extends OpMode{
                     } else
                         armMotor.setPower(gamepad2.left_stick_y*armMotorSpeedLimiter);
 
-                    if (gamepad1.dpad_right){
+                    if (gamepad2.dpad_right){
                         //relicServo.setPosition(0.3);
                         relicServPos = 0.3;
-                    } else if (gamepad1.dpad_left){
+                    } else if (gamepad2.dpad_left){
                         //relicServo.setPosition(0.7);
                         relicServPos = 0.8;
                     }
