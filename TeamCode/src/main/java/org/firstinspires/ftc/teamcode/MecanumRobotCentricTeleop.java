@@ -49,7 +49,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
     private boolean turtleMode = false;
     private double magnitude = 0;
     //private boolean adjustGyroScale = true;
-    private double relicServPos = 0.7;
+    private double relicServPos = 0.8;
 
     //private static double gyroKp = 0;
     //private static double gyroScale = 1.;
@@ -227,7 +227,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
                         relicServPos = 0.3;
                     } else if (gamepad1.dpad_left){
                         //relicServo.setPosition(0.7);
-                        relicServPos = 0.7;
+                        relicServPos = 0.8;
                     }
 
                     relicServo.setPosition(relicServPos);
