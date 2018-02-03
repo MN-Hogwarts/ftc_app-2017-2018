@@ -81,10 +81,11 @@ public class AutoTest5 extends FtcOpMode {
         auto.hingesBack();
         auto.pictographID();
         auto.jewelColor();
-        auto.driveToCryptobox2();
+        auto.driveToCryptobox3();
         auto.place1stGlyph();
         auto.ejectGlyph();
         auto.moveFWBW();
+        auto.hingesForward();
 //        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
 //        sleep(350);
 //        auto.mecanumDriveBase.mecanumDrive.stop();

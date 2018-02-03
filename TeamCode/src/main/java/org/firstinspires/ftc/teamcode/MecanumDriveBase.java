@@ -256,8 +256,6 @@ public class MecanumDriveBase implements Visitor {
         linearFtcOpMode.telemetry.update();
 
         if (angDiff < 0) { //turns right
-            //leftMotor.setPower(APPROACH_SPEED * .6 );
-            //rightMotor.setPower(-APPROACH_SPEED * .6);
 
             while (linearFtcOpMode.opModeIsActive() && angDiff < 0) {
 
@@ -292,8 +290,6 @@ public class MecanumDriveBase implements Visitor {
                 linearFtcOpMode.idle(); // Always call opMode.idle() at the bottom of your while(opModeIsActive()) loop
             }
         } else if (angDiff > 0) { //turns left
-            //leftMotor.setPower(-APPROACH_SPEED);
-            //rightMotor.setPower(APPROACH_SPEED);
 
             while (linearFtcOpMode.opModeIsActive() && angDiff > 0) {
 

@@ -88,9 +88,9 @@ public class AutoTest6 extends FtcOpMode {
         auto.hingesBack();
 //        auto.pictographID();
 //        auto.jewelColor();
-//        auto.driveToCryptobox3();
-        auto.tapeMap.put(auto.outSensOutTape, true);
-        auto.diagonalAlignment();
+        auto.driveToCryptobox3();
+//        auto.tapeMap.put(auto.outSensOutTape, true);
+//        auto.diagonalAlignmentRange();
 //        auto.place1stGlyph();
 //        auto.ejectGlyph();
 //        auto.moveFWBW();

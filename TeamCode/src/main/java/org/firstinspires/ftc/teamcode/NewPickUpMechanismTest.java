@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -8,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Created by spmega4567 on 12/21/17.
  */
 @TeleOp(name = "New Pickup Mechanism Test", group = "test")
+@Disabled
 public class NewPickUpMechanismTest extends OpMode {
     private Servo leftPickupServo, rightPickupServo;
 

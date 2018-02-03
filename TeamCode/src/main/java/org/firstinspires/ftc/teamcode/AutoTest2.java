@@ -64,7 +64,7 @@ public class AutoTest2 extends FtcOpMode {
         auto.initOpmode(this);
         auto.initMecanum();
         //auto.initVuforia();
-        auto.initAlliance(AllianceColor.RED);
+        auto.initAlliance(AllianceColor.BLUE);
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
@@ -87,8 +87,9 @@ public class AutoTest2 extends FtcOpMode {
         //auto.glyphPickup();
 //        auto.encoderDrive(0.6, 700, 2);
 //        auto.mecanumDriveBase.leftBackMotor.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        auto.hingesBack();
         auto.tapeMap.put(auto.inSensInTape, true);
-        auto.diagonalAlignment();
+        auto.diagonalAlignmentRange();
 //        auto.mecanumDriveBase.rightBackMotor.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        auto.positionUsingTape();
 //        auto.encoderColorDrive(0.6, 2500, 500);
