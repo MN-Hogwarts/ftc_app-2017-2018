@@ -92,9 +92,9 @@ public class AutoTest9 extends FtcOpMode {
 //        auto.tapeMap.put(auto.outSensOutTape, true);
 //        auto.diagonalAlignment();
         auto.positionUsingBackTape();
-        auto.place1stGlyph();
+        auto.place1stGlyph(auto.backCryptoboxAngle);
         auto.ejectGlyph();
-        auto.moveFWBW();
+        auto.moveFWBW(auto.backCryptoboxAngle);
 
         while (opModeIsActive()) {
             telemetry.addData("Moving Away:", auto.moveAwayFromColor());

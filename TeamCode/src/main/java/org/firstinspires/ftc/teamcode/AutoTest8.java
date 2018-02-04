@@ -82,10 +82,10 @@ public class AutoTest8 extends FtcOpMode {
 //        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.7, 62, 0);
 //        sleep(1500);
 //        auto.mecanumDriveBase.mecanumDrive.stop();
-        auto.positionUsingBackTape();
-        auto.place1stGlyph();
+        auto.driveToSideCryptobox();
+        auto.place1stGlyph(180);
         auto.ejectGlyph();
-        auto.moveFWBW();
+        auto.moveFWBW(180);
 
         while (opModeIsActive()) {
             //telemetry.addData("Moving Away:", auto.moveAwayFromColor());
