@@ -29,6 +29,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
     private volatile static boolean OP_MODE_IS_ACTIVE = false;
 
+    private int WristOrientation = 1;
     private FtcDcMotor leftFrontMotor;
     private FtcDcMotor leftRearMotor;
     private FtcDcMotor rightFrontMotor;
@@ -218,9 +219,9 @@ public class MecanumRobotCentricTeleop extends OpMode{
                     }
 
                     if (gamepad2.left_stick_y == 0) {
-                        armMotor.setPower(gamepad2.right_stick_y);
+                        armMotor.setPower(gamepad2.right_stick_y*WristOrientation);
                     } else
-                        armMotor.setPower(gamepad2.left_stick_y*armMotorSpeedLimiter);
+                        armMotor.setPower(gamepad2.left_stick_y*armMotorSpeedLimiter*WristOrientation);
 
                     if (gamepad2.dpad_right){
                         //relicServo.setPosition(0.3);
@@ -230,6 +231,11 @@ public class MecanumRobotCentricTeleop extends OpMode{
                         relicServPos = 0.8;
                     }
 
+                    if (gamepad2.right_bumper){
+                        WristOrientation = 1;
+                    } else if (gamepad2.left_bumper) {
+                        WristOrientation = -1;
+                    }
                     relicServo.setPosition(relicServPos);
                 }
             }
@@ -253,14 +259,14 @@ public class MecanumRobotCentricTeleop extends OpMode{
                         leftPickupServo.setPosition(1.0);
                         rightPickupServo.setPosition(-1.0);
                     } //Stop wheels
-                    else if (gamepad2.left_bumper) {
-                        leftPickupServo.setPosition(1.0);
-                        rightPickupServo.setPosition(0.5);
-                    }
-                    else if (gamepad2.right_bumper) {
-                        rightPickupServo.setPosition(-1.0);
-                        leftPickupServo.setPosition(0.53);
-                    }
+//                    else if (gamepad2.left_bumper) {
+//                        leftPickupServo.setPosition(1.0);
+//                        rightPickupServo.setPosition(0.5);
+//                    }
+//                    else if (gamepad2.right_bumper) {
+//                        rightPickupServo.setPosition(-1.0);
+//                        leftPickupServo.setPosition(0.53);
+//                    }
                     else {
                         leftPickupServo.setPosition(0.53);
                         rightPickupServo.setPosition(0.5);
@@ -347,7 +353,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
                         position = 0.50;
                     }
 
-                    setWristPosition(position);
+                    setWristPosition(position*WristOrientation);
 
                 }
             }
