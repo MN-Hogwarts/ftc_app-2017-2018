@@ -248,8 +248,7 @@ public class AutonomousActions implements VisitableActions{
         Log.d(TAG, "initGlyphHardware: range sensors initialized");
 
         pickupHw.init(hardwareMap);
-        pickupHw.rightHinge.setPosition(0.7);
-        pickupHw.leftHinge.setPosition(0.3);
+        hingesBack();
 //        pickupHw.rightHinge.setPosition(0.95);
 //        pickupHw.leftHinge.setPosition(0.1);
 
@@ -822,12 +821,13 @@ public class AutonomousActions implements VisitableActions{
         Log.d(TAG, "driveToSideCryptobox: drove off balancing stone");
         mecanumDriveBase.mecanumDrive.stop();
         Log.d(TAG, "driveToSideCryptobox: stopped after driving off balancing stone");
-        timeDrive(0.5, outerDirection, 0.5);
+        timeDrive(0.5, outerDirection, 0.6);
         Log.d(TAG, "driveToSideCryptobox: strafed away from stone");
         mecanumDriveBase.turn(180);
         Log.d(TAG, "driveToSideCryptobox: turned toward cryptobox");
         encoderDrive(0.5, -400, 1.5);
         Log.d(TAG, "driveToSideCryptobox: backed away from cryptobox");
+        cryptoboxAngleCorrectionSide();
         positionUsingTapeForward();
 //        timeDrive(0.5, outerDirection, 1.5);
 //        Log.d(TAG, "driveToSideCryptobox: strafed toward stone");
@@ -846,6 +846,18 @@ public class AutonomousActions implements VisitableActions{
             Log.d(TAG, "cryptoboxAngleCorrection: turn correction before positioning with tape");
         }
         Log.d(TAG, "cryptoboxAngleCorrection: finished");
+    }
+
+    void cryptoboxAngleCorrectionSide() throws InterruptedException {
+        Log.d(TAG, "cryptoboxAngleCorrectionSide: starting");
+        int angleOffset = 10;
+
+        if (Math.abs(180 - getAngleX()) > angleOffset) {
+            Log.d(TAG, "cryptoboxAngleCorrectionSide: correcting angle");
+            mecanumDriveBase.turn(180);
+            Log.d(TAG, "cryptoboxAngleCorrectionSide: turn correction before positioning with tape");
+        }
+        Log.d(TAG, "cryptoboxAngleCorrectionSide: finished");
     }
 
     void rangeTurn() {
@@ -1831,7 +1843,7 @@ public class AutonomousActions implements VisitableActions{
         if (vuMark == RelicRecoveryVuMark.UNKNOWN) {
             telemetry.addLine("VuMark Unknown");
         } if (vuMark == RelicRecoveryVuMark.LEFT) {
-            mecanumDriveBase.turn(cryptoboxAngle + 10);
+            mecanumDriveBase.turn(cryptoboxAngle + 5);
             telemetry.addLine("Glyph Left");
             mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 90, 0);
             Log.d(TAG, "place1stGlyph: started moving left");
@@ -1842,7 +1854,7 @@ public class AutonomousActions implements VisitableActions{
             telemetry.addLine("Glyph Center");
             mecanumDriveBase.turn(cryptoboxAngle);
         } if (vuMark == RelicRecoveryVuMark.RIGHT) {
-            mecanumDriveBase.turn(cryptoboxAngle - 10);
+            mecanumDriveBase.turn(cryptoboxAngle - 5);
             telemetry.addLine("Glyph Right");
             mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.4, 270, 0);
             Log.d(TAG, "place1stGlyph: started moving right");
@@ -1870,9 +1882,11 @@ public class AutonomousActions implements VisitableActions{
         opMode.sleep(500);
         mecanumDriveBase.turn(cryptoboxAngle);
         Log.d(TAG, "moveFWBW: moving backward more");
-        encoderDrive(0.5, -350, 1);
+        encoderDrive(0.5, -750, 1);
+        Log.d(TAG, "moveFWBW: putting hinges down");
+        hingesForward();
         Log.d(TAG, "moveFWBW: moving forward");
-        encoderDrive(0.5, 800, 1);
+        encoderDrive(0.5, 1200, 1);
         Log.d(TAG, "moveFWBW: moving backward again");
         encoderDrive(0.3, -800, 1);
 
@@ -1926,7 +1940,7 @@ public class AutonomousActions implements VisitableActions{
         pickupHw.rightServo.setPosition(1.0);
         Log.d(TAG, "ejectGlyph: servos moving outward");
         while (opMode.opModeIsActive() && time.seconds() < 2);
-        pickupHw.leftServo.setPosition(0.5);
+        pickupHw.leftServo.setPosition(0.53);
         pickupHw.rightServo.setPosition(0.5);
         Log.d(TAG, "ejectGlyph: servos stopped");
     }

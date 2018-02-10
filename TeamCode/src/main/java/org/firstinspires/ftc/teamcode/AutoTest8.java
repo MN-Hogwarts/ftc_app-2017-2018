@@ -65,7 +65,7 @@ public class AutoTest8 extends FtcOpMode {
         auto.initOpmode(this);
         auto.initMecanum();
 
-//        auto.initVuforia();
+        auto.initVuforia();
         auto.initAlliance(AllianceColor.RED);
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
@@ -74,8 +74,8 @@ public class AutoTest8 extends FtcOpMode {
         }
 
         auto.hingesBack();
-//        auto.pictographID();
-//        auto.jewelColor();
+        auto.pictographID();
+        auto.jewelColor();
 //        auto.driveToCryptobox3();
 //        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.3, 62, 0);
 //        sleep(1500);

@@ -65,39 +65,28 @@ public class AutoTest9 extends FtcOpMode {
         auto.initOpmode(this);
         auto.initMecanum();
 
-//        auto.initVuforia();
+        auto.initVuforia();
         auto.initAlliance(AllianceColor.BLUE);
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
-            telemetry.addLine("Hi");
-            telemetry.addData("Color Sensor blue", auto.jewelColorL.blue());
-            telemetry.addData("Color Sensor red", auto.jewelColorL.red());
-            telemetry.addData("Right Bottom Blue", auto.tapeSensorR.blue());
-            telemetry.addData("Right Bottom Red", auto.tapeSensorR.red());
-            telemetry.addData("Left Bottom Blue", auto.tapeSensorL.blue());
-            telemetry.addData("Left Bottom Red", auto.tapeSensorL.red());
-            telemetry.addData("Angle X", auto.getAngleX());
-            telemetry.addData("Angle Y", auto.getAngleY());
-            telemetry.addData("Angle Z", auto.getAngleZ());
-            telemetry.addData("Left distance", auto.leftRange.getDistance(DistanceUnit.CM));
-            telemetry.addData("Right distance", auto.rightRange.getDistance(DistanceUnit.CM));
-            telemetry.update();
+            auto.allSensorData();
         }
 
         auto.hingesBack();
-//        auto.pictographID();
-//        auto.jewelColor();
+        auto.pictographID();
+        auto.jewelColor();
 //        auto.driveToCryptobox3();
 //        auto.tapeMap.put(auto.outSensOutTape, true);
 //        auto.diagonalAlignment();
-        auto.positionUsingBackTape();
-        auto.place1stGlyph(auto.backCryptoboxAngle);
+//        auto.positionUsingBackTape();
+        auto.driveToSideCryptobox();
+        auto.place1stGlyph(180);
         auto.ejectGlyph();
-        auto.moveFWBW(auto.backCryptoboxAngle);
+        auto.moveFWBW(180);
 
         while (opModeIsActive()) {
-            telemetry.addData("Moving Away:", auto.moveAwayFromColor());
+//            telemetry.addData("Moving Away:", auto.moveAwayFromColor());
 //            auto.place1stGlyph();
 //            telemetry.update();
         }
