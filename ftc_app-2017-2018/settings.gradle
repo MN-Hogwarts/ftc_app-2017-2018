@@ -1,0 +1,3 @@
+include ':FtcRobotController', ':Ftc3543Lib-2017-18'
+include ':TeamCode'
+project(':Ftc3543Lib-2017-18').projectDir = new File('Ftc3543Lib')
