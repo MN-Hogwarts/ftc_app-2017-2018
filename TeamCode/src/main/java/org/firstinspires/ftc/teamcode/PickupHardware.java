@@ -65,7 +65,7 @@ public class PickupHardware
         rightServo = hwMap.get(CRServo.class, "rightPickup") ;
         Log.d("Right Pickup", "Initialized");
         wristServo1 = hwMap.get(CRServo.class, "wristServo1") ;
-//        wristServo1.setDirection(CRServo.Direction.REVERSE);
+        wristServo1.setDirection(CRServo.Direction.REVERSE);
         wristServo2 = hwMap.get(CRServo.class, "wristServo2") ;
         Log.d("Wrist Servo", "Initialized");
         armMotor = new FtcDcMotor("armMotor");

@@ -1868,10 +1868,11 @@ public class AutonomousActions implements VisitableActions{
         }
         telemetry.update();
 
-        pickupHw.wristServo1.setPower(0.1);
+//        pickupHw.wristServo1.setPower(0.1);
+        pickupHw.setWristPosition(0.8);
         opMode.sleep(1000);
-        pickupHw.setWristPosition(0.5);
-        pickupHw.wristServo1.setPower(0.5);
+        pickupHw.setWristPosition(0);
+//        pickupHw.wristServo1.setPower(0);
 //        mecanumDriveBase.turn(backCryptoboxAngle);
 //        encoderDrive(0.3, 400, 1);
         rangeAdjustmentForward(optimalRangeCm);
