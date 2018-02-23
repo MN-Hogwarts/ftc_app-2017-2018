@@ -351,7 +351,7 @@ public class MecanumDriveBase implements Visitor {
     private double turnPower(double difference) {
         if (Math.abs(difference) < 20) {
             //return 0.15;
-            return 0.55;
+            return 0.6;
         } else if (Math.abs(difference) < 45) {
             //return 0.3;
             return 0.65;

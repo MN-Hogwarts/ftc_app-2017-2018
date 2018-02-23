@@ -1408,6 +1408,7 @@ public class AutonomousActions implements VisitableActions{
         int strafeBounceAngle = 15;
         double rotation = 0;
         int turnCorrectAngle = 15;
+        double speed = 0.5;
         ElapsedTime time = new ElapsedTime();
 
         double bounceBackDirection = outerDirection + Math.signum(backCryptoboxAngle) * strafeBounceAngle;
@@ -1435,11 +1436,14 @@ public class AutonomousActions implements VisitableActions{
             else {
                 rotation = 0;
             }
+            if (tapeMap.get(outSensInTape)) {
+                speed = 0.35;
+            }
             if (getSmallerRange() >= farCm && getSmallerRange() < 100) {
-                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, bounceForwardDirection, rotation);
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(speed, bounceForwardDirection, rotation);
                 Log.d(TAG, "rangeBounceBackTape: strafing while moving forward slightly, distance = " + getSmallerRange());
             } else if (getSmallerRange() <= nearCm) {
-                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, bounceBackDirection, rotation);
+                mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(speed, bounceBackDirection, rotation);
                 Log.d(TAG, "rangeBounceBackTape: strafing while moving back slightly, distance = " + getSmallerRange());
             }
         }
@@ -1936,11 +1940,11 @@ public class AutonomousActions implements VisitableActions{
 
     void ejectGlyph() {
         ElapsedTime time = new ElapsedTime();
-        pickupHw.leftServo.setPosition(0);
-        pickupHw.rightServo.setPosition(1.0);
+        pickupHw.leftServo.setPosition(0.13);
+        pickupHw.rightServo.setPosition(0.87);
         Log.d(TAG, "ejectGlyph: servos moving outward");
         while (opMode.opModeIsActive() && time.seconds() < 2);
-        pickupHw.leftServo.setPosition(0.53);
+        pickupHw.leftServo.setPosition(0.5);
         pickupHw.rightServo.setPosition(0.5);
         Log.d(TAG, "ejectGlyph: servos stopped");
     }

@@ -87,15 +87,16 @@ public class AutoTest1 extends FtcOpMode {
 //        auto.positionUsingTape();
 //        auto.cryptoboxAngleCorrection();
 //        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 0, -1); // -1 is left
-        auto.hingesBack();
-        auto.tapeMap.put(auto.inSensInTape, true);
-        auto.diagonalAlignmentRange();
+//        auto.hingesBack();
+//        auto.tapeMap.put(auto.inSensInTape, true);
+//        auto.diagonalAlignmentRange();
 //        auto.moveFWBW();
-        while (opModeIsActive()) {
-            telemetry.addData("Left encoder position:", auto.mecanumDriveBase.leftBackMotor.motor.getCurrentPosition());
-            telemetry.addData("Right encoder position:", auto.mecanumDriveBase.rightBackMotor.motor.getCurrentPosition());
-//            telemetry.update();
-        }
+        auto.ejectGlyph();
+//        while (opModeIsActive()) {
+//            telemetry.addData("Left encoder position:", auto.mecanumDriveBase.leftBackMotor.motor.getCurrentPosition());
+//            telemetry.addData("Right encoder position:", auto.mecanumDriveBase.rightBackMotor.motor.getCurrentPosition());
+////            telemetry.update();
+//        }
 
         //auto.initVuforia();
         //auto.pictographID(); //run Vuforia method, includes initVuforia()
