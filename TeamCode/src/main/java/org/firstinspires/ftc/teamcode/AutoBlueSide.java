@@ -42,7 +42,7 @@ import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
  */
-@Autonomous(name = "AutoBlueSide", group = "Concept")
+@Autonomous(name = "AutoBlueSide", group = "Main Auto")
 //@Disabled
 public class AutoBlueSide extends FtcOpMode {
 

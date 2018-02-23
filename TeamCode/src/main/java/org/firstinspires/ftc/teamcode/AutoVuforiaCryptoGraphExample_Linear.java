@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -22,6 +23,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * Created by spmega4567 on 9/30/17.
  */
 @TeleOp(name = "Auto Vuforia Crypto Graph Example", group = "linear opmodes")
+@Disabled
 public class AutoVuforiaCryptoGraphExample_Linear extends LinearOpMode{
 
     public static final String TAG = "Vuforia Navigation Sample";
