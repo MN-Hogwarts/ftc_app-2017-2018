@@ -1868,10 +1868,10 @@ public class AutonomousActions implements VisitableActions{
         }
         telemetry.update();
 
-        pickupHw.wristServo1.setPosition(0.1);
+        pickupHw.wristServo1.setPower(0.1);
         opMode.sleep(1000);
         pickupHw.setWristPosition(0.5);
-        pickupHw.wristServo1.setPosition(0.5);
+        pickupHw.wristServo1.setPower(0.5);
 //        mecanumDriveBase.turn(backCryptoboxAngle);
 //        encoderDrive(0.3, 400, 1);
         rangeAdjustmentForward(optimalRangeCm);
@@ -1940,12 +1940,12 @@ public class AutonomousActions implements VisitableActions{
 
     void ejectGlyph() {
         ElapsedTime time = new ElapsedTime();
-        pickupHw.leftServo.setPosition(0.13);
-        pickupHw.rightServo.setPosition(0.87);
+        pickupHw.leftServo.setPower(-0.8);
+        pickupHw.rightServo.setPower(0.8);
         Log.d(TAG, "ejectGlyph: servos moving outward");
         while (opMode.opModeIsActive() && time.seconds() < 2);
-        pickupHw.leftServo.setPosition(0.5);
-        pickupHw.rightServo.setPosition(0.5);
+        pickupHw.leftServo.setPower(0);
+        pickupHw.rightServo.setPower(0);
         Log.d(TAG, "ejectGlyph: servos stopped");
     }
 

@@ -29,12 +29,12 @@ import ftclib.FtcDcMotor;
 public class PickupHardware
 {
     /* Public OpMode members. */
-    Servo leftServo ;
-    Servo rightServo ;
-    Servo wristServo1;
-    Servo wristServo2;
-    Servo left_Servo ;
-    Servo right_Servo ;
+    CRServo leftServo ;
+    CRServo rightServo ;
+    CRServo wristServo1;
+    CRServo wristServo2;
+    CRServo left_Servo ;
+    CRServo right_Servo ;
     Servo rightHinge;
     Servo leftHinge;
     DigitalChannel touchSensor ;
@@ -60,13 +60,13 @@ public class PickupHardware
 
         Log.d("Hardware Map", "Initialized");
         // Define and Initialize Motors
-        leftServo = hwMap.get(Servo.class, "leftPickup") ;
+        leftServo = hwMap.get(CRServo.class, "leftPickup") ;
         Log.d("Left Pickup", "Initialized");
-        rightServo = hwMap.get(Servo.class, "rightPickup") ;
+        rightServo = hwMap.get(CRServo.class, "rightPickup") ;
         Log.d("Right Pickup", "Initialized");
-        wristServo1 = hwMap.get(Servo.class, "wristServo1") ;
-        wristServo1.setDirection(Servo.Direction.REVERSE);
-        wristServo2 = hwMap.get(Servo.class, "wristServo2") ;
+        wristServo1 = hwMap.get(CRServo.class, "wristServo1") ;
+//        wristServo1.setDirection(CRServo.Direction.REVERSE);
+        wristServo2 = hwMap.get(CRServo.class, "wristServo2") ;
         Log.d("Wrist Servo", "Initialized");
         armMotor = new FtcDcMotor("armMotor");
         Log.d("Arm Motor", "Initialized");
@@ -77,8 +77,8 @@ public class PickupHardware
     }
 
     public void setWristPosition(double position) {
-        wristServo1.setPosition(position);
-        wristServo2.setPosition(position);
+        wristServo1.setPower(position);
+        wristServo2.setPower(position);
     }
 }
 

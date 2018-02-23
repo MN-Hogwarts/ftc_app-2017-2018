@@ -92,11 +92,11 @@ public class AutoTest1 extends FtcOpMode {
 //        auto.diagonalAlignmentRange();
 //        auto.moveFWBW();
         auto.ejectGlyph();
-//        while (opModeIsActive()) {
+        while (opModeIsActive()) {
 //            telemetry.addData("Left encoder position:", auto.mecanumDriveBase.leftBackMotor.motor.getCurrentPosition());
 //            telemetry.addData("Right encoder position:", auto.mecanumDriveBase.rightBackMotor.motor.getCurrentPosition());
-////            telemetry.update();
-//        }
+//            telemetry.update();
+        }
 
         //auto.initVuforia();
         //auto.pictographID(); //run Vuforia method, includes initVuforia()
