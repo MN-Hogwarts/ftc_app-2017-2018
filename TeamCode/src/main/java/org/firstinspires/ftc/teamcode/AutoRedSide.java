@@ -42,9 +42,9 @@ import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
  */
-@Autonomous(name = "Auto Test 9", group = "Concept")
+@Autonomous(name = "AutoRedSide", group = "Main Auto")
 //@Disabled
-public class AutoTest9 extends FtcOpMode {
+public class AutoRedSide extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
 
@@ -66,7 +66,7 @@ public class AutoTest9 extends FtcOpMode {
         auto.initMecanum();
 
         auto.initVuforia();
-        auto.initAlliance(AllianceColor.BLUE);
+        auto.initAlliance(AllianceColor.RED);
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
@@ -77,18 +77,24 @@ public class AutoTest9 extends FtcOpMode {
         auto.pictographID();
         auto.jewelColor();
 //        auto.driveToCryptobox3();
-//        auto.tapeMap.put(auto.outSensOutTape, true);
-//        auto.diagonalAlignment();
-//        auto.positionUsingBackTape();
+//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.3, 62, 0);
+//        sleep(1500);
+//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.7, 62, 0);
+//        sleep(1500);
+//        auto.mecanumDriveBase.mecanumDrive.stop();
         auto.driveToSideCryptobox();
         auto.place1stGlyph(180);
         auto.ejectGlyph();
         auto.moveFWBW(180);
 
         while (opModeIsActive()) {
-//            telemetry.addData("Moving Away:", auto.moveAwayFromColor());
+            //telemetry.addData("Moving Away:", auto.moveAwayFromColor());
 //            auto.place1stGlyph();
 //            telemetry.update();
         }
+
+        //auto.initVuforia();
+        //auto.pictographID(); //run Vuforia method, includes initVuforia()
+
     }
 }

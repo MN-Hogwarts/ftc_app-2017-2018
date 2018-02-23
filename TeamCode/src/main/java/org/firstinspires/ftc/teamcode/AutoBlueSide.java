@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.AutoOptions.AllianceColor;
 
 import ftclib.FtcOpMode;
@@ -41,9 +42,9 @@ import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
  */
-@Autonomous(name = "Auto Red", group = "Concept")
+@Autonomous(name = "AutoBlueSide", group = "Concept")
 //@Disabled
-public class AutoTest4 extends FtcOpMode {
+public class AutoBlueSide extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
 
@@ -65,50 +66,29 @@ public class AutoTest4 extends FtcOpMode {
         auto.initMecanum();
 
         auto.initVuforia();
-        auto.initAlliance(AllianceColor.RED);
+        auto.initAlliance(AllianceColor.BLUE);
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
             auto.allSensorData();
-            telemetry.update();
         }
 
-//        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 0, 0);
-//        sleep(500);
-//        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 90, 0);
-//        sleep(500);
-//        auto.mecanumDrive.stop();
         auto.hingesBack();
         auto.pictographID();
         auto.jewelColor();
-        auto.driveToCryptobox3();
-        auto.place1stGlyph(auto.backCryptoboxAngle);
+//        auto.driveToCryptobox3();
+//        auto.tapeMap.put(auto.outSensOutTape, true);
+//        auto.diagonalAlignment();
+//        auto.positionUsingBackTape();
+        auto.driveToSideCryptobox();
+        auto.place1stGlyph(180);
         auto.ejectGlyph();
-        auto.moveFWBW(auto.backCryptoboxAngle);
-        auto.hingesForward();
-//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
-//        sleep(350);
-//        auto.mecanumDriveBase.mecanumDrive.stop();
-//
-//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(1.0, 0, 0);
-//        sleep(600);
-//        auto.mecanumDriveBase.mecanumDrive.stop();
-//
-//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
-//        sleep(400);
-//        auto.mecanumDriveBase.mecanumDrive.stop();
+        auto.moveFWBW(180);
 
-        //auto.turn(0);
-        //auto.ejectGlyph();
-        //sleep(5000);
         while (opModeIsActive()) {
-            //telemetry.addData("Moving Away:", auto.moveAwayFromColor());
+//            telemetry.addData("Moving Away:", auto.moveAwayFromColor());
 //            auto.place1stGlyph();
 //            telemetry.update();
         }
-
-        //auto.initVuforia();
-        //auto.pictographID(); //run Vuforia method, includes initVuforia()
-
-        }
+    }
 }

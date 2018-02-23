@@ -32,7 +32,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.AutoOptions.AllianceColor;
 
 import ftclib.FtcOpMode;
@@ -42,9 +41,9 @@ import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 /**
  * Rotates Servo between min and max position or rotatescontinuaou
  */
-@Autonomous(name = "Auto Test 8", group = "Concept")
+@Autonomous(name = "AutoRedBack", group = "Main Auto")
 //@Disabled
-public class AutoTest8 extends FtcOpMode {
+public class AutoRedBack extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
 
@@ -71,22 +70,37 @@ public class AutoTest8 extends FtcOpMode {
         auto.initGlyphHardware();
         while (!isStarted()) {
             auto.allSensorData();
+            telemetry.update();
         }
 
+//        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 0, 0);
+//        sleep(500);
+//        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 90, 0);
+//        sleep(500);
+//        auto.mecanumDrive.stop();
         auto.hingesBack();
         auto.pictographID();
         auto.jewelColor();
-//        auto.driveToCryptobox3();
-//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.3, 62, 0);
-//        sleep(1500);
-//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.7, 62, 0);
-//        sleep(1500);
+        auto.driveToCryptobox3();
+        auto.place1stGlyph(auto.backCryptoboxAngle);
+        auto.ejectGlyph();
+        auto.moveFWBW(auto.backCryptoboxAngle);
+        auto.hingesForward();
+//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
+//        sleep(350);
 //        auto.mecanumDriveBase.mecanumDrive.stop();
-        auto.driveToSideCryptobox();
-        auto.place1stGlyph(180);
-//        auto.ejectGlyph();
-//        auto.moveFWBW(180);
+//
+//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(1.0, 0, 0);
+//        sleep(600);
+//        auto.mecanumDriveBase.mecanumDrive.stop();
+//
+//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
+//        sleep(400);
+//        auto.mecanumDriveBase.mecanumDrive.stop();
 
+        //auto.turn(0);
+        //auto.ejectGlyph();
+        //sleep(5000);
         while (opModeIsActive()) {
             //telemetry.addData("Moving Away:", auto.moveAwayFromColor());
 //            auto.place1stGlyph();
@@ -96,5 +110,5 @@ public class AutoTest8 extends FtcOpMode {
         //auto.initVuforia();
         //auto.pictographID(); //run Vuforia method, includes initVuforia()
 
-    }
+        }
 }

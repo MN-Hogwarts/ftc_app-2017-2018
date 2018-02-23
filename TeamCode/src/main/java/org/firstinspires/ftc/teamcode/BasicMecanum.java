@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -18,6 +19,7 @@ import trclib.TrcServo;
 import trclib.TrcUtil;
 
 @TeleOp(name = "Basic Mecanum", group = "teleop")
+@Disabled
 public class BasicMecanum extends OpMode{
 
     private FtcDcMotor leftFrontMotor;

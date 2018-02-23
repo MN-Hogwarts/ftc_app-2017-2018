@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -27,6 +28,7 @@ import trclib.TrcTaskMgr;
  * Created by spmeg on 4/15/2017.
  */
 @TeleOp(name = "MecanumFieldCentricTeleop", group = "teleop")
+@Disabled
 public class MecanumFieldCentricTeleop extends OpMode implements SWGamePad.ButtonHandler, Runnable{
     /*
     private final double LOADED_POSITION_TRIGGER = 0.557;

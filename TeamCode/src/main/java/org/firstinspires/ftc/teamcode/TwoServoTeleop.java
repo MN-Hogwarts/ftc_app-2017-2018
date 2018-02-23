@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -53,7 +54,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 
 @TeleOp(name="TwoServo", group="Pushbot")
-//@Disabled
+@Disabled
 public class TwoServoTeleop extends OpMode{
 
     /* Declare OpMode members. */

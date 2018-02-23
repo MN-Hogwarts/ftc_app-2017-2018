@@ -26,7 +26,7 @@ import trclib.TrcUtil;
  * Created by spmeg on 4/15/2017.
  */
 @TeleOp(name = "NewMecanumRobotCentricTeleop", group = "teleop")
-//@Disabled
+@Disabled
 public class NewMecanumRobotCentricTeleop extends OpMode{
 
     private volatile static boolean OP_MODE_IS_ACTIVE = false;

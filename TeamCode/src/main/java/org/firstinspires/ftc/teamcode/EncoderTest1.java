@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import ftclib.FtcOpMode;
@@ -38,7 +39,7 @@ import ftclib.FtcOpMode;
  * Rotates Servo between min and max position or rotatescontinuaou
  */
 @Autonomous(name = "Encoder Test 1", group = "Concept")
-//@Disabled
+@Disabled
 public class EncoderTest1 extends FtcOpMode {
 
 

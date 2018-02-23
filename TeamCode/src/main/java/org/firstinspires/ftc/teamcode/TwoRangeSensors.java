@@ -52,7 +52,7 @@ import hallib.HalDbgLog;
  * @see <a href="http://modernroboticsinc.com/range-sensor">MR Range Sensor</a>
  */
 @Autonomous(name = "Sensor: 2 MR range sensors", group = "Sensor")
-//@Disabled   // comment out or remove this line to enable this opmode
+@Disabled   // comment out or remove this line to enable this opmode
 public class TwoRangeSensors extends LinearOpMode {
 
     ModernRoboticsI2cRangeSensor rangeSensor1;
