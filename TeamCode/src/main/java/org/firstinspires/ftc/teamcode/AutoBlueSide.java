@@ -81,7 +81,7 @@ public class AutoBlueSide extends FtcOpMode {
 //        auto.diagonalAlignment();
 //        auto.positionUsingBackTape();
         auto.driveToSideCryptobox();
-        auto.place1stGlyph(180);
+        auto.place1stGlyphHinge(180);
         auto.ejectGlyph();
         auto.moveFWBW(180);
 

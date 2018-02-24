@@ -83,7 +83,7 @@ public class AutoRedSide extends FtcOpMode {
 //        sleep(1500);
 //        auto.mecanumDriveBase.mecanumDrive.stop();
         auto.driveToSideCryptobox();
-        auto.place1stGlyph(180);
+        auto.place1stGlyphHinge(180);
         auto.ejectGlyph();
         auto.moveFWBW(180);
 

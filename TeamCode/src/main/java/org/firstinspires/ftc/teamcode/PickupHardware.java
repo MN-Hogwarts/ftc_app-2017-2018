@@ -44,6 +44,11 @@ public class PickupHardware
     public static final double ARM_UP_POWER    =  0.45 ;
     public static final double ARM_DOWN_POWER  = -0.45 ;
 
+    public static final double RIGHT_HINGE_UP   = 0.95;
+    public static final double RIGHT_HINGE_DOWN = 0.3;
+    public static final double LEFT_HINGE_UP    = 0.0;
+    public static final double LEFT_HINGE_DOWN  = 0.7;
+
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();

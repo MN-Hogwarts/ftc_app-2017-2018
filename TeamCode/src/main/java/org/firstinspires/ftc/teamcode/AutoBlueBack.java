@@ -82,7 +82,7 @@ public class AutoBlueBack extends FtcOpMode {
         auto.pictographID();
         auto.jewelColor();
         auto.driveToCryptobox3();
-        auto.place1stGlyph(auto.backCryptoboxAngle);
+        auto.place1stGlyphHinge(auto.backCryptoboxAngle);
         auto.ejectGlyph();
         auto.moveFWBW(auto.backCryptoboxAngle);
         auto.hingesForward();
