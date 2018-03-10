@@ -29,17 +29,22 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.AutoOptions.AllianceColor;
 
+import java.io.File;
+
 import ftclib.FtcOpMode;
 
 import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
+import static org.firstinspires.ftc.teamcode.AutonomousActions.TAG;
 
 /**
- * Rotates Servo between min and max position or rotatescontinuaou
+ * Rotates Servo between min and max power or rotatescontinuaou
  */
 @Autonomous(name = "Auto Test 10", group = "Concept")
 //@Disabled
@@ -49,7 +54,7 @@ public class AutoTest10 extends FtcOpMode {
 
     // Define class members
     Servo   servo;
-    double  position = .55;//(MAX_POS - MIN_POS) / 2; // Start at halfway position
+    double  position = .55;//(MAX_POS - MIN_POS) / 2; // Start at halfway power
     boolean rampUp = true;
 
 
@@ -64,7 +69,7 @@ public class AutoTest10 extends FtcOpMode {
         auto.initOpmode(this);
         auto.initMecanum();
 
-        auto.initVuforia();
+//        auto.initVuforia();
         auto.initAlliance(AllianceColor.BLUE);
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
@@ -74,20 +79,20 @@ public class AutoTest10 extends FtcOpMode {
 
         auto.hingesBack();
 //        auto.pictographID();
-//        auto.jewelColor();
+        auto.jewelColor();
+        auto.driveToCryptoboxPart1();
+        Log.d(TAG, "runOpMode: log");
+        File newLog = new File("phone", "bottomLeft");
+
 //        auto.driveToCryptobox3();
 //        auto.tapeMap.put(auto.outSensOutTape, true);
 //        auto.diagonalAlignment();
 //        auto.positionUsingBackTape();
 //        auto.driveToSideCryptobox();
-        auto.place1stGlyph(180);
-        auto.ejectGlyph();
-        auto.moveFWBW(180);
 
         while (opModeIsActive()) {
-//            telemetry.addData("Moving Away:", auto.moveAwayFromColor());
-//            auto.place1stGlyph();
-//            telemetry.update();
+            auto.addTapeMapData();
+            telemetry.update();
         }
     }
 }

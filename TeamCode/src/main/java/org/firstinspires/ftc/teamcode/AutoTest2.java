@@ -39,7 +39,7 @@ import ftclib.FtcOpMode;
 import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 
 /**
- * Rotates Servo between min and max position or rotatescontinuaou
+ * Rotates Servo between min and max power or rotatescontinuaou
  */
 @Autonomous(name = "Auto 2", group = "Concept")
 //@Disabled
@@ -49,7 +49,7 @@ public class AutoTest2 extends FtcOpMode {
 
     // Define class members
     Servo   servo;
-    double  position = .55;//(MAX_POS - MIN_POS) / 2; // Start at halfway position
+    double  position = .55;//(MAX_POS - MIN_POS) / 2; // Start at halfway power
     boolean rampUp = true;
 
 
@@ -98,8 +98,8 @@ public class AutoTest2 extends FtcOpMode {
         //sleep(5000);
         while (opModeIsActive()) {
             telemetry.addData("1st Tape Found", auto.firstTapeFound);
-            telemetry.addData("Left encoder position:", auto.mecanumDriveBase.leftBackMotor.motor.getCurrentPosition());
-            telemetry.addData("Right encoder position:", auto.mecanumDriveBase.rightBackMotor.motor.getCurrentPosition());
+            telemetry.addData("Left encoder power:", auto.mecanumDriveBase.leftBackMotor.motor.getCurrentPosition());
+            telemetry.addData("Right encoder power:", auto.mecanumDriveBase.rightBackMotor.motor.getCurrentPosition());
             telemetry.update();
         }
 

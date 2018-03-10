@@ -64,10 +64,10 @@ public class FourServo extends OpMode{
     Servo left_Servo ;
     Servo right_Servo ;
     DigitalChannel touchSensor ;
-    double  position = .55;//(MAX_POS - MIN_POS) / 2; // Start at halfway position
+    double  position = .55;//(MAX_POS - MIN_POS) / 2; // Start at halfway power
     static final int    CYCLE_MS    =   2000;     // period of each cycle
     // could also use HardwarePushbotMatrix class.
-   /* double          clawOffset  = 0.0 ;                  // Servo mid position
+   /* double          clawOffset  = 0.0 ;                  // Servo mid power
     final double    CLAW_SPEED  = 0.02 ;                 // sets rate to move servo */
 
 

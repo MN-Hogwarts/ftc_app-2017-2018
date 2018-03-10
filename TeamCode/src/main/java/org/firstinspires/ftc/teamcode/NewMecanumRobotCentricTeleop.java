@@ -61,8 +61,8 @@ public class NewMecanumRobotCentricTeleop extends OpMode{
 
     static final double INCREMENT   = 0.3;     // amount to slew servo each CYCLE_MS cycle
     static final int    CYCLE_MS    =   50;     // period of each cycle
-    static final double MAX_POS     =  0.9;     // Maximum rotational position
-    static final double MIN_POS     =  0.1;     // Minimum rotational position
+    static final double MAX_POS     =  0.9;     // Maximum rotational power
+    static final double MIN_POS     =  0.1;     // Minimum rotational power
 
     private boolean hingeUpR = true;
     private boolean hingeUpL = true;

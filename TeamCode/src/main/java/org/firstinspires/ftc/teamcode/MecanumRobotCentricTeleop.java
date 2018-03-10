@@ -61,10 +61,12 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
     static final double INCREMENT   = 0.3;     // amount to slew servo each CYCLE_MS cycle
     static final int    CYCLE_MS    =   50;     // period of each cycle
-    static final double MAX_POS     =  0.8;     // Maximum rotational position
-    static final double MIN_POS     =  -0.8;     // Minimum rotational position
+    static final double MAX_POS     =  0.8;     // Maximum rotational power
+    static final double MIN_POS     =  -0.8;     // Minimum rotational power
     static final double MAX_FINGER_POS = 0.8;
     static final double MIN_FINGER_POS = -0.8;
+    static final double LEFT_STOP_POS   = 0.025;
+    static final double RIGHT_STOP_POS   = 0;
 
     private boolean hingeUpR = true;
     private boolean hingeUpL = true;
@@ -74,8 +76,8 @@ public class MecanumRobotCentricTeleop extends OpMode{
     private boolean prevPressedTriggerL = false;
 
     double  position = 0.5;
-    double rightHingePos = 0.9;
-    double leftHingePos = 0.0;
+    double rightHingePos = 0.2;
+    double leftHingePos = 0.9;
 
     private ExecutorService executorService;
     private boolean initFinished = false;
@@ -255,16 +257,16 @@ public class MecanumRobotCentricTeleop extends OpMode{
                 while (OP_MODE_IS_ACTIVE){
                     ///*
                     if (gamepad2.b) {
-                        leftPickupServo.setPower(MIN_FINGER_POS);
-                        rightPickupServo.setPower(MAX_FINGER_POS);
+                        leftPickupServo.setPower(PickupHardware.MIN_FINGER_POS);
+                        rightPickupServo.setPower(PickupHardware.MAX_FINGER_POS);
                     } //If touch sensor is pressed, stop wheels. If 'A' is pressed, run wheels. If neither is pressed, stop wheels
                     else if (!touchSensor.getState()) {
-                        leftPickupServo.setPower(0);
-                        rightPickupServo.setPower(0);
+                        leftPickupServo.setPower(PickupHardware.LEFT_STOP_POS);
+                        rightPickupServo.setPower(PickupHardware.RIGHT_STOP_POS);
                     } //Turn inward
                     else if (gamepad2.a) {
-                        leftPickupServo.setPower(MAX_FINGER_POS);
-                        rightPickupServo.setPower(MIN_FINGER_POS);
+                        leftPickupServo.setPower(PickupHardware.MAX_FINGER_POS);
+                        rightPickupServo.setPower(PickupHardware.MIN_FINGER_POS);
                     } //Stop wheels
 //                    else if (gamepad2.left_bumper) {
 //                        leftPickupServo.setPosition(1.0);
@@ -275,8 +277,8 @@ public class MecanumRobotCentricTeleop extends OpMode{
 //                        leftPickupServo.setPosition(0.53);
 //                    }
                     else {
-                        leftPickupServo.setPower(0);
-                        rightPickupServo.setPower(0);
+                        leftPickupServo.setPower(PickupHardware.LEFT_STOP_POS);
+                        rightPickupServo.setPower(PickupHardware.RIGHT_STOP_POS);
                     }
                     //*/
 
@@ -313,11 +315,11 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
                     if (pressedTriggerR) {
                         if(hingeUpR && prevPressedTriggerR != pressedTriggerR){
-                            rightHingePos = 0.4;
+                            rightHingePos = PickupHardware.RIGHT_HINGE_DOWN;
                             hingeUpR = false;
                             //prevPressedTriggerR = pressedTriggerR;
                         } else if (prevPressedTriggerR != pressedTriggerR){
-                            rightHingePos = 0.95;
+                            rightHingePos = PickupHardware.RIGHT_HINGE_UP;
                             hingeUpR = true;
                             //prevPressedTriggerR = pressedTriggerR;
                         }
@@ -331,11 +333,11 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
                     if (pressedTriggerL) {
                         if(hingeUpL && prevPressedTriggerL != pressedTriggerL){
-                            leftHingePos = 0.7;
+                            leftHingePos = PickupHardware.LEFT_HINGE_DOWN;
                             hingeUpL = false;
                             //prevPressedTriggerR = pressedTriggerR;
                         } else if (prevPressedTriggerL != pressedTriggerL){
-                            leftHingePos = 0.0;
+                            leftHingePos = PickupHardware.LEFT_HINGE_UP;
                             hingeUpL = true;
                             //prevPressedTriggerR = pressedTriggerR;
                         }

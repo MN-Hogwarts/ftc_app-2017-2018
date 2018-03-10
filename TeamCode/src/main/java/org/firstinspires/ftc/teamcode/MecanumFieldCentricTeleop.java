@@ -241,7 +241,7 @@ public class MecanumFieldCentricTeleop extends OpMode implements SWGamePad.Butto
         }
 
         dashboard.displayPrintf(1, LABEL_WIDTH, "digital input: ", "%b", inputPin);
-        dashboard.displayPrintf(2, LABEL_WIDTH, "servo position: ", "%1.3f", triggerServo.getPosition());
+        dashboard.displayPrintf(2, LABEL_WIDTH, "servo power: ", "%1.3f", triggerServo.getPosition());
         dashboard.displayPrintf(4, LABEL_WIDTH, "rotation: ", "%.2f", rotation);
         */
         dashboard.displayPrintf(2, LABEL_WIDTH, "imu z: ", "%.2f", gyro.getZRotationRate().value);

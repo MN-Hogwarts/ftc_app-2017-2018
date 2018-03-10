@@ -29,50 +29,42 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 
-/**
- * Rotates Servo between min and max power or rotatescontinuaou
+/*
+ * This is an example LinearOpMode that shows how to use
+ * a Modern Robotics Optical Distance Sensor
+ * It assumes that the ODS sensor is configured with a name of "sensor_ods".
+ *
+ * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-@Autonomous(name = "2 Servo Test", group = "Concept")
-@Disabled
-public class TwoServoTest extends LinearOpMode {
+@TeleOp(name = "Sensor: Analog Encoder", group = "Sensor")
+//@Disabled
+public class SensorAnalogEncoder extends LinearOpMode {
 
-    static final double INCREMENT   = 0.01;     // amount to slew leftServo each CYCLE_MS cycle
-    static final int    CYCLE_MS    =   2000;     // period of each cycle
-    static final double MAX_POS     =  1.0;     // Maximum rotational power
-    static final double MIN_POS     =  0.0;     // Minimum rotational power
+  AnalogInput encoder = null;
 
-    // Define class members
-    Servo leftServo;
-    Servo rightServo;
-    double  position = .55;//(MAX_POS - MIN_POS) / 2; // Start at halfway power
-    boolean rampUp = true;
+  @Override
+  public void runOpMode() {
 
+    // get a reference to our Light Sensor object.
+    encoder = hardwareMap.get(AnalogInput.class, "analogEncoder");
 
-    @Override
-    public void runOpMode() {
+    // wait for the start button to be pressed.
+    waitForStart();
 
-        // Connect to leftServo (Assume PushBot Left Hand)
-        // Change the text in quotes to match any leftServo name on your robot.
-        leftServo = hardwareMap.get(Servo.class, "leftWheel");
-        rightServo = hardwareMap.get(Servo.class, "rightWheel");
+    // while the op mode is active, loop and read the light levels.
+    // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
+    while (opModeIsActive()) {
 
-        // Wait for the start button
-        telemetry.addData(">", "Press Start to scan Servo." );
-        telemetry.update();
-        waitForStart();
-
-        leftServo.setPosition(-2.0);
-        rightServo.setPosition(-1.0);
-
-        while (opModeIsActive());
-
-        // Signal done;
-        telemetry.addData(">", "Done");
-        telemetry.update();
+      // send the info back to driver station using telemetry function.
+      telemetry.addData("Encoder Voltage", encoder.getVoltage());
+      telemetry.update();
     }
+  }
 }

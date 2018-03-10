@@ -39,7 +39,7 @@ import ftclib.FtcOpMode;
 import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 
 /**
- * Rotates Servo between min and max position or rotatescontinuaou
+ * Rotates Servo between min and max power or rotatescontinuaou
  */
 @Autonomous(name = "Auto Red 2", group = "Concept")
 //@Disabled
@@ -49,7 +49,7 @@ public class AutoRed2 extends FtcOpMode {
 
     // Define class members
     Servo   servo;
-    double  position = .55;//(MAX_POS - MIN_POS) / 2; // Start at halfway position
+    double  position = .55;//(MAX_POS - MIN_POS) / 2; // Start at halfway power
     boolean rampUp = true;
 
 

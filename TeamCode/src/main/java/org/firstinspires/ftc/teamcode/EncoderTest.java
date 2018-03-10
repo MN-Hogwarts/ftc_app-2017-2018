@@ -36,7 +36,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import ftclib.FtcOpMode;
 
 /**
- * Rotates Servo between min and max position or rotatescontinuaou
+ * Rotates Servo between min and max power or rotatescontinuaou
  */
 @Autonomous(name = "Encoder Test", group = "Concept")
 @Disabled

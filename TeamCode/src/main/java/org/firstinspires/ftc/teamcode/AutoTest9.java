@@ -41,9 +41,9 @@ import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 /**
  * Rotates Servo between min and max power or rotatescontinuaou
  */
-@Autonomous(name = "AutoBlueBack", group = "Main Auto")
+@Autonomous(name = "Auto Test 9", group = "Concept")
 //@Disabled
-public class AutoBlueBack extends FtcOpMode {
+public class AutoTest9 extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
 
@@ -64,43 +64,26 @@ public class AutoBlueBack extends FtcOpMode {
         auto.initOpmode(this);
         auto.initMecanum();
 
-        auto.initVuforia();
+//        auto.initVuforia();
         auto.initAlliance(AllianceColor.BLUE);
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
         while (!isStarted()) {
             auto.allSensorData();
-            telemetry.update();
         }
 
-//        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 0, 0);
-//        sleep(500);
-//        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 90, 0);
-//        sleep(500);
-//        auto.mecanumDrive.stop();
         auto.hingesBack();
-        auto.pictographID();
-        auto.jewelColor();
-        auto.driveToCryptobox3();
-        auto.place1stGlyphHinge(auto.backCryptoboxAngle);
-        auto.ejectGlyph();
-        auto.moveFWBW(auto.backCryptoboxAngle);
-        auto.hingesForward();
-//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
-//        sleep(350);
-//        auto.mecanumDriveBase.mecanumDrive.stop();
-//
-//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(1.0, 0, 0);
-//        sleep(600);
-//        auto.mecanumDriveBase.mecanumDrive.stop();
-//
-//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
-//        sleep(400);
-//        auto.mecanumDriveBase.mecanumDrive.stop();
+//        auto.pictographID();
+//        auto.jewelColor();
+//        auto.driveToCryptobox3();
+        auto.tapeMap.put(auto.outSensOutTape, true);
+        auto.diagonalAlignmentColorSensors();
+//        auto.tapeMap.put(auto.outSensOutTape, true);
+//        auto.diagonalAlignmentRange();
+//        auto.place1stGlyph();
+//        auto.ejectGlyph();
+//        auto.moveFWBW();
 
-        //auto.turn(0);
-        //auto.ejectGlyph();
-        //sleep(5000);
         while (opModeIsActive()) {
             //telemetry.addData("Moving Away:", auto.moveAwayFromColor());
 //            auto.place1stGlyph();

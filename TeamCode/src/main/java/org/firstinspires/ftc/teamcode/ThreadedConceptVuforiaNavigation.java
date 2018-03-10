@@ -60,7 +60,7 @@ import java.util.List;
  *
  * Vuforia uses the phone's camera to inspect it's surroundings, and attempt to locate target images.
  *
- * When images are located, Vuforia is able to determine the position and orientation of the
+ * When images are located, Vuforia is able to determine the power and orientation of the
  * image relative to the camera.  This sample code than combines that information with a
  * knowledge of where the target images are on the field, to determine the location of the camera.
  *

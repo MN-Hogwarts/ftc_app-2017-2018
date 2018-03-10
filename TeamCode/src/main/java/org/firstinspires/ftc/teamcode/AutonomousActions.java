@@ -32,6 +32,10 @@ import ftclib.FtcOpMode;
 
 import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.GYRO;
 import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
+import static org.firstinspires.ftc.teamcode.PickupHardware.LEFT_HINGE_DOWN;
+import static org.firstinspires.ftc.teamcode.PickupHardware.LEFT_HINGE_UP;
+import static org.firstinspires.ftc.teamcode.PickupHardware.RIGHT_HINGE_DOWN;
+import static org.firstinspires.ftc.teamcode.PickupHardware.RIGHT_HINGE_UP;
 
 public class AutonomousActions implements VisitableActions{
     int   RED_THRESHOLD  = (90);
@@ -308,6 +312,17 @@ public class AutonomousActions implements VisitableActions{
         telemetry.update();
     }
 
+    public void addTapeMapData() {
+
+        telemetry.addData("Inner Sensor " + allianceColor.name(), tapeAllianceColorValue(innerColor));
+        telemetry.addData("Outer Sensor " + allianceColor.name(), tapeAllianceColorValue(outerColor));
+        telemetry.addData(outSensInTape, tapeMap.get(outSensInTape));
+        telemetry.addData(outSensOutTape, tapeMap.get(outSensOutTape));
+        telemetry.addData(inSensInTape, tapeMap.get(inSensInTape));
+        telemetry.addData(inSensInTapeAgain, tapeMap.get(inSensInTapeAgain));
+
+    }
+
     // DON"T USE THIS YET
     public void glyphPickup() {
         leftServo = hardwareMap.get(Servo.class, "leftWheel");
@@ -324,14 +339,13 @@ public class AutonomousActions implements VisitableActions{
     }
 
     void hingesBack() {
-        pickupHw.rightHinge.setPosition(0.95);
-        pickupHw.leftHinge.setPosition(0.1);
-
+        pickupHw.rightHinge.setPosition(RIGHT_HINGE_UP);
+        pickupHw.leftHinge.setPosition(LEFT_HINGE_UP);
     }
 
     void hingesForward() {
-        pickupHw.rightHinge.setPosition(0.4);
-        pickupHw.leftHinge.setPosition(0.7);
+        pickupHw.rightHinge.setPosition(RIGHT_HINGE_DOWN);
+        pickupHw.leftHinge.setPosition(LEFT_HINGE_DOWN);
     }
 
     public void pictographID() {
@@ -781,17 +795,14 @@ public class AutonomousActions implements VisitableActions{
         mecanumDriveBase.turn(backCryptoboxAngle);
         Log.d(TAG, "driveToCryptobox3: turned toward cryptobox");
 
-        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.6, 0, 0);
-        Log.d(TAG, "driveToCryptobox3: started driving toward wall");
-
         encoderDrive(0.5, 1800, 3);
         rangeAdjustmentForward(wallCm, "tapeSearch");
         Log.d(TAG, "driveToCryptobox3: stopped driving toward wall");
 
-        mecanumDriveBase.turn(backCryptoboxAngle);
-        Log.d(TAG, "driveToCryptobox3: turned toward back cryptobox");
-
-        cryptoboxAngleCorrection();
+//        mecanumDriveBase.turn(backCryptoboxAngle);
+//        Log.d(TAG, "driveToCryptobox3: turned toward back cryptobox");
+//
+//        cryptoboxAngleCorrection();
         positionUsingBackTape();
         Log.d(TAG, "driveToCryptobox3: stopped in front of center column");
 
@@ -799,6 +810,48 @@ public class AutonomousActions implements VisitableActions{
 //        Log.d(TAG, "driveToCryptobox3: turned to realign with cryptobox");
 
     }
+
+    void driveToCryptoboxPart1() throws InterruptedException {
+
+        int wallCm = 40;
+
+        ElapsedTime time = new ElapsedTime();
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(.6, 0, 0);
+        Log.d(TAG, "driveToCryptobox3: started moving forward off balancing stone");
+        opMode.sleep(500);
+
+        while (opMode.opModeIsActive() && (Math.abs(getAngleY()) > 2 || Math.abs(getAngleZ()) > 2)
+                && time.seconds() < 1) {
+            telemetry.addData("Angle Y", getAngleY());
+            telemetry.addData("Angle Z", getAngleZ());
+            telemetry.update();
+        }
+        Log.d(TAG, "driveToCryptobox3: drove off balancing stone");
+        mecanumDriveBase.mecanumDrive.stop();
+        Log.d(TAG, "driveToCryptobox2: stopped after driving off balancing stone");
+//        if (allianceColor == AllianceColor.BLUE) {
+//            encoderDrive(0.5, 200, 2);
+//        }
+//        else if (allianceColor == AllianceColor.RED) {
+//            encoderDrive(0.5, 100, 2);
+//        }
+
+        mecanumDriveBase.turn(backCryptoboxAngle);
+        Log.d(TAG, "driveToCryptobox3: turned toward cryptobox");
+
+        mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.6, 0, 0);
+        Log.d(TAG, "driveToCryptobox3: started driving toward wall");
+
+        encoderDrive(0.5, 1800, 3);
+        rangeAdjustmentForward(wallCm, "tapeSearch");
+        Log.d(TAG, "driveToCryptobox3: stopped driving toward wall");
+
+        mecanumDriveBase.turn(backCryptoboxAngle, this, "tapeSearch");
+        Log.d(TAG, "driveToCryptobox3: turned toward back cryptobox");
+
+        cryptoboxAngleCorrection();
+
+    } // For testing where it starts before strafing
 
     void driveToSideCryptobox() throws InterruptedException {
 
@@ -842,7 +895,7 @@ public class AutonomousActions implements VisitableActions{
 
         if (Math.abs(backCryptoboxAngle - getAngleX()) > strafeStartAngleOffset) {
             Log.d(TAG, "cryptoboxAngleCorrection: correcting angle");
-            mecanumDriveBase.turn(strafeStartAngle);
+            mecanumDriveBase.turn(strafeStartAngle, this, "tapeSearch");
             Log.d(TAG, "cryptoboxAngleCorrection: turn correction before positioning with tape");
         }
         Log.d(TAG, "cryptoboxAngleCorrection: finished");
@@ -1432,6 +1485,8 @@ public class AutonomousActions implements VisitableActions{
         int turnCorrectAngle = 5;
         double speed = 0.5;
         ElapsedTime time = new ElapsedTime();
+        double angleX;
+        double range;
 
         double bounceBackDirection = outerDirection + Math.signum(backCryptoboxAngle) * strafeBounceAngle;
         double bounceForwardDirection = outerDirection - Math.signum(backCryptoboxAngle) * strafeBounceAngle;
@@ -1443,15 +1498,17 @@ public class AutonomousActions implements VisitableActions{
 //            Log.d(TAG, "rangeBounceBackTape: inslde loop");
             tapeSearch();
             telemetry.update();
-            if (time.seconds() > 3) {
+            if (time.seconds() > 5) { // Commented to test with slower speed - TODO: Remove comment after testing
                 Log.d(TAG, "rangeBounceBackTape: timed out");
+                timeDrive(0.7, innerDirection, 0.7);
                 break;
             }
-            if (getAngleX() - backCryptoboxAngle > turnCorrectAngle) { // too far left
+            angleX = getAngleX();
+            if (angleX - backCryptoboxAngle > turnCorrectAngle) { // too far left
                 Log.d(TAG, "rangeBounceBackTape: rotating right");
                 rotation = 0.05; // right
             }
-            else if (getAngleX() - backCryptoboxAngle < -turnCorrectAngle) { // too far right
+            else if (angleX - backCryptoboxAngle < -turnCorrectAngle) { // too far right
                 Log.d(TAG, "rangeBounceBackTape: rotating left");
                 rotation = -0.05; // left
             }
@@ -1461,10 +1518,11 @@ public class AutonomousActions implements VisitableActions{
             if (tapeMap.get(outSensInTape)) {
                 speed = 0.35;
             }
-            if (getSmallerRange() >= farCm && getSmallerRange() < 100) {
+            range = getSmallerRange();
+            if (range >= farCm && range < 100) {
                 mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(speed, bounceForwardDirection, rotation);
                 Log.d(TAG, "rangeBounceBackTape: strafing while moving forward slightly, distance = " + getSmallerRange());
-            } else if (getSmallerRange() <= nearCm) {
+            } else if (range <= nearCm) {
                 mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(speed, bounceBackDirection, rotation);
                 Log.d(TAG, "rangeBounceBackTape: strafing while moving back slightly, distance = " + getSmallerRange());
             }
@@ -1591,9 +1649,9 @@ public class AutonomousActions implements VisitableActions{
 
     void diagonalAlignmentColorSensors() throws InterruptedException {
 
-        int addingAngle = 0;
+        int addingAngle = 10;
         double closeRange = 15;
-        double farRange = 40;
+        double farRange = 36;
         double timeout = 2;
         int counter = 0;
         ElapsedTime time = new ElapsedTime();
@@ -1625,7 +1683,7 @@ public class AutonomousActions implements VisitableActions{
                     Log.d(TAG, "diagonalAlignmentColorSensors: angle correction");
                     mecanumDriveBase.turn(backCryptoboxAngle);
                     counter++;
-                    if (counter > 4) {
+                    if (counter > 2) {
                         Log.d(TAG, "diagonalAlignmentColorSensors: timed out");
                         break;
                     }
@@ -1817,12 +1875,37 @@ public class AutonomousActions implements VisitableActions{
             }
         }
         // Add telemetry with color value of each sensor
-        telemetry.addData("Inner Sensor " + allianceColor.name(), tapeAllianceColorValue(innerColor));
-        telemetry.addData("Outer Sensor " + allianceColor.name(), tapeAllianceColorValue(outerColor));
-        telemetry.addData(outSensInTape, tapeMap.get(outSensInTape));
-        telemetry.addData(outSensOutTape, tapeMap.get(outSensOutTape));
-        telemetry.addData(inSensInTape, tapeMap.get(inSensInTape));
-        telemetry.addData(inSensInTapeAgain, tapeMap.get(inSensInTapeAgain));
+        addTapeMapData();
+        // Add telemetry showing values in hashmap
+    } // To be used inside while loop, keeps track of tape states and displays, update telemetry after calling to display
+
+    private void reverseTapeSearch() {
+        // Set variables to previous state of each sensor
+        boolean prevInside = insideColorSensed;
+        boolean prevOutside = outsideColorSensed;
+        insideColorSensed = allianceColorTapeFound(innerColor);
+        outsideColorSensed = allianceColorTapeFound(outerColor);
+        // Set values in hashmap by comparing current and previous states of sensors
+        if (!outsideColorSensed && prevOutside) {
+            if (tapeMap.get(outSensOutTape)) {
+                tapeMap.put(outSensOutTape, false);
+                Log.d(TAG, "tapeSearch: " + outSensOutTape + " found");
+            } else {
+                tapeMap.put(outSensInTape, false);
+                Log.d(TAG, "tapeSearch: " + outSensInTape + " found");
+            }
+        }
+        if (!insideColorSensed && prevInside) {
+            if (tapeMap.get(inSensInTapeAgain)) {
+                tapeMap.put(inSensInTapeAgain, false);
+                Log.d(TAG, "tapeSearch: " + inSensInTapeAgain + " found");
+            } else {
+                tapeMap.put(inSensInTape, false);
+                Log.d(TAG, "tapeSearch: " + inSensInTape + " found");
+            }
+        }
+        // Add telemetry with color value of each sensor
+        addTapeMapData();
         // Add telemetry showing values in hashmap
     } // To be used inside while loop, keeps track of tape states and displays, update telemetry after calling to display
 
@@ -1908,15 +1991,16 @@ public class AutonomousActions implements VisitableActions{
         if (vuMark == RelicRecoveryVuMark.UNKNOWN) {
             telemetry.addLine("VuMark Unknown");
         } if (vuMark == RelicRecoveryVuMark.LEFT) {
-            timeDrive(0.4, 90, 0.5);
+            mecanumDriveBase.turn(cryptoboxAngle + 10);
             rangeAdjustmentForward(optimalRangeCm);
             pickupHw.rightHinge.setPosition(PickupHardware.RIGHT_HINGE_DOWN);
             timeDrive(0.4, 90, 1.0);
         } if (vuMark == RelicRecoveryVuMark.CENTER) {
+            mecanumDriveBase.turn(cryptoboxAngle);
             telemetry.addLine("Glyph Center");
             mecanumDriveBase.turn(cryptoboxAngle);
         } if (vuMark == RelicRecoveryVuMark.RIGHT) {
-            timeDrive(0.4, 270, 0.5);
+            mecanumDriveBase.turn(cryptoboxAngle - 10);
             rangeAdjustmentForward(optimalRangeCm);
             pickupHw.leftHinge.setPosition(PickupHardware.LEFT_HINGE_DOWN);
             timeDrive(0.4, 270, 1.0);
@@ -2005,12 +2089,12 @@ public class AutonomousActions implements VisitableActions{
 
     void ejectGlyph() {
         ElapsedTime time = new ElapsedTime();
-        pickupHw.leftServo.setPower(-0.8);
-        pickupHw.rightServo.setPower(0.8);
+        pickupHw.leftServo.setPower(PickupHardware.MIN_FINGER_POS);
+        pickupHw.rightServo.setPower(PickupHardware.MAX_FINGER_POS);
         Log.d(TAG, "ejectGlyph: servos moving outward");
         while (opMode.opModeIsActive() && time.seconds() < 2);
-        pickupHw.leftServo.setPower(0);
-        pickupHw.rightServo.setPower(0);
+        pickupHw.leftServo.setPower(PickupHardware.LEFT_STOP_POS);
+        pickupHw.rightServo.setPower(PickupHardware.RIGHT_STOP_POS);
         Log.d(TAG, "ejectGlyph: servos stopped");
     }
 
@@ -2030,7 +2114,7 @@ public class AutonomousActions implements VisitableActions{
             int minDist = 1900;
             startPosL = motorL.getCurrentPosition();
             startPosR = motorR.getTargetPosition();
-            // Determine new target position, and pass to motor controller
+            // Determine new target power, and pass to motor controller
             newLeftTarget = motorL.getCurrentPosition() + (int)(encoderCounts);
             newRightTarget = motorR.getCurrentPosition() + (int)(encoderCounts);
             motorL.setTargetPosition(newLeftTarget);
@@ -2049,7 +2133,7 @@ public class AutonomousActions implements VisitableActions{
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // its target power, the motion will stop.  This is "safer" in the event that the robot will
             // always end the motion as soon as possible.
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
@@ -2123,7 +2207,7 @@ public class AutonomousActions implements VisitableActions{
         // Ensure that the opmode is still active
         if (opMode.opModeIsActive()) {
 
-            // Determine new target position, and pass to motor controller
+            // Determine new target power, and pass to motor controller
             newLeftTarget = motorL.getCurrentPosition() + (int)(encoderCounts);
             newRightTarget = motorR.getCurrentPosition() + (int)(encoderCounts);
             motorL.setTargetPosition(newLeftTarget);
@@ -2142,7 +2226,7 @@ public class AutonomousActions implements VisitableActions{
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // its target power, the motion will stop.  This is "safer" in the event that the robot will
             // always end the motion as soon as possible.
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.

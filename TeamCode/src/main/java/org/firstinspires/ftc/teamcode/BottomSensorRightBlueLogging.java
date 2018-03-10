@@ -29,8 +29,9 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.AutoOptions.AllianceColor;
 
@@ -41,17 +42,13 @@ import static org.firstinspires.ftc.teamcode.AutoOptions.AngleMeasureHw.IMU;
 /**
  * Rotates Servo between min and max power or rotatescontinuaou
  */
-@Autonomous(name = "AutoBlueBack", group = "Main Auto")
+@Autonomous(name = "BottomSensorRightBlueLogging", group = "Sensors")
 //@Disabled
-public class AutoBlueBack extends FtcOpMode {
+public class BottomSensorRightBlueLogging extends FtcOpMode {
 
     AutonomousActions auto = new AutonomousActions();
 
     // Define class members
-    Servo   servo;
-    double  position = .55;//(MAX_POS - MIN_POS) / 2; // Start at halfway power
-    boolean rampUp = true;
-
 
     @Override
     public void initRobot() {
@@ -70,45 +67,11 @@ public class AutoBlueBack extends FtcOpMode {
         auto.initGlyphHardware();
         while (!isStarted()) {
             auto.allSensorData();
-            telemetry.update();
         }
 
-//        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 0, 0);
-//        sleep(500);
-//        auto.mecanumDrive.mecanumDrive_BoxPolar(0.8, 90, 0);
-//        sleep(500);
-//        auto.mecanumDrive.stop();
-        auto.hingesBack();
-        auto.pictographID();
-        auto.jewelColor();
-        auto.driveToCryptobox3();
-        auto.place1stGlyphHinge(auto.backCryptoboxAngle);
-        auto.ejectGlyph();
-        auto.moveFWBW(auto.backCryptoboxAngle);
-        auto.hingesForward();
-//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
-//        sleep(350);
-//        auto.mecanumDriveBase.mecanumDrive.stop();
-//
-//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(1.0, 0, 0);
-//        sleep(600);
-//        auto.mecanumDriveBase.mecanumDrive.stop();
-//
-//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_XPolar(-1.0, 0, 0);
-//        sleep(400);
-//        auto.mecanumDriveBase.mecanumDrive.stop();
-
-        //auto.turn(0);
-        //auto.ejectGlyph();
-        //sleep(5000);
+        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 0, 0);
         while (opModeIsActive()) {
-            //telemetry.addData("Moving Away:", auto.moveAwayFromColor());
-//            auto.place1stGlyph();
-//            telemetry.update();
+            Log.d(auto.TAG, "runOpMode: Right Bottom Blue " + auto.tapeSensorR.blue());
         }
-
-        //auto.initVuforia();
-        //auto.pictographID(); //run Vuforia method, includes initVuforia()
-
     }
 }
