@@ -19,7 +19,7 @@ import trclib.TrcServo;
 import trclib.TrcUtil;
 
 @TeleOp(name = "Basic Mecanum", group = "teleop")
-@Disabled
+//@Disabled
 public class BasicMecanum extends OpMode{
 
     private FtcDcMotor leftFrontMotor;

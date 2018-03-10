@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import ftclib.FtcDcMotor;
 
 @TeleOp(name = "Basic Mecanum 2", group = "teleop")
-@Disabled
+//@Disabled
 public class BasicMecanum2 extends OpMode{
 
     private boolean OP_MODE_IS_ACTIVE = true;

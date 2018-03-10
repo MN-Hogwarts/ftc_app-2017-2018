@@ -111,6 +111,7 @@ public class AutonomousActions implements VisitableActions{
         initGlyphHardware();
         initAlliance();
         initAlliance(allianceColor);
+        servosOff();
     }
 
     void initOpmode(FtcOpMode opMode) {
@@ -274,6 +275,8 @@ public class AutonomousActions implements VisitableActions{
         tapeMap.put(outSensInTape, false);
         tapeMap.put(inSensInTapeAgain, false);
 
+        servosOff();
+
     }
 
     private void initColorSensorSides() {
@@ -309,6 +312,15 @@ public class AutonomousActions implements VisitableActions{
         telemetry.addData("Angle Z", getAngleZ());
         telemetry.addData("Left distance", leftRange.getDistance(DistanceUnit.CM));
         telemetry.addData("Right distance", rightRange.getDistance(DistanceUnit.CM));
+        telemetry.update();
+    }
+
+    public void servosOff(){
+        initGlyphHardware();
+        pickupHw.leftServo.setPower(0);
+        pickupHw.rightServo.setPower(0);
+
+        telemetry.addLine("Servos Off");
         telemetry.update();
     }
 
@@ -387,7 +399,7 @@ public class AutonomousActions implements VisitableActions{
         ElapsedTime time = new ElapsedTime();
 
         opMode.sleep(1000);
-                telemetry.log().add("Move Away From Color: " + moveAwayFromColor());
+        telemetry.log().add("Move Away From Color: " + moveAwayFromColor());
 
         if (jewelColorL.red() == 0 && jewelColorR.red() == 0
                 && jewelColorL.blue() == 0 && jewelColorR.blue() == 0) {
@@ -453,7 +465,7 @@ public class AutonomousActions implements VisitableActions{
 //        return allianceColor == AllianceColor.RED && (jewelColorL.red()-jewelColorL.blue()) > (jewelColorR.red()-jewelColorR.blue())
 //                || allianceColor == AllianceColor.BLUE && (jewelColorL.blue()-jewelColorL.red()) > (jewelColorR.blue()-jewelColorR.red());
         return allianceColor == AllianceColor.RED && jewelRedR < jewelRedL
-                    || allianceColor == AllianceColor.BLUE && jewelBlueR < jewelBlueL;
+                || allianceColor == AllianceColor.BLUE && jewelBlueR < jewelBlueL;
     }
 
     void driveToCryptobox() throws InterruptedException {
@@ -862,7 +874,7 @@ public class AutonomousActions implements VisitableActions{
         time.reset();
         while (opMode.opModeIsActive() && (Math.abs(getAngleY()) > 2 || Math.abs(getAngleZ()) > 2)
 //                && time.seconds() < 1
-              ) {
+                ) {
             if (time.seconds() > 1.5) {
                 Log.d(TAG, "driveToSideCryptobox: timed out driving off balancing stone");
                 break;
@@ -938,7 +950,7 @@ public class AutonomousActions implements VisitableActions{
     void distanceToWall() {
         while (opMode.opModeIsActive() &&
                 (Math.abs(leftRange.getDistance(DistanceUnit.CM) - WALL_DISTANCE) > 2
-                || Math.abs(rightRange.getDistance(DistanceUnit.CM) - WALL_DISTANCE) > 2)) {
+                        || Math.abs(rightRange.getDistance(DistanceUnit.CM) - WALL_DISTANCE) > 2)) {
             if (Math.abs(leftRange.getDistance(DistanceUnit.CM) - rightRange.getDistance(DistanceUnit.CM)) > 2) {
                 rangeTurn();
             }
@@ -2099,8 +2111,8 @@ public class AutonomousActions implements VisitableActions{
     }
 
     void encoderColorDrive(double speed,
-                             double encoderCounts,
-                             double timeoutS) {
+                           double encoderCounts,
+                           double timeoutS) {
         int startPosL;
         int startPosR;
         int newLeftTarget;
@@ -2181,7 +2193,7 @@ public class AutonomousActions implements VisitableActions{
 
     private boolean checkCloserColor() {
         return (allianceColor == AllianceColor.BLUE && tapeSensorL.blue() > BLUE_THRESHOLD
-        || allianceColor == AllianceColor.RED && tapeSensorR.red() > RED_THRESHOLD);
+                || allianceColor == AllianceColor.RED && tapeSensorR.red() > RED_THRESHOLD);
     }
 
     void timeDrive(double speed, double direction, double seconds) {
@@ -2207,7 +2219,7 @@ public class AutonomousActions implements VisitableActions{
         // Ensure that the opmode is still active
         if (opMode.opModeIsActive()) {
 
-            // Determine new target power, and pass to motor controller
+            // Determine new target position, and pass to motor controller
             newLeftTarget = motorL.getCurrentPosition() + (int)(encoderCounts);
             newRightTarget = motorR.getCurrentPosition() + (int)(encoderCounts);
             motorL.setTargetPosition(newLeftTarget);
@@ -2226,7 +2238,7 @@ public class AutonomousActions implements VisitableActions{
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target power, the motion will stop.  This is "safer" in the event that the robot will
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
             // always end the motion as soon as possible.
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
