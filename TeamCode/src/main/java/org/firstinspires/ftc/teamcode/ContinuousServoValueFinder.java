@@ -69,7 +69,7 @@ public class ContinuousServoValueFinder extends OpMode {
     @Override
     public void init() {
 
-        servo = hardwareMap.get(CRServo.class, "leftPickup");
+        servo = hardwareMap.get(CRServo.class, "leftPickup2");
 
         telemetry.addData(">", "Press Start to scan Servo." );
         telemetry.update();

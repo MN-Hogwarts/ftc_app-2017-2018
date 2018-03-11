@@ -16,11 +16,9 @@ import java.util.concurrent.Executors;
 import ftclib.FtcDcMotor;
 import ftclib.FtcServo;
 import swlib.SWGamePad;
-import swlib.SWIMUGyro;
 import swlib.SwDriveBase;
 import trclib.TrcSensor;
 import trclib.TrcServo;
-import trclib.TrcUtil;
 
 /**
  * Created by spmeg on 4/15/2017.
@@ -46,6 +44,7 @@ public class MecanumRobotCentricTeleop extends OpMode{
     private CRServo wristServo1, wristServo2;
     private Servo rightHinge, leftHinge;
     private CRServo leftPickupServo, rightPickupServo;
+    private CRServo leftPickupServo2, rightPickupServo2;
     private Servo relicServo;
     private DigitalChannel touchSensor ;
     private boolean turtleMode = false;
@@ -111,6 +110,8 @@ public class MecanumRobotCentricTeleop extends OpMode{
 
         leftPickupServo = this.hardwareMap.get(CRServo.class, "leftPickup");
         rightPickupServo = this.hardwareMap.get(CRServo.class, "rightPickup");
+        leftPickupServo2 = this.hardwareMap.get(CRServo.class, "leftPickup2");
+        rightPickupServo2 = this.hardwareMap.get(CRServo.class, "rightPickup2");
 
         //change for new pickup mechanism
 //        rightPickupServo.setDirection(Servo.Direction.REVERSE);
@@ -259,14 +260,20 @@ public class MecanumRobotCentricTeleop extends OpMode{
                     if (gamepad2.b) {
                         leftPickupServo.setPower(PickupHardware.MIN_FINGER_POS);
                         rightPickupServo.setPower(PickupHardware.MAX_FINGER_POS);
+                        leftPickupServo2.setPower(PickupHardware.MIN_FINGER_POS);
+                        rightPickupServo2.setPower(PickupHardware.MAX_FINGER_POS);
                     } //If touch sensor is pressed, stop wheels. If 'A' is pressed, run wheels. If neither is pressed, stop wheels
                     else if (!touchSensor.getState()) {
-                        leftPickupServo.setPower(PickupHardware.LEFT_STOP_POS);
-                        rightPickupServo.setPower(PickupHardware.RIGHT_STOP_POS);
+                        leftPickupServo.setPower(PickupHardware.LEFT_STOP_POS_1);
+                        rightPickupServo.setPower(PickupHardware.RIGHT_STOP_POS_1);
+                        leftPickupServo2.setPower(PickupHardware.LEFT_STOP_POS_2);
+                        rightPickupServo2.setPower(PickupHardware.RIGHT_STOP_POS_2);
                     } //Turn inward
                     else if (gamepad2.a) {
                         leftPickupServo.setPower(PickupHardware.MAX_FINGER_POS);
                         rightPickupServo.setPower(PickupHardware.MIN_FINGER_POS);
+                        leftPickupServo2.setPower(PickupHardware.MAX_FINGER_POS);
+                        rightPickupServo2.setPower(PickupHardware.MIN_FINGER_POS);
                     } //Stop wheels
 //                    else if (gamepad2.left_bumper) {
 //                        leftPickupServo.setPosition(1.0);
@@ -277,8 +284,10 @@ public class MecanumRobotCentricTeleop extends OpMode{
 //                        leftPickupServo.setPosition(0.53);
 //                    }
                     else {
-                        leftPickupServo.setPower(PickupHardware.LEFT_STOP_POS);
-                        rightPickupServo.setPower(PickupHardware.RIGHT_STOP_POS);
+                        leftPickupServo.setPower(PickupHardware.LEFT_STOP_POS_1);
+                        rightPickupServo.setPower(PickupHardware.RIGHT_STOP_POS_1);
+                        leftPickupServo2.setPower(PickupHardware.LEFT_STOP_POS_2);
+                        rightPickupServo2.setPower(PickupHardware.RIGHT_STOP_POS_2);
                     }
                     //*/
 

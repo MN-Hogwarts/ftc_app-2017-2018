@@ -1340,7 +1340,7 @@ public class AutonomousActions implements VisitableActions{
 //        double backwardOutsideTapeDirection = forwardOutsideTapeDirection + 180;
         ElapsedTime time = new ElapsedTime();
         rangeBounceBackTape();
-        mecanumDriveBase.turn(backCryptoboxAngle);
+        mecanumDriveBase.turn(backCryptoboxAngle, this, "tapeSearch");
 //        smallSidewaysAdjustment();
         time.reset();
         while (opMode.opModeIsActive() && time.seconds() < 0.2) {
@@ -1517,11 +1517,11 @@ public class AutonomousActions implements VisitableActions{
             angleX = getAngleX();
             if (angleX - backCryptoboxAngle > turnCorrectAngle) { // too far left
                 Log.d(TAG, "rangeBounceBackTape: rotating right");
-                rotation = 0.05; // right
+                rotation = -0.1; // right
             }
             else if (angleX - backCryptoboxAngle < -turnCorrectAngle) { // too far right
                 Log.d(TAG, "rangeBounceBackTape: rotating left");
-                rotation = -0.05; // left
+                rotation = 0.1; // left
             }
             else {
                 rotation = 0;
@@ -2104,8 +2104,8 @@ public class AutonomousActions implements VisitableActions{
         pickupHw.rightServo.setPower(PickupHardware.MAX_FINGER_POS);
         Log.d(TAG, "ejectGlyph: servos moving outward");
         while (opMode.opModeIsActive() && time.seconds() < 2);
-        pickupHw.leftServo.setPower(PickupHardware.LEFT_STOP_POS);
-        pickupHw.rightServo.setPower(PickupHardware.RIGHT_STOP_POS);
+        pickupHw.leftServo.setPower(PickupHardware.LEFT_STOP_POS_1);
+        pickupHw.rightServo.setPower(PickupHardware.RIGHT_STOP_POS_1);
         Log.d(TAG, "ejectGlyph: servos stopped");
     }
 

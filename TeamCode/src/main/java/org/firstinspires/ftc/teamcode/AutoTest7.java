@@ -78,6 +78,7 @@ public class AutoTest7 extends FtcOpMode {
 //        auto.jewelColor();
 //        auto.driveToCryptobox3();
 
+        auto.mecanumDriveBase.setStartangle(auto.backCryptoboxAngle);
         auto.positionUsingBackTape();
 
 //        auto.tapeMap.put(auto.inSensInTape, true);

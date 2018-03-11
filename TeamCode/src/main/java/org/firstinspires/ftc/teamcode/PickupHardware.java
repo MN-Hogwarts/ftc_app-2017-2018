@@ -31,10 +31,10 @@ public class PickupHardware
     /* Public OpMode members. */
     CRServo leftServo ;
     CRServo rightServo ;
+    CRServo leftServo2 ;
+    CRServo rightServo2 ;
     CRServo wristServo1;
     CRServo wristServo2;
-    CRServo left_Servo ;
-    CRServo right_Servo ;
     Servo rightHinge;
     Servo leftHinge;
     DigitalChannel touchSensor ;
@@ -44,10 +44,12 @@ public class PickupHardware
     public static final double ARM_UP_POWER    =  0.45 ;
     public static final double ARM_DOWN_POWER  = -0.45 ;
 
-    static final double MAX_FINGER_POS = 0.8;
-    static final double MIN_FINGER_POS = -0.8;
-    static final double LEFT_STOP_POS   = 0.025;
-    static final double RIGHT_STOP_POS   = 0;
+    static final double MAX_FINGER_POS = 1.0;
+    static final double MIN_FINGER_POS = -1.0;
+    static final double LEFT_STOP_POS_1 = 0.05;
+    static final double RIGHT_STOP_POS_1 = 0;
+    static final double LEFT_STOP_POS_2 = 0;
+    static final double RIGHT_STOP_POS_2 = 0;
 
     public static final double RIGHT_HINGE_UP   = 0.25;
     public static final double RIGHT_HINGE_DOWN = 0.95;
@@ -74,6 +76,10 @@ public class PickupHardware
         Log.d("Left Pickup", "Initialized");
         rightServo = hwMap.get(CRServo.class, "rightPickup") ;
         Log.d("Right Pickup", "Initialized");
+        leftServo2 = hwMap.get(CRServo.class, "leftPickup2") ;
+        Log.d("Left Pickup 2", "Initialized");
+        rightServo2 = hwMap.get(CRServo.class, "rightPickup2") ;
+        Log.d("Right Pickup 2", "Initialized");
         wristServo1 = hwMap.get(CRServo.class, "wristServo1") ;
         wristServo1.setDirection(CRServo.Direction.REVERSE);
         wristServo2 = hwMap.get(CRServo.class, "wristServo2") ;

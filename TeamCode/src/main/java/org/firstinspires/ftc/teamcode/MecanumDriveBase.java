@@ -69,6 +69,8 @@ public class MecanumDriveBase implements Visitor {
 
     FtcOpMode linearFtcOpMode = null;
 
+    double startangle   = 0;
+
     /* Constructor */
     public MecanumDriveBase(){
 
@@ -558,8 +560,12 @@ public class MecanumDriveBase implements Visitor {
         */
     }
 
+    void setStartangle(double angle) {
+        startangle = angle;
+    }
+
     double getAngleX() {
-        return imu.getAngularOrientation().firstAngle;
+        return imu.getAngularOrientation().firstAngle + startangle;
     }
 
     @Override
