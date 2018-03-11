@@ -77,13 +77,11 @@ public class AutoTest6 extends FtcOpMode {
 //        auto.pictographID();
 //        auto.jewelColor();
 //        auto.driveToCryptobox3();
-        auto.tapeMap.put(auto.inSensInTape, true);
-        auto.diagonalAlignmentColorSensors();
-//        auto.tapeMap.put(auto.outSensOutTape, true);
-//        auto.diagonalAlignmentRange();
-//        auto.place1stGlyph();
-//        auto.ejectGlyph();
-//        auto.moveFWBW();
+
+        auto.positionUsingBackTape();
+
+//        auto.tapeMap.put(auto.inSensInTape, true);
+//        auto.diagonalAlignmentColorSensors();
 
         while (opModeIsActive()) {
 //            telemetry.addData("Moving Away:", auto.moveAwayFromColor());

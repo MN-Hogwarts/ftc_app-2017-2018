@@ -316,7 +316,6 @@ public class AutonomousActions implements VisitableActions{
     }
 
     public void servosOff(){
-        initGlyphHardware();
         pickupHw.leftServo.setPower(0);
         pickupHw.rightServo.setPower(0);
 
