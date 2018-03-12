@@ -46,6 +46,10 @@ public class ServosOff extends FtcOpMode {
 
     @Override
     public void initRobot() {
+    }
+
+    @Override
+    public void runOpMode() throws InterruptedException{
         auto.initOpmode(this);
         auto.initMecanum();
         auto.initAlliance(AllianceColor.RED);
@@ -54,10 +58,6 @@ public class ServosOff extends FtcOpMode {
 
         auto.servosOff();
         telemetry.update();
-    }
-
-    @Override
-    public void runOpMode() throws InterruptedException{
         while (!isStarted()) {
             auto.servosOff();
             telemetry.update();

@@ -29,7 +29,10 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.AutoOptions.AllianceColor;
@@ -78,21 +81,12 @@ public class AutoTest1 extends FtcOpMode {
             telemetry.update();
         }
 
-        //auto.pictographID();
-        //auto.jewelColor();
-        //auto.distanceToWall1();
-        //sleep(5000);
-        //auto.driveToCryptobox();
-//        auto.firstTapeFound = true;
-//        auto.positionUsingTape();
-//        auto.cryptoboxAngleCorrection();
-//        auto.mecanumDriveBase.mecanumDrive.mecanumDrive_BoxPolar(0.5, 0, -1); // -1 is left
-//        auto.hingesBack();
-//        auto.tapeMap.put(auto.inSensInTape, true);
-//        auto.diagonalAlignmentRange();
-//        auto.moveFWBW();
-        auto.ejectGlyph();
+        auto.setStartangle(auto.backCryptoboxAngle);
+
         while (opModeIsActive()) {
+            telemetry.addData("Angle", auto.getAngleX());
+            telemetry.addData("Angle Drive Base", auto.mecanumDriveBase.getAngleX());
+            telemetry.update();
 //            telemetry.addData("Left encoder power:", auto.mecanumDriveBase.leftBackMotor.motor.getCurrentPosition());
 //            telemetry.addData("Right encoder power:", auto.mecanumDriveBase.rightBackMotor.motor.getCurrentPosition());
 //            telemetry.update();
