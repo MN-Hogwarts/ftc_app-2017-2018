@@ -76,6 +76,7 @@ public class AutoTest8 extends FtcOpMode {
 //        auto.pictographID();
 //        auto.jewelColor();
 //        auto.driveToCryptobox3();
+        auto.setStartangle(auto.backCryptoboxAngle);
         auto.tapeMap.put(auto.outSensOutTape, true);
         auto.diagonalAlignmentColorSensors();
 //        auto.tapeMap.put(auto.outSensOutTape, true);

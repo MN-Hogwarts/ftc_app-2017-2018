@@ -65,7 +65,7 @@ public class AutoTest6 extends FtcOpMode {
         auto.initOpmode(this);
         auto.initMecanum();
 
-//        auto.initVuforia();
+        auto.initVuforia();
         auto.initAlliance(AllianceColor.RED);
         auto.initJewelHardware(IMU);
         auto.initGlyphHardware();
@@ -74,13 +74,18 @@ public class AutoTest6 extends FtcOpMode {
         }
 
         auto.hingesBack();
-//        auto.pictographID();
+        auto.pictographID();
 //        auto.jewelColor();
 //        auto.driveToCryptobox3();
 
         auto.setStartangle(auto.backCryptoboxAngle);
         auto.positionUsingBackTape();
+        auto.place1stGlyphHinge(auto.backCryptoboxAngle);
+//        auto.ejectGlyph();
+//        auto.moveFWBW(auto.backCryptoboxAngle);
+//        auto.hingesForward();
 
+//        auto.setStartangle(auto.backCryptoboxAngle);
 //        auto.tapeMap.put(auto.inSensInTape, true);
 //        auto.diagonalAlignmentColorSensors();
 
