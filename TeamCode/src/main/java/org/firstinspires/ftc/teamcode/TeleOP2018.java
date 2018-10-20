@@ -108,7 +108,7 @@ public class TeleOP2018 extends LinearOpMode {
              if (gamepad1.x) {
                 frontPower = 1.0;
             }
-            else if {
+            else {
                 frontPower = 0.0;
             }
 
