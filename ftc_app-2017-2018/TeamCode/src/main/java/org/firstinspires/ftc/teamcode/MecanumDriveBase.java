@@ -27,10 +27,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -41,9 +41,8 @@ import org.firstinspires.ftc.teamcode.VisitorPattern.Visitor;
 
 import ftclib.FtcDcMotor;
 import ftclib.FtcOpMode;
-import swlib.SWIMUGyro;
-import swlib.SwDriveBase;
-import trclib.TrcRobot;
+import ftclib.FtcBNO055Imu;
+import trclib.TrcDriveBase;
 
 /**
  * This is NOT an opmode.
@@ -58,16 +57,22 @@ public class MecanumDriveBase implements Visitor {
     FtcDcMotor leftBackMotor    = null;
     FtcDcMotor rightBackMotor   = null;
 
-    SWIMUGyro gyro              = null;
-    BNO055IMU imu               = null;
+    FtcBNO055Imu imu = null;
 
-    SwDriveBase mecanumDrive   = null;
+    TrcDriveBase mecanumDrive   = null;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
 
     FtcOpMode linearFtcOpMode = null;
+
+    double startangle   = 0;
+
+    double maxTurnPower = 0.8;
+    double turnPower2   = 0.7;
+    double turnPower3   = 0.65;
+    double minTurnPower = 0.55;
 
     /* Constructor */
     public MecanumDriveBase(){
@@ -92,27 +97,19 @@ public class MecanumDriveBase implements Visitor {
         leftBackMotor = new FtcDcMotor("leftRear");
         rightBackMotor = new FtcDcMotor("rightRear");
 
-        gyro = new SWIMUGyro(hwMap, "imu", null);
-        imu = hwMap.get(BNO055IMU.class, "imu");
-        gyro.calibrate();
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
-        /*
-        // Set all motors to zero power
-        leftFrontDrive.setPower(0);
-        rightFrontDrive.setPower(0);
-        leftRearDrive.setPower(0);
-        rightRearDrive.setPower(0);
+        imu = new FtcBNO055Imu(hwMap, "imu");
+        imu.imu.initialize(parameters);
 
-        // Set all motors to run without encoders.
-        // May want to use RUN_USING_ENCODERS if encoders are installed.
-        leftFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftRearDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightRearDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        */
-
-        mecanumDrive = new SwDriveBase(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor,
-                gyro);
+        mecanumDrive = new TrcDriveBase(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor,
+                imu.gyro);
         // Define and initialize ALL installed servos.
     }
 
@@ -135,11 +132,6 @@ public class MecanumDriveBase implements Visitor {
             return;
         }
 
-        // leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        // rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        // int leftPos = leftMotor.getCurrentPosition();
-        // int rightPos = rightMotor.getCurrentPosition();
-
         double startAngle = getAngleX();
         double angleZ = getAngleX();
 
@@ -151,8 +143,6 @@ public class MecanumDriveBase implements Visitor {
         linearFtcOpMode.telemetry.update();
 
         if (angDiff < 0) { //turns right
-            //leftMotor.setPower(APPROACH_SPEED * .6 );
-            //rightMotor.setPower(-APPROACH_SPEED * .6);
 
             while (linearFtcOpMode.opModeIsActive() && angDiff < 0) {
 
@@ -166,28 +156,11 @@ public class MecanumDriveBase implements Visitor {
                 linearFtcOpMode.telemetry.update();
 
                 turnRightWithoutAngle(power);
-                /*
-                leftFrontMotor.setPower(turnPower(angDiff));
-                rightFrontMotor.setPower(-turnPower(angDiff));
-                leftBackMotor.setPower(turnPower(angDiff));
-                rightBackMotor.setPower(-turnPower(angDiff));
-                */
                 linearFtcOpMode.telemetry.addData("Power", leftFrontMotor.getPower());
-
-                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, -90, false);
-                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, angDiff);
-
-                /* if (leftMotor.getCurrentPosition() - 100 > leftPos
-                        && rightMotor.getCurrentPosition() + 100 < rightPos
-                        && IMUheading() == startAngle) {
-                    resetIMuandPos(leftPos, rightPos);
-                } */
 
                 linearFtcOpMode.idle(); // Always call opMode.idle() at the bottom of your while(opModeIsActive()) loop
             }
         } else if (angDiff > 0) { //turns left
-            //leftMotor.setPower(-APPROACH_SPEED);
-            //rightMotor.setPower(APPROACH_SPEED);
 
             while (linearFtcOpMode.opModeIsActive() && angDiff > 0) {
 
@@ -201,34 +174,12 @@ public class MecanumDriveBase implements Visitor {
                 linearFtcOpMode.telemetry.update();
 
                 turnLeftWithoutAngle(power);
-                /*
-                leftFrontMotor.setPower(turnPower(angDiff));
-                rightFrontMotor.setPower(-turnPower(angDiff));
-                leftBackMotor.setPower(turnPower(angDiff));
-                rightBackMotor.setPower(-turnPower(angDiff));
-                telemetry.addData("Power", leftFrontMotor.getPower());
-                */
-
-                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, 90, false);
-                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, angDiff);
-
-                /* if (leftMotor.getCurrentPosition() + 100 < leftPos
-                        && rightMotor.getCurrentPosition() - 100 > rightPos
-                        && IMUheading() == startAngle) {
-                    resetIMuandPos(leftPos, rightPos);
-                } */
 
                 linearFtcOpMode.idle(); // Always call opMode.idle() at the bottom of your while(opModeIsActive()) loop
             }
         }
 
         mecanumDrive.stop();
-        /*
-        leftFrontMotor.setPower(0);
-        rightFrontMotor.setPower(0);
-        leftBackMotor.setPower(0);
-        rightBackMotor.setPower(0);
-        */
     }
 
     public void turn(int turnAngle) throws InterruptedException {
@@ -239,11 +190,6 @@ public class MecanumDriveBase implements Visitor {
         if (linearFtcOpMode == null) {
             return;
         }
-
-        // leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        // rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        // int leftPos = leftMotor.getCurrentPosition();
-        // int rightPos = rightMotor.getCurrentPosition();
 
         double startAngle = getAngleX();
         double angleZ = getAngleX();
@@ -270,22 +216,7 @@ public class MecanumDriveBase implements Visitor {
                 linearFtcOpMode.telemetry.update();
 
                 turnRightWithoutAngle(turnPower(angDiff));
-                /*
-                leftFrontMotor.setPower(turnPower(angDiff));
-                rightFrontMotor.setPower(-turnPower(angDiff));
-                leftBackMotor.setPower(turnPower(angDiff));
-                rightBackMotor.setPower(-turnPower(angDiff));
-                */
                 linearFtcOpMode.telemetry.addData("Power", leftFrontMotor.getPower());
-
-                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, -90, false);
-                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, angDiff);
-
-                /* if (leftMotor.getCurrentPosition() - 100 > leftPos
-                        && rightMotor.getCurrentPosition() + 100 < rightPos
-                        && IMUheading() == startAngle) {
-                    resetIMuandPos(leftPos, rightPos);
-                } */
 
                 linearFtcOpMode.idle(); // Always call opMode.idle() at the bottom of your while(opModeIsActive()) loop
             }
@@ -304,34 +235,12 @@ public class MecanumDriveBase implements Visitor {
                 linearFtcOpMode.telemetry.update();
 
                 turnLeftWithoutAngle(turnPower(angDiff));
-                /*
-                leftFrontMotor.setPower(turnPower(angDiff));
-                rightFrontMotor.setPower(-turnPower(angDiff));
-                leftBackMotor.setPower(turnPower(angDiff));
-                rightBackMotor.setPower(-turnPower(angDiff));
-                telemetry.addData("Power", leftFrontMotor.getPower());
-                */
-
-                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, 90, false);
-                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, angDiff);
-
-                /* if (leftMotor.getCurrentPosition() + 100 < leftPos
-                        && rightMotor.getCurrentPosition() - 100 > rightPos
-                        && IMUheading() == startAngle) {
-                    resetIMuandPos(leftPos, rightPos);
-                } */
 
                 linearFtcOpMode.idle(); // Always call opMode.idle() at the bottom of your while(opModeIsActive()) loop
             }
         }
 
         mecanumDrive.stop();
-        /*
-        leftFrontMotor.setPower(0);
-        rightFrontMotor.setPower(0);
-        leftBackMotor.setPower(0);
-        rightBackMotor.setPower(0);
-        */
     }
 
     public void turnLeftWithoutAngle(double power) {
@@ -348,27 +257,27 @@ public class MecanumDriveBase implements Visitor {
         rightBackMotor.setPower(-power);
     }
 
+    public void setTurnPowers(double maxPower, double power2, double power3, double minPower) {
+        maxTurnPower    = maxPower;
+        turnPower2      = power2;
+        turnPower3      = power3;
+        minTurnPower    = minPower;
+    }
+
     private double turnPower(double difference) {
         if (Math.abs(difference) < 20) {
-            //return 0.15;
-            return 0.55;
+            return minTurnPower;
         } else if (Math.abs(difference) < 45) {
-            //return 0.3;
-            return 0.65;
+            return turnPower3;
         } else if (Math.abs(difference) < 90) {
-            return 0.7;
-        } else return 0.8;
-    }
+            return turnPower2;
+        } else return maxTurnPower;
+    } // Adjust powers depending on robot
 
     public void leftSideSwingTurn(int turnAngle, VisitableActions visAct, String methodName) throws InterruptedException {
         if (linearFtcOpMode == null) {
             return;
         }
-
-        // leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        // rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        // int leftPos = leftMotor.getCurrentPosition();
-        // int rightPos = rightMotor.getCurrentPosition();
 
         double startAngle = getAngleX();
         double angleZ = getAngleX();
@@ -381,8 +290,6 @@ public class MecanumDriveBase implements Visitor {
         linearFtcOpMode.telemetry.update();
 
         if (angDiff < 0) { //turns right
-            //leftMotor.setPower(APPROACH_SPEED * .6 );
-            //rightMotor.setPower(-APPROACH_SPEED * .6);
 
             while (linearFtcOpMode.opModeIsActive() && angDiff < 0) {
 
@@ -403,20 +310,9 @@ public class MecanumDriveBase implements Visitor {
 
                 linearFtcOpMode.telemetry.addData("Power", leftFrontMotor.getPower());
 
-                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, -90, false);
-                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, angDiff);
-
-                /* if (leftMotor.getCurrentPosition() - 100 > leftPos
-                        && rightMotor.getCurrentPosition() + 100 < rightPos
-                        && IMUheading() == startAngle) {
-                    resetIMuandPos(leftPos, rightPos);
-                } */
-
                 linearFtcOpMode.idle(); // Always call opMode.idle() at the bottom of your while(opModeIsActive()) loop
             }
         } else if (angDiff > 0) { //turns left
-            //leftMotor.setPower(-APPROACH_SPEED);
-            //rightMotor.setPower(APPROACH_SPEED);
 
             while (linearFtcOpMode.opModeIsActive() && angDiff > 0) {
 
@@ -437,26 +333,11 @@ public class MecanumDriveBase implements Visitor {
 
                 linearFtcOpMode.telemetry.addData("Power", leftFrontMotor.getPower());
 
-                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, 90, false);
-                // driveBase.mecanumDrive_Polar(turnPower(angDiff), 0, angDiff);
-
-                /* if (leftMotor.getCurrentPosition() + 100 < leftPos
-                        && rightMotor.getCurrentPosition() - 100 > rightPos
-                        && IMUheading() == startAngle) {
-                    resetIMuandPos(leftPos, rightPos);
-                } */
-
                 linearFtcOpMode.idle(); // Always call opMode.idle() at the bottom of your while(opModeIsActive()) loop
             }
         }
 
         mecanumDrive.stop();
-        /*
-        leftFrontMotor.setPower(0);
-        rightFrontMotor.setPower(0);
-        leftBackMotor.setPower(0);
-        rightBackMotor.setPower(0);
-        */
     }
 
     public void rightSideSwingTurn(int turnAngle, VisitableActions visAct, String methodName) throws InterruptedException {
@@ -558,8 +439,12 @@ public class MecanumDriveBase implements Visitor {
         */
     }
 
+    void setStartangle(double angle) {
+        startangle = angle;
+    }
+
     double getAngleX() {
-        return imu.getAngularOrientation().firstAngle;
+        return imu.imu.getAngularOrientation().firstAngle + startangle;
     }
 
     @Override
